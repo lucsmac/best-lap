@@ -1,0 +1,26 @@
+{
+  "name": "@best-lap/env",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@t3-oss/env-nextjs": "^0.13.8",
+    "zod": "^4.0.5"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.13",
+    "@best-lap/prettier": "workspace:*",
+    "@best-lap/eslint-config": "workspace:*",
+    "@best-lap/tsconfig": "workspace:*"
+  },
+  "eslintConfig": {
+    "extends": ["@best-lap/eslint-config/library"]
+  },
+  "prettier": "@best-lap/prettier"
+}

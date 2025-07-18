@@ -1,0 +1,55 @@
+services:
+  # Serviço do Redis
+  redis:
+    image: redis:latest
+    container_name: redis-container
+    ports:
+      - "6379:6379"
+    networks:
+      - app-network
+
+  # Serviço do Cassandra
+  timescaledb:
+    image: timescale/timescaledb:latest-pg14
+    container_name: timescaledb_container
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: metrics_db
+    volumes:
+      - timescale_data:/var/lib/postgresql/data
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: atd-dashboard-api
+    ports:
+      - "3000:3000"
+    environment:
+      - TIMESCALEDB_HOST=timescaledb
+      - TIMESCALEDB_PORT=5432
+      - TIMESCALEDB_USER=postgres
+      - TIMESCALEDB_PASSWORD=postgres
+      - TIMESCALEDB_DB=metrics_db
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    volumes:
+      - ./src:/usr/src/app/src
+      - /usr/src/app/node_modules
+    depends_on:
+      - redis
+      - timescaledb
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  timescale_data:

@@ -1,0 +1,6 @@
+{
+  "extends": "@best-lap/tsconfig/base.json",
+  "include": [
+    "index.ts"
+  ]
+}
