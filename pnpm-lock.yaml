@@ -46,28 +46,6 @@ importers:
         specifier: ^24.0.13
         version: 24.0.13
 
-  apps/application:
-    dependencies:
-      typeorm:
-        specifier: ^0.3.25
-        version: 0.3.25(reflect-metadata@0.2.2)
-    devDependencies:
-      '@best-lap/env':
-        specifier: workspace:*
-        version: link:../../packages/env
-      '@best-lap/eslint-config':
-        specifier: workspace:*
-        version: link:../../config/eslint-config
-      '@best-lap/prettier':
-        specifier: workspace:*
-        version: link:../../config/prettier
-      '@best-lap/tsconfig':
-        specifier: workspace:*
-        version: link:../../config/typescript-config
-      '@types/node':
-        specifier: ^24.0.13
-        version: 24.0.13
-
   apps/metrics-collector:
     dependencies:
       bullmq:
@@ -130,6 +108,59 @@ importers:
         version: 3.6.2
 
   config/typescript-config: {}
+
+  infra/database:
+    dependencies:
+      reflect-metadata:
+        specifier: ^0.2.2
+        version: 0.2.2
+      typeorm:
+        specifier: ^0.3.25
+        version: 0.3.25(reflect-metadata@0.2.2)
+    devDependencies:
+      '@best-lap/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      '@best-lap/env':
+        specifier: workspace:*
+        version: link:../../packages/env
+      '@best-lap/eslint-config':
+        specifier: workspace:*
+        version: link:../../config/eslint-config
+      '@best-lap/prettier':
+        specifier: workspace:*
+        version: link:../../config/prettier
+      '@best-lap/tsconfig':
+        specifier: workspace:*
+        version: link:../../config/typescript-config
+      '@types/node':
+        specifier: ^24.0.13
+        version: 24.0.13
+
+  packages/core:
+    dependencies:
+      date-fns:
+        specifier: ^4.1.0
+        version: 4.1.0
+      typeorm:
+        specifier: ^0.3.25
+        version: 0.3.25(reflect-metadata@0.2.2)
+    devDependencies:
+      '@best-lap/env':
+        specifier: workspace:*
+        version: link:../env
+      '@best-lap/eslint-config':
+        specifier: workspace:*
+        version: link:../../config/eslint-config
+      '@best-lap/prettier':
+        specifier: workspace:*
+        version: link:../../config/prettier
+      '@best-lap/tsconfig':
+        specifier: workspace:*
+        version: link:../../config/typescript-config
+      '@types/node':
+        specifier: ^24.0.13
+        version: 24.0.13
 
   packages/env:
     dependencies:
@@ -894,6 +925,10 @@ packages:
       path-key: 3.1.1
       shebang-command: 2.0.0
       which: 2.0.2
+
+  /date-fns@4.1.0:
+    resolution: {integrity: sha512-Ukq0owbQXxa/U3EGtsdVBkR1w7KOQ5gIBqdH2hkvknzZPYvBxb/aa6E8L7tmjFtkwZBu3UXBbjIgPo/Ez4xaNg==}
+    dev: false
 
   /dayjs@1.11.13:
     resolution: {integrity: sha512-oaMBel6gjolK862uaPQOVTA7q3TZhuSvuMQAAglQDOWYO9A91IrAOUJEyKVlqJlHE0vq5p5UXxzdPfMH/x6xNg==}

@@ -1,0 +1,9 @@
+{
+  "extends": "@best-lap/tsconfig/base.json",
+  "include": [
+    "src/**/*",
+    "../../apps/metrics-collector/src/services",
+    "../../infra/database/src/typeorm/repositories/typeorm-metrics-repository.ts",
+    "../../infra/database/src/typeorm/repositories/typeorm-channel-repository.ts"
+  ]
+}
