@@ -28,6 +28,7 @@ export class CreateChannelTable1732044214596 implements MigrationInterface {
                         name: 'internal_link',
                         type: 'text',
                         isNullable: false,
+                        isUnique: true,
                     },
                     {
                         name: 'theme',
@@ -36,13 +37,13 @@ export class CreateChannelTable1732044214596 implements MigrationInterface {
                     },
                     {
                         name: 'active',
-                        type: 'bool',
+                        type: 'boolean',
                         isNullable: false,
                         default: false,
                     },
                     {
                         name: 'is_reference',
-                        type: 'bool',
+                        type: 'boolean',
                         isNullable: false,
                         default: false,
                     },
