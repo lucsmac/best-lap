@@ -1,4 +1,4 @@
-import { ChannelEntity } from "../channel";
+import { PageEntity } from "../page";
 
 export interface MetricEntity {
   id?: string;
@@ -10,7 +10,7 @@ export interface MetricEntity {
   lcp: number;
   tbt: number;
   cls: number;
-  channel: ChannelEntity;
+  page: PageEntity;
 }
 
 export interface MetricEntityUnchecked {
@@ -23,5 +23,5 @@ export interface MetricEntityUnchecked {
   lcp: number;
   tbt: number;
   cls: number;
-  channel_id: string;
+  page_id: string;
 }

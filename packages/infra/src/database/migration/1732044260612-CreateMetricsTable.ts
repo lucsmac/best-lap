@@ -15,7 +15,7 @@ export class CreateMetricsTable1732044260612 implements MigrationInterface {
                         default: 'uuid_generate_v4()'
                     },
                     {
-                        name: 'channel_id',
+                        name: 'page_id',
                         type: 'uuid',
                         isNullable: false,
                     },
@@ -74,9 +74,9 @@ export class CreateMetricsTable1732044260612 implements MigrationInterface {
         await queryRunner.createForeignKey(
             'metrics',
             new TableForeignKey({
-                columnNames: ['channel_id'],
+                columnNames: ['page_id'],
                 referencedColumnNames: ['id'],
-                referencedTableName: 'channel',
+                referencedTableName: 'page',
                 onDelete: 'CASCADE',
                 onUpdate: 'CASCADE',
             }),
@@ -85,13 +85,12 @@ export class CreateMetricsTable1732044260612 implements MigrationInterface {
 
     public async down(queryRunner: QueryRunner): Promise<void> {
         const table = await queryRunner.getTable('metrics');
-        const foreignKey = table?.foreignKeys.find(fk => fk.columnNames.indexOf('channel_id') !== -1);
+        const foreignKey = table?.foreignKeys.find(fk => fk.columnNames.indexOf('page_id') !== -1);
         if (foreignKey) {
             await queryRunner.dropForeignKey('metrics', foreignKey);
         }
 
-        
-        await queryRunner.dropTable('metrics')
-    }
 
+        await queryRunner.dropTable('metrics', true);
+    }
 }

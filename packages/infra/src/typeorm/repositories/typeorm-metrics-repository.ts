@@ -1,8 +1,8 @@
 import {
-  ChannelEntity,
   MetricEntity,
   MetricEntityUnchecked,
-  MetricsRepository
+  MetricsRepository,
+  PageEntity
 } from "@best-lap/core";
 import { Metric as MetricModel } from '../entities/metric-entity';
 import { dataSource } from "../../database/data-source";
@@ -15,14 +15,14 @@ export class TypeormMetricsRepository implements MetricsRepository {
     await metricsRepository.save(metricsData)
   }
 
-  async listByChannel(channel: ChannelEntity): Promise<MetricEntity[]> {
-    const channelMetrics = await metricsRepository.find({
+  async listByPage(page: PageEntity): Promise<MetricEntity[]> {
+    const pageMetrics = await metricsRepository.find({
       where: {
-        channel
+        page
       }
     })
 
-    return channelMetrics
+    return pageMetrics
   }
 
   async query(query: string, parameters: unknown[]): Promise<unknown> {

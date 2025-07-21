@@ -1,8 +1,9 @@
 import 'dotenv/config';
 import { DataSource } from 'typeorm';
-import { env } from '@best-lap/env'
+import { env } from '@best-lap/env';
+import path from 'path';
 
-const rootFolder = env.NODE_ENV === 'development' ? 'src' : 'dist'
+const rootFolder = env.NODE_ENV === 'development' ? 'src' : 'dist';
 
 export const dataSource = new DataSource({
   type: 'postgres',
@@ -14,9 +15,9 @@ export const dataSource = new DataSource({
   synchronize: false,
   logging: true,
   entities: [
-    `${rootFolder}/models/entities/*.{js,ts}`
+    path.resolve(__dirname, `../${rootFolder}/typeorm/entities/*.{ts,js}`)
   ],
   migrations: [
-    `${rootFolder}/infra/db/migration/*.{js,ts}`
+    path.resolve(__dirname, `../${rootFolder}/database/migration/*.{ts,js}`)
   ]
 });

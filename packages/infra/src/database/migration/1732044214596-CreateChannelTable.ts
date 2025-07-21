@@ -5,7 +5,7 @@ export class CreateChannelTable1732044214596 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.createTable(
             new Table({
-                name: 'channel',
+                name: 'channels',
                 columns: [
                     {
                         name: 'id',
@@ -35,10 +35,29 @@ export class CreateChannelTable1732044214596 implements MigrationInterface {
                         isNullable: false,
                     },
                     {
+                        name: 'active',
+                        type: 'bool',
+                        isNullable: false,
+                        default: false,
+                    },
+                    {
                         name: 'is_reference',
                         type: 'bool',
-                        isNullable: true,
-                    }
+                        isNullable: false,
+                        default: false,
+                    },
+                    {
+                        name: 'created_at',
+                        type: 'timestamp',
+                        default: 'now()',
+                        isNullable: false,
+                    },
+                    {
+                        name: 'updated_at',
+                        type: 'timestamp',
+                        default: 'now()',
+                        isNullable: false,
+                    },
                 ]
             }),
             true,
@@ -46,7 +65,6 @@ export class CreateChannelTable1732044214596 implements MigrationInterface {
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.dropTable('channel')
+        await queryRunner.dropTable('channels', true, true, true);
     }
-
 }

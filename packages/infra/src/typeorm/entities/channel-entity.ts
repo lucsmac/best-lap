@@ -1,6 +1,6 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
 import { ChannelEntity } from '@best-lap/core'
-import { Metric } from './metric-entity';
+import { Page } from './page-entity';
 
 @Entity()
 export class Channel implements ChannelEntity {
@@ -20,8 +20,17 @@ export class Channel implements ChannelEntity {
   theme!: string;
 
   @Column('bool')
+  active!: boolean;
+
+  @Column('bool')
   is_reference!: boolean;
 
-  @OneToMany(() => Metric, (metric) => metric.channel)
-  metrics!: Metric[];
+  @CreateDateColumn()
+  created_at!: Date;
+
+  @UpdateDateColumn()
+  updated_at!: Date;
+
+  @OneToMany(() => Page, (page) => page.channel)
+  pages!: Page[];
 }

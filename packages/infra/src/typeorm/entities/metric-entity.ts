@@ -1,6 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm'
-import { Channel } from './channel-entity';
 import { MetricEntity } from '@best-lap/core';
+import { Page } from './page-entity';
 
 @Entity()
 export class Metric implements MetricEntity {
@@ -35,9 +35,9 @@ export class Metric implements MetricEntity {
   cls!: number;
 
   @Column({ nullable: false })
-  channel_id!: string;
+  page_id!: string;
 
-  @ManyToOne(() => Channel, (channel: Channel) => channel.metrics)
-  @JoinColumn({ name: 'channel_id' })
-  channel!: Channel;
+  @ManyToOne(() => Page, (page: Page) => page.metrics)
+  @JoinColumn({ name: 'page_id' })
+  page!: Page;
 }
