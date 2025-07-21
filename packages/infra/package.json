@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "pnpm env:load tsx watch src/index.ts",
+    "env:load": "dotenv -e ../../.env --"
   },
   "devDependencies": {
     "@best-lap/core": "workspace:*",
@@ -24,6 +25,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "dotenv-cli": "^8.0.0",
     "reflect-metadata": "^0.2.2",
     "typeorm": "^0.3.25"
   }

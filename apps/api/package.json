@@ -3,16 +3,16 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "env:load": "dotenv -e ../../.env --"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@best-lap/env": "workspace:*",
     "@best-lap/eslint-config": "workspace:*",
     "@best-lap/prettier": "workspace:*",
     "@best-lap/tsconfig": "workspace:*",
-    "@best-lap/env": "workspace:*",
     "@types/node": "^24.0.13"
   },
   "eslintConfig": {
@@ -24,6 +24,7 @@
   "dependencies": {
     "@fastify/swagger": "^9.5.1",
     "@fastify/swagger-ui": "^5.2.3",
+    "dotenv-cli": "^8.0.0",
     "fastify": "^5.4.0",
     "fastify-type-provider-zod": "^5.0.2",
     "zod": "^4.0.5"
