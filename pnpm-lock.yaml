@@ -109,42 +109,11 @@ importers:
 
   config/typescript-config: {}
 
-  infra/database:
-    dependencies:
-      reflect-metadata:
-        specifier: ^0.2.2
-        version: 0.2.2
-      typeorm:
-        specifier: ^0.3.25
-        version: 0.3.25(reflect-metadata@0.2.2)
-    devDependencies:
-      '@best-lap/core':
-        specifier: workspace:*
-        version: link:../../packages/core
-      '@best-lap/env':
-        specifier: workspace:*
-        version: link:../../packages/env
-      '@best-lap/eslint-config':
-        specifier: workspace:*
-        version: link:../../config/eslint-config
-      '@best-lap/prettier':
-        specifier: workspace:*
-        version: link:../../config/prettier
-      '@best-lap/tsconfig':
-        specifier: workspace:*
-        version: link:../../config/typescript-config
-      '@types/node':
-        specifier: ^24.0.13
-        version: 24.0.13
-
   packages/core:
     dependencies:
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
-      typeorm:
-        specifier: ^0.3.25
-        version: 0.3.25(reflect-metadata@0.2.2)
     devDependencies:
       '@best-lap/env':
         specifier: workspace:*
@@ -171,6 +140,34 @@ importers:
         specifier: ^4.0.5
         version: 4.0.5
     devDependencies:
+      '@best-lap/eslint-config':
+        specifier: workspace:*
+        version: link:../../config/eslint-config
+      '@best-lap/prettier':
+        specifier: workspace:*
+        version: link:../../config/prettier
+      '@best-lap/tsconfig':
+        specifier: workspace:*
+        version: link:../../config/typescript-config
+      '@types/node':
+        specifier: ^24.0.13
+        version: 24.0.13
+
+  packages/infra:
+    dependencies:
+      reflect-metadata:
+        specifier: ^0.2.2
+        version: 0.2.2
+      typeorm:
+        specifier: ^0.3.25
+        version: 0.3.25(reflect-metadata@0.2.2)
+    devDependencies:
+      '@best-lap/core':
+        specifier: workspace:*
+        version: link:../core
+      '@best-lap/env':
+        specifier: workspace:*
+        version: link:../env
       '@best-lap/eslint-config':
         specifier: workspace:*
         version: link:../../config/eslint-config

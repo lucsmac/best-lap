@@ -11,8 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "date-fns": "^4.1.0",
-    "typeorm": "^0.3.25"
+    "date-fns": "^4.1.0"
   },
   "devDependencies": {
     "@best-lap/env": "workspace:*",
