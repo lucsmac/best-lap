@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner, Table } from "typeorm";
+import { MigrationInterface, QueryRunner, Table, TableForeignKey } from "typeorm";
 
 export class CreatePageTable1732044214599 implements MigrationInterface {
 
@@ -29,9 +29,31 @@ export class CreatePageTable1732044214599 implements MigrationInterface {
             type: 'uuid',
             isNullable: false,
           },
+          {
+            name: 'created_at',
+            type: 'timestamp',
+            default: 'now()',
+            isNullable: false,
+          },
+          {
+            name: 'updated_at',
+            type: 'timestamp',
+            default: 'now()',
+            isNullable: false,
+          },
         ]
       }),
       true,
+    );
+
+    await queryRunner.createForeignKey(
+      'pages',
+      new TableForeignKey({
+        columnNames: ['channel_id'],
+        referencedColumnNames: ['id'],
+        referencedTableName: 'channels',
+        onDelete: 'CASCADE',
+      }),
     );
   }
 

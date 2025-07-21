@@ -78,7 +78,6 @@ export class CreateMetricsTable1732044260612 implements MigrationInterface {
                 referencedColumnNames: ['id'],
                 referencedTableName: 'page',
                 onDelete: 'CASCADE',
-                onUpdate: 'CASCADE',
             }),
         );
     }
