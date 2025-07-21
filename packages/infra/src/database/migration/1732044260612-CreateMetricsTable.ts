@@ -15,6 +15,12 @@ export class CreateMetricsTable1732044260612 implements MigrationInterface {
                         default: 'uuid_generate_v4()'
                     },
                     {
+                        name: 'time',
+                        type: 'timestamp with time zone',
+                        isNullable: false,
+                        default: 'CURRENT_TIMESTAMP',
+                    },
+                    {
                         name: 'page_id',
                         type: 'uuid',
                         isNullable: false,
@@ -54,12 +60,6 @@ export class CreateMetricsTable1732044260612 implements MigrationInterface {
                         type: 'float',
                         isNullable: false,
                     },
-                    {
-                        name: 'time',
-                        type: 'timestamp with time zone',
-                        isNullable: false,
-                        default: 'CURRENT_TIMESTAMP',
-                    },
                 ],
                 indices: [
                     {
@@ -76,7 +76,7 @@ export class CreateMetricsTable1732044260612 implements MigrationInterface {
             new TableForeignKey({
                 columnNames: ['page_id'],
                 referencedColumnNames: ['id'],
-                referencedTableName: 'page',
+                referencedTableName: 'pages',
                 onDelete: 'CASCADE',
             }),
         );
