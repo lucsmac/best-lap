@@ -51,6 +51,12 @@ importers:
 
   apps/metrics-collector:
     dependencies:
+      '@best-lap/core':
+        specifier: workspace:^
+        version: link:../../packages/core
+      '@best-lap/infra':
+        specifier: workspace:^
+        version: link:../../packages/infra
       bullmq:
         specifier: ^5.56.4
         version: 5.56.4

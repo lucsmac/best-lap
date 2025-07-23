@@ -6,6 +6,7 @@ export interface ChannelsRepository {
   listAll(): Promise<ChannelEntity[]>
   listAllReferences(): Promise<ChannelEntity[]>
   listAllClients(): Promise<ChannelEntity[]>
+  listActiveChannels(): Promise<ChannelEntity[]>
   listByTheme(theme: string): Promise<ChannelEntity[]>
   findById(id: string): Promise<ChannelEntity | null>
   findByLink(id: string): Promise<ChannelEntity | null>

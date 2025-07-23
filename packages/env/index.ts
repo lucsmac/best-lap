@@ -4,7 +4,7 @@ import { z } from 'zod'
 export const env = createEnv({
   server: {
     API_PORT: z.coerce.number().default(3333),
-    DATABASE_URL: z.string().url(),
+    DATABASE_URL: z.url(),
     NODE_ENV: z.enum(['development', 'test', 'production']),
 
     DB_HOST: z.string(),
@@ -12,6 +12,8 @@ export const env = createEnv({
     DB_USER: z.string(),
     DB_PASSWORD: z.string(),
     DB_NAME: z.string(),
+
+    GOOGLE_API_KEY: z.string().optional(),
   },
   client: {},
   shared: {},
@@ -25,6 +27,8 @@ export const env = createEnv({
     DB_USER: process.env.DB_USER,
     DB_PASSWORD: process.env.DB_PASSWORD,
     DB_NAME: process.env.DB_NAME,
+
+    GOOGLE_API_KEY: process.env.GOOGLE_API_KEY,
   },
   emptyStringAsUndefined: true,
 })

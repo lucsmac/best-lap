@@ -1,5 +1,2 @@
-export * from './add-channel-performance-metrics-jobs'
-export * from './add-channels-performance-metrics-jobs'
-export * from './add-job-on-create-channel'
-export * from './create-collect-metrics-job'
-export * from './delete-channel-collect-job-service'
+export * from './collect-page-metrics-dispatcher'
+export * from './collect-page-metrics-service'

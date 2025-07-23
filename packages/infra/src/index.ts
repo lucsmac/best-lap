@@ -1,4 +1,2 @@
-import 'reflect-metadata'
-import { connection } from "./database/connection";
-
-connection()
+export * from './queue';
+export * from './typeorm';
