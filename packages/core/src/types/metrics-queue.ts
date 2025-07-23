@@ -1,6 +1,13 @@
-export type MetricsQueue = {
-  setJob: (job: {
-    type: string;
-    data: any;
-  }) => Promise<void>;
+export interface CollectPageMetricsJobParams {
+  type: 'client' | 'reference';
+  data: CollectPageMetricsJobData;
+}
+
+type CollectPageMetricsJobData = {
+  pageUrl: string
+  pageId: string
+}
+
+export type PageMetricsQueue = {
+  setCollectPageMetricsJob: (job: CollectPageMetricsJobParams) => Promise<void>;
 }

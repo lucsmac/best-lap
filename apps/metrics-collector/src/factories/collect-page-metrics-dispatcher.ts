@@ -1,14 +1,16 @@
-import { TypeormChannelsRepository, BullMqMetricsQueue } from "@best-lap/infra";
+import { TypeormChannelsRepository, BullMqPageMetricsQueue, bullMqClientsQueue, bullMqMainQueue } from "@best-lap/infra";
 import { CollectPageMetricsDispatcher } from "../services";
 
-export const MakeCollectPageMetricsDispatcher = async () => {
-  try {
-    const channelsRepository = new TypeormChannelsRepository()
-    const metricsQueue = new BullMqMetricsQueue();
-    const collectPageMetricsDispatcher = new CollectPageMetricsDispatcher(channelsRepository, metricsQueue)
+export const makeCollectPageMetricsDispatcher = () => {
+  const channelsRepository = new TypeormChannelsRepository()
 
-    await collectPageMetricsDispatcher.execute();
-  } catch (error) {
-    console.error(`Error during set up of collect page metrics`, error);
+  const queuesMap = {
+    reference: bullMqMainQueue,
+    client: bullMqClientsQueue
   }
+  const pageMetricsQueue = new BullMqPageMetricsQueue(queuesMap);
+
+  const collectPageMetricsDispatcher = new CollectPageMetricsDispatcher(channelsRepository, pageMetricsQueue)
+
+  return collectPageMetricsDispatcher;
 }

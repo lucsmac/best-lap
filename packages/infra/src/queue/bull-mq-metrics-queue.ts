@@ -1,10 +1,25 @@
-import { MetricsQueue } from "@best-lap/core";
+import { CollectPageMetricsJobParams, PageMetricsQueue } from "@best-lap/core";
+import { Queue } from "bullmq";
 
-export class BullMqMetricsQueue implements MetricsQueue {
-  async setJob(job: { type: string; data: any }): Promise<void> {
-    // Implementation for setting a job in the BullMQ queue
-    // This is a placeholder; actual implementation will depend on the BullMQ setup
-    console.log(`Setting job of type ${job.type} with data`, job.data);
-    // Here you would typically use a BullMQ Queue instance to add the job
+export class BullMqPageMetricsQueue implements PageMetricsQueue {
+  constructor(
+    private queuesMap: {
+      [key: string]: Queue;
+    }
+  ) { }
+
+  async setCollectPageMetricsJob({ type, data }: CollectPageMetricsJobParams): Promise<void> {
+    const queue = this.queuesMap[type];
+    if (!queue) {
+      throw new Error(`Queue for type "${type}" not found`);
+    }
+
+    const { pageId, pageUrl } = data;
+
+    await queue.add(
+      'collectChannelPerformanceMetric',
+      { pageUrl, pageId },
+      { jobId: `collect-metrics-${pageId}` }
+    )
   }
 } 

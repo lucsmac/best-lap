@@ -13,6 +13,9 @@ export const env = createEnv({
     DB_PASSWORD: z.string(),
     DB_NAME: z.string(),
 
+    REDIS_PORT: z.coerce.number().default(6379),
+    REDIS_HOST: z.string().default('redis'),
+
     GOOGLE_API_KEY: z.string().optional(),
   },
   client: {},
@@ -27,6 +30,9 @@ export const env = createEnv({
     DB_USER: process.env.DB_USER,
     DB_PASSWORD: process.env.DB_PASSWORD,
     DB_NAME: process.env.DB_NAME,
+
+    REDIS_PORT: process.env.REDIS_PORT,
+    REDIS_HOST: process.env.REDIS_HOST,
 
     GOOGLE_API_KEY: process.env.GOOGLE_API_KEY,
   },

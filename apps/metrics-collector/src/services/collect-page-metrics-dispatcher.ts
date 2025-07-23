@@ -1,9 +1,9 @@
-import { ChannelsRepository, MetricsQueue } from "@best-lap/core";
+import { ChannelsRepository, PageMetricsQueue } from "@best-lap/core";
 
 export class CollectPageMetricsDispatcher {
-  constructor(private channelsRepository: ChannelsRepository, private metricsQueue: MetricsQueue) {
+  constructor(private channelsRepository: ChannelsRepository, private pageMetricsQueue: PageMetricsQueue) {
     this.channelsRepository = channelsRepository;
-    this.metricsQueue = metricsQueue
+    this.pageMetricsQueue = pageMetricsQueue
   }
 
   async execute() {
@@ -32,8 +32,8 @@ export class CollectPageMetricsDispatcher {
         }
 
         try {
-          this.metricsQueue.setJob({
-            type: channel.is_reference ? '' : 'client',
+          this.pageMetricsQueue.setCollectPageMetricsJob({
+            type: channel.is_reference ? 'reference' : 'client',
             data: collectPageMetricsJobParams
           });
 
