@@ -1,6 +1,6 @@
 import { dataSource } from './data-source';
 
-export const connection = async () => {
+export const startConnection = async () => {
   await dataSource.initialize()
     .then(async () => {
       await dataSource.runMigrations();

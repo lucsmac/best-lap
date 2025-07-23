@@ -1,4 +1,6 @@
 import 'reflect-metadata'
-import { connection } from "./database/connection";
+import { startConnection } from './database/start-connection';
+import { startWorkers } from './queue/workers/bull-mq/start-workers';
 
-connection()
+startConnection()
+startWorkers()
