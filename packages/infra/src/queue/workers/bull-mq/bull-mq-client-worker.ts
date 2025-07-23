@@ -1,8 +1,9 @@
 import { bullMqClientsQueue } from "../../queues/bull-mq/bull-mq-client-queue";
+import { QueueType } from "../../queues/types/queue-type";
 import { makeWorker } from "./factory/make-worker";
 
 export const bullMqClientWorker = makeWorker({
-  queueName: bullMqClientsQueue.name,
+  queueName: bullMqClientsQueue.name as QueueType,
   processor: async (job) => {
     // Implement the job processing logic here
     console.log(`Processing job ${job.id} in main worker`);

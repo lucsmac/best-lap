@@ -1,8 +1,9 @@
 import { Worker } from 'bullmq'
 import { redisOptions } from '../../../../redis/config'
+import { QueueType } from '../../../queues/types/queue-type';
 
 type MakeWorkerParams = {
-  queueName: string;
+  queueName: QueueType;
   processor: (job: any) => Promise<void>;
 }
 
