@@ -2,20 +2,20 @@ import { PageEntity, PageRepository } from "@best-lap/core";
 import { dataSource } from "../../database/data-source";
 import { Page } from "../entities";
 
-const PageRepository = dataSource.getRepository<Page>(Page);
+const pageRepository = dataSource.getRepository<Page>(Page);
 
 export class TypeormPagesRepository implements PageRepository {
   async create(params: PageEntity): Promise<PageEntity> {
-    const pageData = PageRepository.create(params);
-    return await PageRepository.save(pageData);
+    const pageData = pageRepository.create(params);
+    return await pageRepository.save(pageData);
   }
 
   async delete(pageId: string): Promise<void> {
-    await PageRepository.delete({ id: pageId });
+    await pageRepository.delete({ id: pageId });
   }
 
   async findByPath(channel_id: string, path: string): Promise<PageEntity | null> {
-    return await PageRepository.findOne({
+    return await pageRepository.findOne({
       where: {
         channel_id,
         path
@@ -23,12 +23,18 @@ export class TypeormPagesRepository implements PageRepository {
     }) || null;
   }
 
-  async listAll(): Promise<PageEntity[]> {
-    return await PageRepository.find();
+  async listAllByChannel(channel_id: string): Promise<PageEntity[]> {
+    const pages = await pageRepository.find({
+      where: {
+        channel_id: channel_id
+      }
+    });
+
+    return pages.map(page => page as PageEntity);
   }
 
   async listByChannel(channel_id: string): Promise<PageEntity[]> {
-    return await PageRepository.find({
+    return await pageRepository.find({
       where: {
         channel_id: channel_id
       }
@@ -36,10 +42,10 @@ export class TypeormPagesRepository implements PageRepository {
   }
 
   async findById(id: string): Promise<PageEntity | null> {
-    return await PageRepository.findOne({ where: { id } }) || null;
+    return await pageRepository.findOne({ where: { id } }) || null;
   }
 
   async update(channelId: string, data: Partial<PageEntity>): Promise<void> {
-    await PageRepository.update({ id: channelId }, data);
+    await pageRepository.update({ id: channelId }, data);
   }
 }
