@@ -4,8 +4,8 @@ import { listChannelsByTheme } from './list-by-theme'
 import { createChannel } from './create'
 import { deleteChannel } from './delete'
 import { editChannel } from './edit'
-import { disableChannel } from './disable-channel'
-import { enableChannel } from './enable-channel'
+import { disableChannel } from './disable'
+import { enableChannel } from './enable'
 
 export async function channelsRoutes(server: FastifyInstance) {
   server.get('/', listChannels)
