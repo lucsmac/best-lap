@@ -1,4 +1,4 @@
-import { ChannelsRepository } from "../modules";
+import { ChannelsRepository } from "../../modules";
 
 export class DeleteChannelUseCase {
   constructor(private channelsRepository: ChannelsRepository) { }

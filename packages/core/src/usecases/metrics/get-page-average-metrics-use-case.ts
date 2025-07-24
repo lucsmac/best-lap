@@ -1,24 +1,24 @@
 import { endOfDay, parseISO } from "date-fns";
-import { MetricsRepository } from "../modules";
-import { PerformanceAverageMetricsResponse, PerformanceMetricEnum } from "../types";
-import { filterByAverageMetric } from "../utils";
+import { MetricsRepository } from "../../modules";
+import { PerformanceAverageMetricsResponse, PerformanceMetricEnum } from "../../types";
+import { filterByAverageMetric } from "../../utils";
 
 type GetMetricsAverageParams = {
   period: 'hourly' | 'daily' | 'weekly'
   startDate?: string
   endDate?: string
-  theme?: string
+  page_id?: string
 }
 
-interface GetChannelsAverageMetricsUseCaseRequest {
+interface GetPageAverageMetricsUseCaseRequest {
   metric?: PerformanceMetricEnum
   filterPeriodOptions: GetMetricsAverageParams
 }
 
-export class GetChannelsAverageMetricsUseCase {
+export class GetPageAverageMetricsUseCase {
   constructor(private metricsRepository: MetricsRepository) { }
 
-  async execute({ metric, filterPeriodOptions }: GetChannelsAverageMetricsUseCaseRequest) {
+  async execute({ metric, filterPeriodOptions }: GetPageAverageMetricsUseCaseRequest) {
     const metricsAverage = await this._getMetricsByPeriod(filterPeriodOptions)
 
     const allMetricsResponseData = metricsAverage as PerformanceAverageMetricsResponse[]
@@ -30,8 +30,8 @@ export class GetChannelsAverageMetricsUseCase {
     return filteredMetricsData
   }
 
-  async _getMetricsByPeriod({ period, startDate = '2000-01-01', endDate, theme }: GetMetricsAverageParams) {
-    if (!period) {
+  async _getMetricsByPeriod({ period, startDate = '2000-01-01', endDate, page_id }: GetMetricsAverageParams) {
+    if (!period || !page_id) {
       return null
     }
 
@@ -44,8 +44,7 @@ export class GetChannelsAverageMetricsUseCase {
     const parsedStartDate = parseISO(startDate)
     const parsedEndDate = endDate ? endOfDay(parseISO(endDate)) : new Date()
 
-    const queryParams = [dateTrunc, parsedStartDate, parsedEndDate]
-    if (theme) queryParams.push(theme)
+    const queryParams = [dateTrunc, parsedStartDate, parsedEndDate, page_id]
 
     const results = await this.metricsRepository.query(
       `
@@ -61,8 +60,8 @@ export class GetChannelsAverageMetricsUseCase {
         MIN(score) AS min_score,
         MAX(score) AS max_score
       FROM metrics
-      ${theme ? 'INNER JOIN channel c ON metrics.channel_id = c.id' : ''}
-      WHERE time BETWEEN $2 AND $3 ${theme ? 'AND c.theme = $4' : ''}
+      INNER JOIN page p ON metrics.page_id = c.id
+      WHERE time BETWEEN $2 AND $3 AND c.id = $4
       GROUP BY
         DATE_TRUNC($1, time)
       ORDER BY

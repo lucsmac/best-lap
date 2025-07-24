@@ -8,7 +8,7 @@ export interface ChannelEntity {
   theme: string;
   active: boolean;
   is_reference?: boolean;
-  pages: PageEntity[];
-  created_at: Date;
-  updated_at: Date;
+  pages?: PageEntity[];
+  created_at?: Date;
+  updated_at?: Date;
 }

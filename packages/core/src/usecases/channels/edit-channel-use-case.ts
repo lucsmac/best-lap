@@ -1,5 +1,5 @@
-import { NoDataProvided, ResourceNotFound } from "../errors";
-import { ChannelsRepository } from "../modules";
+import { NoDataProvided, ResourceNotFound } from "../../errors";
+import { ChannelsRepository } from "../../modules";
 
 interface DataToUpdateChannel {
   domain?: string;

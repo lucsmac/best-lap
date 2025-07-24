@@ -1,5 +1,5 @@
-import { ChannelAlreadyExists } from "../errors";
-import { ChannelsRepository } from "../modules";
+import { ChannelAlreadyExists } from "../../errors";
+import { ChannelsRepository } from "../../modules";
 
 interface CreateChannelUseCaseRequest {
   name: string;
@@ -7,12 +7,13 @@ interface CreateChannelUseCaseRequest {
   internal_link: string;
   theme: string;
   is_reference?: boolean;
+  active: boolean;
 }
 
 export class CreateChannelUseCase {
   constructor(private channelsRepository: ChannelsRepository) { }
 
-  async execute({ domain, internal_link, name, theme, is_reference }: CreateChannelUseCaseRequest) {
+  async execute({ domain, internal_link, name, theme, is_reference, active }: CreateChannelUseCaseRequest) {
     const channelAlreadyExists = await this.channelsRepository.findByLink(internal_link)
 
     if (channelAlreadyExists) {
@@ -24,7 +25,8 @@ export class CreateChannelUseCase {
       internal_link,
       name,
       theme,
-      is_reference
+      is_reference,
+      active,
     })
 
     return createdChannel
