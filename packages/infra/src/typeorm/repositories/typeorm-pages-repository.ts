@@ -2,20 +2,20 @@ import { PageEntity, PageRepository } from "@best-lap/core";
 import { dataSource } from "../../database/data-source";
 import { Page } from "../entities";
 
-const pageRepository = dataSource.getRepository<Page>(Page);
+const PageRepository = dataSource.getRepository<Page>(Page);
 
-export class TypeormPageRepository implements PageRepository {
+export class TypeormPagesRepository implements PageRepository {
   async create(params: PageEntity): Promise<PageEntity> {
-    const pageData = pageRepository.create(params);
-    return await pageRepository.save(pageData);
+    const pageData = PageRepository.create(params);
+    return await PageRepository.save(pageData);
   }
 
   async delete(pageId: string): Promise<void> {
-    await pageRepository.delete({ id: pageId });
+    await PageRepository.delete({ id: pageId });
   }
 
   async findByPath(channel_id: string, path: string): Promise<PageEntity | null> {
-    return await pageRepository.findOne({
+    return await PageRepository.findOne({
       where: {
         channel_id,
         path
@@ -24,11 +24,11 @@ export class TypeormPageRepository implements PageRepository {
   }
 
   async listAll(): Promise<PageEntity[]> {
-    return await pageRepository.find();
+    return await PageRepository.find();
   }
 
   async listByChannel(channel_id: string): Promise<PageEntity[]> {
-    return await pageRepository.find({
+    return await PageRepository.find({
       where: {
         channel_id: channel_id
       }
@@ -36,10 +36,10 @@ export class TypeormPageRepository implements PageRepository {
   }
 
   async findById(id: string): Promise<PageEntity | null> {
-    return await pageRepository.findOne({ where: { id } }) || null;
+    return await PageRepository.findOne({ where: { id } }) || null;
   }
 
   async update(channelId: string, data: Partial<PageEntity>): Promise<void> {
-    await pageRepository.update({ id: channelId }, data);
+    await PageRepository.update({ id: channelId }, data);
   }
 }

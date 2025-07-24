@@ -1,6 +1,6 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { createPageBodySchema, createPageRequestParamsSchema } from "./schemas/create";
-import { TypeormChannelsRepository, TypeormPageRepository } from "@best-lap/infra";
+import { TypeormChannelsRepository, TypeormPagesRepository } from "@best-lap/infra";
 import { CreatePageUseCase, PageAlreadyExists } from "@best-lap/core";
 
 export async function createPage(request: FastifyRequest, reply: FastifyReply) {
@@ -15,7 +15,7 @@ export async function createPage(request: FastifyRequest, reply: FastifyReply) {
       return reply.code(400).send({ error: "Channel doesn't exist" });
     }
 
-    const pagesRepository = new TypeormPageRepository()
+    const pagesRepository = new TypeormPagesRepository()
     const createPageUseCase = new CreatePageUseCase(pagesRepository)
 
     await createPageUseCase.execute({ channel_id, path, name })

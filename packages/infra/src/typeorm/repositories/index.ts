@@ -1,3 +1,3 @@
-export * from './typeorm-channel-repository';
-export * from './typeorm-metric-repository';
-export * from './typeorm-page-repository';
+export * from './typeorm-channels-repository';
+export * from './typeorm-metrics-repository';
+export * from './typeorm-pages-repository';
