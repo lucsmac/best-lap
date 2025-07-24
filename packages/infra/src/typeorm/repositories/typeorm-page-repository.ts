@@ -14,6 +14,15 @@ export class TypeormPageRepository implements PageRepository {
     await pageRepository.delete({ id: pageId });
   }
 
+  async findByPath(channel_id: string, path: string): Promise<PageEntity | null> {
+    return await pageRepository.findOne({
+      where: {
+        channel_id,
+        path
+      }
+    }) || null;
+  }
+
   async listAll(): Promise<PageEntity[]> {
     return await pageRepository.find();
   }

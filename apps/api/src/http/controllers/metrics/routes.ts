@@ -8,13 +8,13 @@ import { ZodTypeProvider } from "fastify-type-provider-zod"
 import { listAverageChannelMetricsDocs } from "./docs/list-average.docs"
 
 export async function metricsRoutes(server: FastifyInstance) {
-  server.get('/metrics/average/:period', listAverageForAllChannelsMetrics)
-  server.get('/metrics/:theme/average/:period', listAverageChannelsMetricsByTheme)
+  server.get('/average/:period', listAverageForAllChannelsMetrics)
+  server.get('/:theme/average/:period', listAverageChannelsMetricsByTheme)
 
   server
     .withTypeProvider<ZodTypeProvider>()
     .get(
-      '/metrics/:channel_id',
+      '/:channel_id',
       listChannelMetricsDocs,
       listChannelMetrics
     )
@@ -22,7 +22,7 @@ export async function metricsRoutes(server: FastifyInstance) {
   server
     .withTypeProvider<ZodTypeProvider>()
     .get(
-      '/metrics/:channel_id/average/:period',
+      '/:channel_id/average/:period',
       listAverageChannelMetricsDocs,
       listAverageChannelMetrics
     )
