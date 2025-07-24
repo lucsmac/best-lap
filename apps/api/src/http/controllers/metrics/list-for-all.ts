@@ -1,13 +1,12 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { TypeormMetricsRepository } from "@best-lap/infra";
 import { GetChannelsAverageMetricsUseCase } from "@best-lap/core";
-import { themeRequestParamsSchema } from "./utils/list-average-route-schemas";
-import { querySchema } from "./utils/list-route-schemas";
+import { querySchema, requestParamsSchema } from "./utils/list-all-route-schemas";
 
-export async function listAverageChannelsMetricsByTheme(request: FastifyRequest, reply: FastifyReply) {
+export async function listAverageForAllChannelsMetrics(request: FastifyRequest, reply: FastifyReply) {
   try {
     const { metric, startDate, endDate } = querySchema.parse(request.query);
-    const { period, theme } = themeRequestParamsSchema.parse(request.params);
+    const { period } = requestParamsSchema.parse(request.params);
 
     const metricsRepository = new TypeormMetricsRepository()
     const getChannelMetricsAverageUseCase = new GetChannelsAverageMetricsUseCase(metricsRepository)
@@ -17,8 +16,7 @@ export async function listAverageChannelsMetricsByTheme(request: FastifyRequest,
       filterPeriodOptions: {
         period,
         endDate,
-        startDate,
-        theme
+        startDate
       }
     })
 

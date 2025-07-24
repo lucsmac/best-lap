@@ -1,7 +1,7 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { editChannelRequestBodySchema, editChannelRequestParamsSchema } from "./utils/edit-route-schemas";
-import { TypeormChannelsRepository } from "@/data/repositories/typeorm";
-import { EditChannelUseCase } from "@/application/usecases";
+import { TypeormChannelsRepository } from "@best-lap/infra";
+import { EditChannelUseCase } from "@best-lap/core";
 
 export async function editChannel(request: FastifyRequest, reply: FastifyReply) {
   try {
@@ -14,9 +14,9 @@ export async function editChannel(request: FastifyRequest, reply: FastifyReply) 
     await editChannelUseCase.execute(channel_id, dataToUpdate)
 
     return reply.code(204).send()
-  } catch(error) {
+  } catch (error) {
     console.error(error)
 
     return reply.code(500).send({ error: 'Internal Server Error.' })
-  } 
+  }
 }

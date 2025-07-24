@@ -1,9 +1,7 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { TypeormChannelsRepository } from "@/data/repositories/typeorm";
-import { CreateChannelUseCase } from "@/application/usecases";
+import { ChannelAlreadyExists, CreateChannelUseCase } from '@best-lap/core'
 import { createChannelBodySchema } from "./utils/create-route-schemas";
-import { ChannelAlreadyExists } from "@/models/errors";
-import { AddJobOnCreateChannel } from "@/application/services";
+import { TypeormChannelsRepository } from "@best-lap/infra";
 
 export async function createChannel(request: FastifyRequest, reply: FastifyReply) {
   try {
@@ -17,20 +15,17 @@ export async function createChannel(request: FastifyRequest, reply: FastifyReply
 
     const channelsRepository = new TypeormChannelsRepository()
     const createChannelUseCase = new CreateChannelUseCase(channelsRepository)
-    
-    const createdChannel = await createChannelUseCase.execute({ domain, internal_link, is_reference, name, theme})
 
-    const addJobOnCreateChannel = new AddJobOnCreateChannel(channelsRepository)
-    addJobOnCreateChannel.execute(createdChannel)
+    await createChannelUseCase.execute({ domain, internal_link, is_reference, name, theme })
 
     return reply.code(201).send()
-  } catch(error) {
+  } catch (error) {
     console.error(error);
-    
+
     if (error instanceof ChannelAlreadyExists) {
       return reply.status(409).send({ message: error.message })
     }
-    
-    return reply.code(500).send({ error: 'Internal Server Error.'})
+
+    return reply.code(500).send({ error: 'Internal Server Error.' })
   }
 }

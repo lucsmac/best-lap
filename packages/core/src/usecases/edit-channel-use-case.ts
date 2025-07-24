@@ -5,6 +5,7 @@ interface DataToUpdateChannel {
   domain?: string;
   internal_link?: string;
   is_reference?: boolean;
+  active?: boolean;
   name?: string;
   theme?: string;
 }

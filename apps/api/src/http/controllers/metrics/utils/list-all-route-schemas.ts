@@ -8,5 +8,10 @@ export const querySchema = z.object({
 });
 
 export const requestParamsSchema = z.object({
-  channel_id: z.string(),
+  period: z.enum(["daily", "hourly", "weekly"]),
+})
+
+export const themeRequestParamsSchema = z.object({
+  period: z.enum(["daily", "hourly", "weekly"]),
+  theme: z.string(),
 })

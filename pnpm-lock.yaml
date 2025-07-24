@@ -14,6 +14,12 @@ importers:
 
   apps/api:
     dependencies:
+      '@best-lap/core':
+        specifier: workspace:^
+        version: link:../../packages/core
+      '@best-lap/infra':
+        specifier: workspace:^
+        version: link:../../packages/infra
       '@fastify/swagger':
         specifier: ^9.5.1
         version: 9.5.1

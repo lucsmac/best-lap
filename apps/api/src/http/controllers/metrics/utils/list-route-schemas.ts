@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { MetricEnum } from "../../channel-metrics/utils/metrics-schemas";
+import { MetricEnum } from "./metrics-schemas";
 
 export const querySchema = z.object({
   metric: MetricEnum.optional(),
@@ -8,10 +8,5 @@ export const querySchema = z.object({
 });
 
 export const requestParamsSchema = z.object({
-  period: z.enum(["daily", "hourly", "weekly"]),
-})
-
-export const themeRequestParamsSchema = z.object({
-  period: z.enum(["daily", "hourly", "weekly"]),
-  theme: z.string(),
+  channel_id: z.string(),
 })
