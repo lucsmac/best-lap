@@ -16,7 +16,8 @@ export async function listAverageForAllChannelsMetrics(request: FastifyRequest, 
       filterPeriodOptions: {
         period,
         endDate,
-        startDate
+        startDate,
+        pagePath: '/'
       }
     })
 
