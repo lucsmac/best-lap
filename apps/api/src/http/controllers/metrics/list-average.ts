@@ -1,7 +1,7 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { querySchema } from "./utils/list-route-schemas";
-import { TypeormMetricsRepository } from "@best-lap/infra";
-import { GetChannelAverageMetricsUseCase } from "@best-lap/core";
+import { TypeormMetricsRepository, TypeormPagesRepository } from "@best-lap/infra";
+import { GetPageAverageMetricsUseCase } from "@best-lap/core";
 import { channelRequestParamsSchema } from "./utils/list-average-route-schemas";
 
 export async function listAverageChannelMetrics(request: FastifyRequest, reply: FastifyReply) {
@@ -9,14 +9,24 @@ export async function listAverageChannelMetrics(request: FastifyRequest, reply: 
     const { metric, startDate, endDate } = querySchema.parse(request.query);
     const { period, channel_id } = channelRequestParamsSchema.parse(request.params);
 
+    const pagesRepository = new TypeormPagesRepository()
+    const page = await pagesRepository.findByPathFromChannelId({
+      channel_id,
+      path: '/'
+    })
+
+    if (!page) {
+      return reply.code(404).send({ error: 'Page not found' });
+    }
+
     const metricsRepository = new TypeormMetricsRepository()
-    const getChannelMetricsAverageUseCase = new GetChannelAverageMetricsUseCase(metricsRepository)
+    const getChannelMetricsAverageUseCase = new GetPageAverageMetricsUseCase(metricsRepository)
 
     const metricsAverageData = await getChannelMetricsAverageUseCase.execute({
       metric,
       filterPeriodOptions: {
         period,
-        channel_id,
+        page_id: page.id,
         endDate,
         startDate
       }
