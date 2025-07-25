@@ -32,7 +32,7 @@ export class TypeormPagesRepository implements PageRepository {
     return pages.map(page => page as PageEntity);
   }
 
-  async findByPathFromChannelId({ channel_id, path }: { channel_id: string; path: string }): Promise<PageEntity | null> {
+  async findByPathFromChannel({ channel_id, path }: { channel_id: string; path: string }): Promise<PageEntity | null> {
     return await pageRepository.findOne({
       where: {
         channel_id,

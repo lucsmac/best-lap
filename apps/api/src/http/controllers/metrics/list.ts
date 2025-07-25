@@ -1,21 +1,35 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { querySchema, requestParamsSchema } from "./utils/list-route-schemas";
-import { TypeormChannelsRepository, TypeormMetricsRepository } from "@best-lap/infra";
-import { GetChannelMetricsUseCase, ResourceNotFound } from "@best-lap/core";
+import { TypeormChannelsRepository, TypeormMetricsRepository, TypeormPagesRepository } from "@best-lap/infra";
+import { GetPageMetricsUseCase, ResourceNotFound } from "@best-lap/core";
 
 export async function listChannelMetrics(request: FastifyRequest, reply: FastifyReply) {
   try {
     const { channel_id } = requestParamsSchema.parse(request.params);
 
     const channelsRepository = new TypeormChannelsRepository()
+    const pagesRepository = new TypeormPagesRepository()
     const metricsRepository = new TypeormMetricsRepository()
 
-    const getChannelMetricsUseCase = new GetChannelMetricsUseCase(channelsRepository, metricsRepository)
+    const page = await pagesRepository.findByPathFromChannel({
+      channel_id,
+      path: '/'
+    })
+
+    if (!page) {
+      return reply.code(404).send({ error: 'Page not found' });
+    }
+
+    const getChannelMetricsUseCase = new GetPageMetricsUseCase(
+      channelsRepository,
+      pagesRepository,
+      metricsRepository
+    )
     const { metric, startDate, endDate } = querySchema.parse(request.query);
 
     const channelMetrics = await getChannelMetricsUseCase.execute(
       {
-        channel_id,
+        pageId: page.id!,
         filterOptions: {
           endDate,
           startDate,

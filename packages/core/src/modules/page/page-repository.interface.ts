@@ -4,7 +4,7 @@ export interface PageRepository {
   create(params: PageEntity): Promise<PageEntity>
   delete(pageId: string): Promise<void>
   findByPath(path: string): Promise<PageEntity | null>
-  findByPathFromChannelId(params: { channel_id: string; path: string }): Promise<PageEntity | null>
+  findByPathFromChannel(params: { channel_id: string; path: string }): Promise<PageEntity | null>
   listAllByChannel(channel_id: string): Promise<PageEntity[]>
   listByChannel(channel_id: string): Promise<PageEntity[]>
   findById(id: string): Promise<PageEntity | null>

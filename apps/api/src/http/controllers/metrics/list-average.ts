@@ -10,7 +10,7 @@ export async function listAverageChannelMetrics(request: FastifyRequest, reply: 
     const { period, channel_id } = channelRequestParamsSchema.parse(request.params);
 
     const pagesRepository = new TypeormPagesRepository()
-    const page = await pagesRepository.findByPathFromChannelId({
+    const page = await pagesRepository.findByPathFromChannel({
       channel_id,
       path: '/'
     })
