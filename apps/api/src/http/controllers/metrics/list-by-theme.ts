@@ -18,7 +18,8 @@ export async function listAverageChannelsMetricsByTheme(request: FastifyRequest,
         period,
         endDate,
         startDate,
-        theme
+        theme,
+        pagePath: '/'
       }
     })
 
