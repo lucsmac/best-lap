@@ -11,7 +11,7 @@ export class CreatePageUseCase {
   constructor(private pagesRepository: PageRepository) { }
 
   async execute({ channel_id, name, path }: CreatePageUseCaseRequest) {
-    const pageAlreadyExists = await this.pagesRepository.findByPath(channel_id, path);
+    const pageAlreadyExists = await this.pagesRepository.findByPathFromChannel({ channel_id, path });
 
     if (pageAlreadyExists) {
       throw new PageAlreadyExists()

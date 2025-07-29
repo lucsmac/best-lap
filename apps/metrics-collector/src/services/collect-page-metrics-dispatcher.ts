@@ -20,6 +20,11 @@ export class CollectPageMetricsDispatcher {
         continue;
       }
 
+      if (!channel.pages) {
+        console.warn(`Channel with ID ${channel.id} has no pages, skipping metrics collection.`);
+        continue;
+      }
+
       channel.pages.forEach(page => {
         if (!page.path) {
           console.warn(`Page with ID ${page.id} does not have a URL, skipping metrics collection.`);
@@ -28,7 +33,7 @@ export class CollectPageMetricsDispatcher {
 
         const collectPageMetricsJobParams = {
           pageUrl: `${channel.internal_link}${page.path}`,
-          pageId: page.id,
+          pageId: page.id!,
         }
 
         try {
