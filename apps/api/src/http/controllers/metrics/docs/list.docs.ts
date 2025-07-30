@@ -21,7 +21,7 @@ export const listChannelMetricsDocs = {
         metrics: z.array(z.object({
           time: z.string().datetime(),
           score: z.number().optional(),
-          responseTime: z.number().optional(),
+          response_time: z.number().optional(),
           fcp: z.number().optional(),
           si: z.number().optional(),
           lcp: z.number().optional(),

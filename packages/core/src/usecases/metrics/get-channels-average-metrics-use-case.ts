@@ -73,7 +73,7 @@ export class GetChannelsAverageMetricsUseCase {
       SELECT
         DATE_TRUNC('${granularity}', time) AS period_start,
         AVG(score) AS avg_score,
-        AVG("responseTime") AS avg_response_time,
+        AVG("response_time") AS avg_response_time,
         AVG(fcp) AS avg_fcp,
         AVG(si) AS avg_si,
         AVG(lcp) AS avg_lcp,

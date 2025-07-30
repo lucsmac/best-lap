@@ -4,7 +4,7 @@ export interface MetricEntity {
   id?: string;
   time: Date;
   score: number;
-  responseTime: number;
+  response_time: number;
   fcp: number;
   si: number;
   lcp: number;
@@ -17,7 +17,7 @@ export interface MetricEntityUnchecked {
   id?: string;
   time: Date;
   score: number;
-  responseTime: number;
+  response_time: number;
   fcp: number;
   si: number;
   lcp: number;

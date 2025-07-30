@@ -14,10 +14,11 @@ export const dataSource = new DataSource({
   database: env.DB_NAME,
   synchronize: false,
   logging: true,
+  migrationsTransactionMode: 'each',
   entities: [
-    path.resolve(__dirname, `../${rootFolder}/typeorm/entities/*.{ts,js}`)
+    path.resolve(__dirname, `../../${rootFolder}/typeorm/entities/*.{ts,js}`)
   ],
   migrations: [
-    path.resolve(__dirname, `../${rootFolder}/database/migration/*.{ts,js}`)
+    path.resolve(__dirname, `../../${rootFolder}/database/migration/*.{ts,js}`)
   ]
 });

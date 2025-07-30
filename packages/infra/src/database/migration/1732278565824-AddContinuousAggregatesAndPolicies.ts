@@ -1,6 +1,9 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
 export class AddContinuousAggregatesAndPolicies1732278565824 implements MigrationInterface {
+  // 🚫 Desativa transações nesta migration
+  public readonly transaction = false;
+
   public async up(queryRunner: QueryRunner): Promise<void> {
     // Criar continuous aggregate diária
     await queryRunner.query(`
@@ -10,7 +13,7 @@ export class AddContinuousAggregatesAndPolicies1732278565824 implements Migratio
         time_bucket('1 day', time) AS bucket,
         page_id,
         avg(score) AS avg_score,
-        avg(responseTime) AS avg_response_time,
+        avg(response_time) AS avg_response_time,
         avg(fcp) AS avg_fcp,
         avg(si) AS avg_si,
         avg(lcp) AS avg_lcp,
@@ -25,10 +28,10 @@ export class AddContinuousAggregatesAndPolicies1732278565824 implements Migratio
       CREATE MATERIALIZED VIEW metrics_weekly
       WITH (timescaledb.continuous) AS
       SELECT
-        time_bucket('1 week', time, '2025-07-26 00:00:00') AS bucket,
+        time_bucket('1 week', time, TIMESTAMPTZ '2025-07-26 00:00:00') AS bucket,
         page_id,
         avg(score) AS avg_score,
-        avg(responseTime) AS avg_response_time,
+        avg(response_time) AS avg_response_time,
         avg(fcp) AS avg_fcp,
         avg(si) AS avg_si,
         avg(lcp) AS avg_lcp,

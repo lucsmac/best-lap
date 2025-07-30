@@ -12,7 +12,7 @@ export const adaptLighthouseResultToMetricPattern = (lighthouseResult: Lighthous
 
   const metrics = {
     score: performanceScore * 100,
-    responseTime: responseTime,
+    respons_time: responseTime,
     fcp,
     si,
     lcp,

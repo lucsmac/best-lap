@@ -14,7 +14,7 @@ export class Page implements PageEntity {
   @Column('text')
   path!: string;
 
-  @Column({ nullable: false })
+  @Column({ type: 'uuid', nullable: false })
   channel_id!: string;
 
   @ManyToOne(() => Channel, (channel: Channel) => channel.pages)

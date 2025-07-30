@@ -31,7 +31,7 @@ export class CreateMetricsTable1732044260612 implements MigrationInterface {
                         isNullable: false,
                     },
                     {
-                        name: 'responseTime',
+                        name: 'response_time',
                         type: 'int',
                         isNullable: false,
                     },

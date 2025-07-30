@@ -8,7 +8,7 @@ type ChannelIdentifier = {
 
 export type PerformanceMetrics = {
   score: number,
-  responseTime: number,
+  response_time: number,
   fcp: number,
   si: number,
   lcp: number,
@@ -18,7 +18,7 @@ export type PerformanceMetrics = {
 
 export const PerformanceMetricEnum = {
   score: 'score',
-  responseTime: 'responseTime',
+  response_time: 'response_time',
   fcp: 'fcp',
   si: 'si',
   lcp: 'lcp',
@@ -31,7 +31,7 @@ export type PerformanceMetricEnum = keyof typeof PerformanceMetricEnum;
 export type PerformanceMetricsResponse = {
   time: Date,
   score?: number,
-  responseTime?: number,
+  response_time?: number,
   fcp?: number,
   si?: number,
   lcp?: number,

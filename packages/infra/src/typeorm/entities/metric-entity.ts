@@ -17,7 +17,7 @@ export class Metric implements MetricEntity {
   score!: number;
 
   @Column('int')
-  responseTime!: number;
+  response_time!: number;
 
   @Column('float')
   fcp!: number;
@@ -34,7 +34,7 @@ export class Metric implements MetricEntity {
   @Column('float')
   cls!: number;
 
-  @Column({ nullable: false })
+  @Column({ type: 'uuid', nullable: false })
   page_id!: string;
 
   @ManyToOne(() => Page, (page: Page) => page.metrics)

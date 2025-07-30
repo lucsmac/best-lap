@@ -4,7 +4,6 @@ import { z } from 'zod'
 export const env = createEnv({
   server: {
     API_PORT: z.coerce.number().default(3333),
-    DATABASE_URL: z.url(),
     NODE_ENV: z.enum(['development', 'test', 'production']),
 
     DB_HOST: z.string(),
@@ -22,7 +21,6 @@ export const env = createEnv({
   shared: {},
   runtimeEnv: {
     API_PORT: process.env.SERVER_PORT,
-    DATABASE_URL: process.env.DATABASE_URL,
     NODE_ENV: process.env.NODE_ENV,
 
     DB_HOST: process.env.DB_HOST,

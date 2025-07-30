@@ -4,7 +4,7 @@ export const filterByAverageMetric = (metric: PerformanceMetricEnum, channelMetr
   const filteredMetricsData = channelMetrics.map(metricData => {
     return {
       time: metricData.period_start,
-      [metric]: metricData[`avg_${metric === 'responseTime' ? 'response_time' : metric}`]
+      [metric]: metricData[`avg_${metric}`]
     }
   })
 
