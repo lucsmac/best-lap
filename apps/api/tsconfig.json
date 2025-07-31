@@ -1,5 +1,5 @@
 {
-  "extends": "@best-lap/tsconfig/base.json",
+  "extends": "@best-lap/tsconfig/node.json",
   "include": [
     "src/**/*"
   ]

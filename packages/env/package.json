@@ -2,7 +2,7 @@
   "name": "@best-lap/env",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -20,7 +20,9 @@
     "@best-lap/tsconfig": "workspace:*"
   },
   "eslintConfig": {
-    "extends": ["@best-lap/eslint-config/library"]
+    "extends": [
+      "@best-lap/eslint-config/library"
+    ]
   },
   "prettier": "@best-lap/prettier"
 }

@@ -1,12 +1,18 @@
 import { dataSource } from './data-source';
 
-export const startConnection = async () => {
-  await dataSource.initialize()
-    .then(async () => {
+export const connectToDatabase = async () => {
+
+  if (!dataSource.isInitialized) {
+    try {
+      await dataSource.initialize()
       await dataSource.runMigrations();
-      console.log('Database has been initialized')
-    })
-    .catch((err: unknown) => {
+    } catch (err) {
       console.error('Error during Database initialization. Error: ', err)
-    })
+      throw err;
+    }
+  } else {
+    console.log('Database is already initialized', dataSource);
+  }
+
+  return dataSource
 }
