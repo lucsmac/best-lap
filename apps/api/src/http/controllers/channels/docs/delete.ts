@@ -1,0 +1,22 @@
+import { z } from 'zod';
+
+export const deleteChannelDocs = {
+  schema: {
+    description: 'Delete a channel',
+    tags: ['channels'],
+    params: z.object({
+      channel_id: z.uuid().describe('Must be a valid channel ID')
+    }),
+    response: {
+      201: z.object({
+        message: z.string().optional().describe('Success message')
+      }),
+      404: z.object({
+        message: z.string()
+      }),
+      500: z.object({
+        error: z.string()
+      })
+    }
+  }
+}
