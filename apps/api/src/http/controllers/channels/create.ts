@@ -18,7 +18,7 @@ export async function createChannel(request: FastifyRequest, reply: FastifyReply
 
     await createChannelUseCase.execute({ domain, internal_link, is_reference, name, theme, active: false })
 
-    return reply.code(201).send()
+    return reply.code(201).send({ message: 'Channel created successfully.' })
   } catch (error) {
     console.error(error);
 

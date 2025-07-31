@@ -1,15 +1,22 @@
 import { FastifyInstance } from 'fastify'
-import { listChannels } from './list'
-import { listChannelsByTheme } from './list-by-theme'
-import { createChannel } from './create'
-import { deleteChannel } from './delete'
-import { editChannel } from './edit'
-import { disableChannel } from './disable'
-import { enableChannel } from './enable'
+import { ZodTypeProvider } from 'fastify-type-provider-zod'
+import { createChannelDocs, listChannelDocs } from './docs'
+import {
+  listChannels,
+  createChannel,
+  deleteChannel,
+  disableChannel, editChannel,
+  enableChannel,
+  listChannelsByTheme
+} from './'
 
 export async function channelsRoutes(server: FastifyInstance) {
-  server.get('/', listChannels)
-  server.post('/', createChannel)
+  server
+    .withTypeProvider<ZodTypeProvider>()
+    .get('/', listChannelDocs, listChannels)
+  server
+    .withTypeProvider<ZodTypeProvider>()
+    .post('/', createChannelDocs, createChannel)
   server.delete('/:channel_id', deleteChannel)
   server.post('/:channel_id/enable', enableChannel)
   server.post('/:channel_id/disable', disableChannel)
