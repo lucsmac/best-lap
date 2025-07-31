@@ -9,7 +9,7 @@ import { listAverageChannelMetricsDocs } from "./docs/list-average.docs"
 
 export async function metricsRoutes(server: FastifyInstance) {
   server.get('/average/:period', listAverageForAllChannelsMetrics)
-  server.get('/:theme/average/:period', listAverageChannelsMetricsByTheme)
+  server.get('/theme/:theme/average/:period', listAverageChannelsMetricsByTheme)
 
   server
     .withTypeProvider<ZodTypeProvider>()
