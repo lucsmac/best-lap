@@ -1,7 +1,6 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
 export class AddContinuousAggregatesAndPolicies1732278565824 implements MigrationInterface {
-  // 🚫 Desativa transações nesta migration
   public readonly transaction = false;
 
   public async up(queryRunner: QueryRunner): Promise<void> {
