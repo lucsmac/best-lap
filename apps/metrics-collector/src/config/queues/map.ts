@@ -1,4 +1,7 @@
-import { bullMqClientsQueue, bullMqMainQueue } from "@best-lap/infra";
+import { makeQueue } from "@best-lap/infra"
+
+const bullMqMainQueue = makeQueue('reference')
+const bullMqClientsQueue = makeQueue('client')
 
 export const queuesMap = {
   reference: bullMqMainQueue,

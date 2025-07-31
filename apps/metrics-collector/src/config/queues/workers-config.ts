@@ -1,6 +1,6 @@
-import { QueueType } from '@best-lap/infra/src/queue/queues/types/queue-type';
 import { queuesMap } from './map';
 import { makeCollectPageMetricsService } from '../../factories';
+import { QueueType } from '@best-lap/infra';
 
 type Job = {
   data: {

@@ -13,7 +13,7 @@ export const env = createEnv({
     DB_NAME: z.string(),
 
     REDIS_PORT: z.coerce.number().default(6379),
-    REDIS_HOST: z.string().default('redis'),
+    REDIS_HOST: z.string().default('localhost'),
 
     GOOGLE_API_KEY: z.string().optional(),
   },
