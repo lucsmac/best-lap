@@ -8,6 +8,8 @@ import fastifySwaggerUi from '@fastify/swagger-ui';
 import { appRoutes } from './http/routes';
 import { swaggerConfig } from './docs/config';
 
+import bullBoardProxy from './plugins/bull-board-plugin';
+
 import { connectToDatabase } from '@best-lap/infra';
 
 async function startServer() {
@@ -32,6 +34,9 @@ async function startServer() {
   server.setValidatorCompiler(validatorCompiler);
   server.setSerializerCompiler(serializerCompiler);
 
+  await server.register(import('@fastify/cors'));
+  await server.register(import('@fastify/helmet'));
+
   server.register(fastifySwagger, swaggerConfig);
 
   server.register(fastifySwaggerUi, {
@@ -42,6 +47,7 @@ async function startServer() {
     }
   });
 
+  await server.register(bullBoardProxy);
   server.register(appRoutes);
 
   server.listen({ port: env.API_PORT, host: '0.0.0.0' })
