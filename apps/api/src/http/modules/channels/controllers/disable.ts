@@ -1,5 +1,5 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { disableChannelRequestParamsSchema } from "./utils/disable-channel-route-schema";
+import { disableChannelRequestParamsSchema } from "../utils/disable-channel-route-schema";
 import { TypeormChannelsRepository } from "@best-lap/infra";
 import { EditChannelUseCase } from "@best-lap/core";
 

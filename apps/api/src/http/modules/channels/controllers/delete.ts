@@ -1,5 +1,5 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { deleteChannelRequestParamsSchema } from "./utils/delete-route-schemas";
+import { deleteChannelRequestParamsSchema } from "../utils/delete-route-schemas";
 import { TypeormChannelsRepository } from "@best-lap/infra";
 import { DeleteChannelUseCase } from "@best-lap/core";
 

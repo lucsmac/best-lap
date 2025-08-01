@@ -1,13 +1,12 @@
-import { z } from "zod"
-import { MetricEnum } from "../utils/metrics-schemas"
-import { dateSchema } from "./utils/date-schema"
+import { z } from 'zod';
+import { MetricEnum } from '../utils/metrics-schemas';
+import { dateSchema } from './utils/date-schema';
 
-export const listAverageChannelMetricsDocs = {
+export const listAverageForAllChannelsMetricsDocs = {
   schema: {
-    description: 'Get average metrics for a channel by period',
-    tags: ['channel-metrics'],
+    description: 'List average metrics for all channels over a specified period',
+    tags: ['metrics'],
     params: z.object({
-      channel_id: z.uuid().describe('Must be a valid channel ID'),
       period: z.enum(['hourly', 'daily', 'weekly', 'monthly']).describe('Must be a valid period')
     }),
     querystring: z.object({
@@ -18,6 +17,9 @@ export const listAverageChannelMetricsDocs = {
     response: {
       200: z.object({
         metrics: z.array(z.object({
+          channel_id: z.uuid(),
+          channel_url: z.string(),
+          theme: z.string(),
           period_start: z.iso.datetime(),
           avg_score: z.number().optional(),
           avg_response_time: z.number().optional(),
@@ -25,7 +27,7 @@ export const listAverageChannelMetricsDocs = {
           avg_si: z.number().optional(),
           avg_lcp: z.number().optional(),
           avg_tbt: z.number().optional(),
-          avg_cls: z.number().optional()
+          avg_cls: z.number().optional(),
         }))
       }),
       404: z.object({
@@ -36,4 +38,4 @@ export const listAverageChannelMetricsDocs = {
       })
     }
   }
-}
+};

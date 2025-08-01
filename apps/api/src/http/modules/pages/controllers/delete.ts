@@ -1,7 +1,7 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { TypeormChannelsRepository, TypeormPagesRepository } from "@best-lap/infra";
 import { DeletePageUseCase, ResourceNotFound } from "@best-lap/core";
-import { deletePageRequestParamsSchema } from "./schemas/delete";
+import { deletePageRequestParamsSchema } from "../schemas/delete";
 
 export async function deletePage(request: FastifyRequest, reply: FastifyReply) {
   try {

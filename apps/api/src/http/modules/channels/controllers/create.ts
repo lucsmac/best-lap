@@ -1,6 +1,6 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { ChannelAlreadyExists, CreateChannelUseCase } from '@best-lap/core'
-import { createChannelBodySchema } from "./utils/create-route-schemas";
+import { createChannelBodySchema } from "../utils/create-route-schemas";
 import { TypeormChannelsRepository } from "@best-lap/infra";
 
 export async function createChannel(request: FastifyRequest, reply: FastifyReply) {

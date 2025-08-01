@@ -1,5 +1,5 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { querySchema, requestParamsSchema } from "./utils/list-route-schemas";
+import { querySchema, requestParamsSchema } from "../utils/list-route-schemas";
 import { TypeormChannelsRepository, TypeormMetricsRepository, TypeormPagesRepository } from "@best-lap/infra";
 import { GetPageMetricsUseCase, ResourceNotFound } from "@best-lap/core";
 

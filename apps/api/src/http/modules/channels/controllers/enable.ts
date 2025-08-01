@@ -1,5 +1,5 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { enableChannelRequestParamsSchema } from "./utils/enable-channel-route-schema";
+import { enableChannelRequestParamsSchema } from "../utils/enable-channel-route-schema";
 import { ChannelAlreadyExists, EditChannelUseCase } from "@best-lap/core";
 import { TypeormChannelsRepository } from "@best-lap/infra";
 

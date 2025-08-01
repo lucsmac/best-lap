@@ -1,5 +1,5 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { createPageBodySchema, createPageRequestParamsSchema } from "./schemas/create";
+import { createPageBodySchema, createPageRequestParamsSchema } from "../schemas/create";
 import { TypeormChannelsRepository, TypeormPagesRepository } from "@best-lap/infra";
 import { CreatePageUseCase, PageAlreadyExists } from "@best-lap/core";
 

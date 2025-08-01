@@ -1,6 +1,6 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { TypeormChannelsRepository, TypeormPagesRepository } from "@best-lap/infra";
-import { editPageRequestBodySchema, editPageRequestParamsSchema } from "./schemas/edit";
+import { editPageRequestBodySchema, editPageRequestParamsSchema } from "../schemas/edit";
 import { EditPageUseCase } from "@best-lap/core";
 
 export async function editPage(request: FastifyRequest, reply: FastifyReply) {

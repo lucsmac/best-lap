@@ -5,9 +5,9 @@ import { dateSchema } from './utils/date-schema';
 export const listChannelMetricsDocs = {
   schema: {
     description: 'List all metrics for a channel',
-    tags: ['channel-metrics'],
+    tags: ['metrics'],
     params: z.object({
-      channel_id: z.string().uuid().describe('Must be a valid channel ID')
+      channel_id: z.uuid().describe('Must be a valid channel ID')
     }),
     querystring: z.object({
       metric: MetricEnum.optional().describe('Must be a valid metric'),

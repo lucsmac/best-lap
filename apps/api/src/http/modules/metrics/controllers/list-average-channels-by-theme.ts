@@ -1,8 +1,8 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { TypeormMetricsRepository } from "@best-lap/infra";
 import { GetChannelsAverageMetricsUseCase } from "@best-lap/core";
-import { themeRequestParamsSchema } from "./utils/list-average-route-schemas";
-import { querySchema } from "./utils/list-route-schemas";
+import { themeRequestParamsSchema } from "../utils/list-average-route-schemas";
+import { querySchema } from "../utils/list-route-schemas";
 
 export async function listAverageChannelsMetricsByTheme(request: FastifyRequest, reply: FastifyReply) {
   try {

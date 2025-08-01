@@ -1,6 +1,6 @@
 import { TypeormChannelsRepository, TypeormPagesRepository } from "@best-lap/infra";
 import { FastifyReply, FastifyRequest } from "fastify";
-import { listPagesRequestParamsSchema } from "./schemas/list";
+import { listPagesRequestParamsSchema } from "../schemas/list";
 
 export async function listPages(request: FastifyRequest, reply: FastifyReply) {
   try {
