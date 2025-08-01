@@ -6,13 +6,15 @@ import {
   deleteChannelDocs,
   editChannelDocs,
   enableChannelDocs,
-  disableChannelDocs
+  disableChannelDocs,
+  listChannelsByThemeDocs
 } from './docs'
 import {
   listChannels,
   createChannel,
   deleteChannel,
-  disableChannel, editChannel,
+  disableChannel,
+  editChannel,
   enableChannel,
   listChannelsByTheme
 } from './'
@@ -36,5 +38,7 @@ export async function channelsRoutes(server: FastifyInstance) {
   server
     .withTypeProvider<ZodTypeProvider>()
     .patch('/:channel_id', editChannelDocs, editChannel)
-  server.get('/theme/:theme', listChannelsByTheme)
+  server
+    .withTypeProvider<ZodTypeProvider>()
+    .get('/theme/:theme', listChannelsByThemeDocs, listChannelsByTheme)
 }
