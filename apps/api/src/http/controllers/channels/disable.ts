@@ -15,7 +15,7 @@ export async function disableChannel(request: FastifyRequest, reply: FastifyRepl
     const editChannelUseCase = new EditChannelUseCase(channelsRepository)
     await editChannelUseCase.execute(channel_id, { active: false })
 
-    return reply.code(204).send()
+    return reply.code(204).send({ message: "Channel disabled successfully." });
   } catch (error) {
     console.log(error)
 

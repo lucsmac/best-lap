@@ -1,6 +1,13 @@
 import { FastifyInstance } from 'fastify'
 import { ZodTypeProvider } from 'fastify-type-provider-zod'
-import { createChannelDocs, listChannelsDocs } from './docs'
+import {
+  createChannelDocs,
+  listChannelsDocs,
+  deleteChannelDocs,
+  editChannelDocs,
+  enableChannelDocs,
+  disableChannelDocs
+} from './docs'
 import {
   listChannels,
   createChannel,
@@ -9,7 +16,6 @@ import {
   enableChannel,
   listChannelsByTheme
 } from './'
-import { deleteChannelDocs } from './docs/delete'
 
 export async function channelsRoutes(server: FastifyInstance) {
   server
@@ -21,8 +27,14 @@ export async function channelsRoutes(server: FastifyInstance) {
   server
     .withTypeProvider<ZodTypeProvider>()
     .delete('/:channel_id', deleteChannelDocs, deleteChannel)
-  server.post('/:channel_id/enable', enableChannel)
-  server.post('/:channel_id/disable', disableChannel)
-  server.patch('/:channel_id', editChannel)
+  server
+    .withTypeProvider<ZodTypeProvider>()
+    .post('/:channel_id/enable', enableChannelDocs, enableChannel)
+  server
+    .withTypeProvider<ZodTypeProvider>()
+    .post('/:channel_id/disable', disableChannelDocs, disableChannel)
+  server
+    .withTypeProvider<ZodTypeProvider>()
+    .patch('/:channel_id', editChannelDocs, editChannel)
   server.get('/theme/:theme', listChannelsByTheme)
 }

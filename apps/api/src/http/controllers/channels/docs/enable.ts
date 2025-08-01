@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
-export const deleteChannelDocs = {
+export const enableChannelDocs = {
   schema: {
-    description: 'Delete a channel',
+    description: 'Enable a channel',
     tags: ['channels'],
     params: z.object({
       channel_id: z.uuid().describe('Must be a valid channel ID')
