@@ -17,7 +17,7 @@ export async function deletePage(request: FastifyRequest, reply: FastifyReply) {
 
     await deletePageUseCase.execute(page_id)
 
-    return reply.code(204).send()
+    return reply.code(204).send({ message: 'Page deleted successfully' })
   } catch (error) {
     console.log(error)
 

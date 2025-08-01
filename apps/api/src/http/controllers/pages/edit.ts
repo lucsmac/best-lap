@@ -18,7 +18,7 @@ export async function editPage(request: FastifyRequest, reply: FastifyReply) {
 
     await editPageUseCase.execute(page_id, dataToUpdate)
 
-    return reply.code(204).send()
+    return reply.code(204).send({ message: 'Page updated successfully' })
   } catch (error) {
     console.error(error)
 
