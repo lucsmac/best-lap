@@ -13,7 +13,7 @@ export async function editChannel(request: FastifyRequest, reply: FastifyReply) 
 
     await editChannelUseCase.execute(channel_id, dataToUpdate)
 
-    return reply.code(204).send()
+    return reply.code(204).send({ message: 'Channel updated successfully' });
   } catch (error) {
     console.error(error)
 

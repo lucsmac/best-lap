@@ -20,7 +20,7 @@ export async function createPage(request: FastifyRequest, reply: FastifyReply) {
 
     await createPageUseCase.execute({ channel_id, path, name })
 
-    return reply.code(201).send()
+    return reply.code(201).send({ message: 'Page created successfully' });
   } catch (error) {
     console.error(error);
 

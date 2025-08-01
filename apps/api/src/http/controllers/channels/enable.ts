@@ -15,7 +15,7 @@ export async function enableChannel(request: FastifyRequest, reply: FastifyReply
     const editChannelUseCase = new EditChannelUseCase(channelsRepository)
     await editChannelUseCase.execute(channel_id, { active: true })
 
-    return reply.code(204).send()
+    return reply.code(204).send({ message: 'Channel enabled successfully' });
   } catch (error) {
     console.error(error);
 

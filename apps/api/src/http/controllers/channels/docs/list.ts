@@ -19,7 +19,7 @@ export const listChannelsDocs = {
           created_at: z.date().describe('Creation date of the channel'),
           updated_at: z.date().optional().describe('Last update date of the channel')
         })).describe('List of channels')
-      }),
+      }).describe('List of channels with their details'),
       404: z.object({
         message: z.string()
       }),
