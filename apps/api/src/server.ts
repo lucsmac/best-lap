@@ -29,11 +29,13 @@ async function startServer() {
     }
   }).withTypeProvider<ZodTypeProvider>();
 
+  server.register(import('@fastify/cors'));
+  server.register(import('@fastify/helmet'));
+
   server.setValidatorCompiler(validatorCompiler);
   server.setSerializerCompiler(serializerCompiler);
 
   server.register(fastifySwagger, swaggerConfig);
-
   server.register(fastifySwaggerUi, {
     routePrefix: '/docs',
     uiConfig: {
