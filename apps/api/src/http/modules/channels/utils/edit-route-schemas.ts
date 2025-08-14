@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const editChannelRequestParamsSchema = z.object({
-  channel_id: z.string().uuid(),
+  channel_id: z.uuid(),
 })
 
 export const editChannelRequestBodySchema = z.object({

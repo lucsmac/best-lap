@@ -6,7 +6,7 @@ import { EditChannelUseCase } from "@best-lap/core";
 export async function editChannel(request: FastifyRequest, reply: FastifyReply) {
   try {
     const { channel_id } = editChannelRequestParamsSchema.parse(request.params)
-    const dataToUpdate = editChannelRequestBodySchema.parse(request.params)
+    const dataToUpdate = editChannelRequestBodySchema.parse(request.body)
 
     const channelsRepository = new TypeormChannelsRepository()
     const editChannelUseCase = new EditChannelUseCase(channelsRepository)

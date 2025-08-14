@@ -8,10 +8,10 @@ export const editChannelDocs = {
       channel_id: z.uuid().describe('Must be a valid channel ID')
     }),
     body: z.object({
-      domain: z.string().describe('Domain of the channel'),
+      domain: z.string().optional().describe('Domain of the channel'),
       internal_link: z.string().optional().describe('Internal link of the channel'),
       is_reference: z.boolean().optional().describe('Indicates if the channel is a reference channel'),
-      name: z.string().describe('Name of the channel'),
+      name: z.string().optional().describe('Name of the channel'),
       theme: z.string().optional().describe('Theme of the channel')
     }),
     response: {

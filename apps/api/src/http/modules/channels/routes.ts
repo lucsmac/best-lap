@@ -34,11 +34,11 @@ export async function channelsRoutes(server: FastifyInstance) {
 
   server
     .withTypeProvider<ZodTypeProvider>()
-    .post('/:channel_id/enable', enableChannelDocs, enableChannel)
+    .patch('/:channel_id/enable', enableChannelDocs, enableChannel)
 
   server
     .withTypeProvider<ZodTypeProvider>()
-    .post('/:channel_id/disable', disableChannelDocs, disableChannel)
+    .patch('/:channel_id/disable', disableChannelDocs, disableChannel)
 
   server
     .withTypeProvider<ZodTypeProvider>()
