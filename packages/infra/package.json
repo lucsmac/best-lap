@@ -8,7 +8,7 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "dev": "pnpm env:load tsx watch src/main.ts",
+    "dev:infra": "pnpm env:load tsx watch src/main.ts",
     "env:load": "dotenv -e ../../.env --",
     "bull-board": "tsx src/queue/bull-board/server.ts"
   },
