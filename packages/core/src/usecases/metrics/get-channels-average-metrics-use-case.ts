@@ -55,11 +55,19 @@ export class GetChannelsAverageMetricsUseCase {
     const parsedStartDate = parseISO(startDate);
     const parsedEndDate = endDate ? endOfDay(parseISO(endDate)) : new Date();
 
-    const whereConditions = ['time BETWEEN $1 AND $2'];
+    const sourceTable = {
+      daily: 'metrics_daily',
+      weekly: 'metrics_weekly',
+      hourly: 'metrics',
+    }[period];
+
+    const timeColumn = period === 'hourly' ? 'time' : 'bucket';
+
+    const whereConditions = [`${timeColumn} BETWEEN $1 AND $2`];
     const queryParams: any[] = [parsedStartDate, parsedEndDate];
 
     if (pagePath) {
-      whereConditions.push('p.path = $3');
+      whereConditions.push('p.path = $' + (queryParams.length + 1));
       queryParams.push(pagePath);
     }
 
@@ -68,24 +76,44 @@ export class GetChannelsAverageMetricsUseCase {
       queryParams.push(theme);
     }
 
+    const colsMetricsTable = {
+      score: 'score',
+      response_time: '"response_time"',
+      fcp: 'fcp',
+      si: 'si',
+      lcp: 'lcp',
+      tbt: 'tbt',
+      cls: 'cls',
+    }
+
+    const colsAvgMetricsTable = {
+      score: 'avg_score',
+      response_time: '"avg_response_time"',
+      fcp: 'avg_fcp',
+      si: 'avg_si',
+      lcp: 'avg_lcp',
+      tbt: 'avg_tbt',
+      cls: 'avg_cls',
+    }
+
+    const tableColsMap = sourceTable === 'metrics' ? colsMetricsTable : colsAvgMetricsTable;
+
     const results = await this.metricsRepository.query(
       `
       SELECT
-        DATE_TRUNC('${granularity}', time) AS period_start,
-        AVG(score) AS avg_score,
-        AVG("response_time") AS avg_response_time,
-        AVG(fcp) AS avg_fcp,
-        AVG(si) AS avg_si,
-        AVG(lcp) AS avg_lcp,
-        AVG(tbt) AS avg_tbt,
-        AVG(cls) AS avg_cls,
-        MIN(score) AS min_score,
-        MAX(score) AS max_score
-      FROM metrics
-      ${theme || pagePath ? 'INNER JOIN pages p ON metrics.page_id = p.id' : ''}
+        DATE_TRUNC('${granularity}', ${timeColumn}) AS period_start,
+        AVG(${tableColsMap.score}) AS avg_score,
+        AVG(${tableColsMap.response_time}) AS avg_response_time,
+        AVG(${tableColsMap.fcp}) AS avg_fcp,
+        AVG(${tableColsMap.si}) AS avg_si,
+        AVG(${tableColsMap.lcp}) AS avg_lcp,
+        AVG(${tableColsMap.tbt}) AS avg_tbt,
+        AVG(${tableColsMap.cls}) AS avg_cls
+      FROM ${sourceTable} m
+      ${theme || pagePath ? 'INNER JOIN pages p ON m.page_id = p.id' : ''}
       ${theme ? 'INNER JOIN channels c ON p.channel_id = c.id' : ''}
       WHERE ${whereConditions.join(' AND ')}
-      GROUP BY DATE_TRUNC('${granularity}', time)
+      GROUP BY DATE_TRUNC('${granularity}', ${timeColumn})
       ORDER BY period_start;
       `,
       queryParams

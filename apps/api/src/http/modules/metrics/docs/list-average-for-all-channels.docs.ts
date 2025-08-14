@@ -7,7 +7,7 @@ export const listAverageForAllChannelsMetricsDocs = {
     description: 'List average metrics for all channels over a specified period',
     tags: ['metrics'],
     params: z.object({
-      period: z.enum(['hourly', 'daily', 'weekly', 'monthly']).describe('Must be a valid period')
+      period: z.enum(['hourly', 'daily', 'weekly']).describe('Must be a valid period')
     }),
     querystring: z.object({
       metric: MetricEnum.optional().describe('Must be a valid metric'),
@@ -17,12 +17,9 @@ export const listAverageForAllChannelsMetricsDocs = {
     response: {
       200: z.object({
         metrics: z.array(z.object({
-          channel_id: z.uuid(),
-          channel_url: z.string(),
-          theme: z.string(),
-          period_start: z.iso.datetime(),
+          period_start: z.date().optional(),
           avg_score: z.number().optional(),
-          avg_response_time: z.number().optional(),
+          avg_response_time: z.string().optional(),
           avg_fcp: z.number().optional(),
           avg_si: z.number().optional(),
           avg_lcp: z.number().optional(),
