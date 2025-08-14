@@ -18,7 +18,7 @@ export class TypeormMetricsRepository implements MetricsRepository {
   async listByPage(page: PageEntity): Promise<MetricEntity[]> {
     const pageMetrics = await metricsRepository.find({
       where: {
-        page
+        page_id: page.id
       }
     })
 
