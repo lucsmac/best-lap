@@ -1,13 +1,10 @@
-import { TypeormChannelsRepository, BullMqPageMetricsQueue, bullMqClientsQueue, bullMqMainQueue } from "@best-lap/infra";
+import { TypeormChannelsRepository, BullMqPageMetricsQueue } from "@best-lap/infra";
 import { CollectPageMetricsDispatcher } from "../services";
+import { queuesMap } from "../config/queues/map";
 
 export const makeCollectPageMetricsDispatcher = () => {
   const channelsRepository = new TypeormChannelsRepository()
 
-  const queuesMap = {
-    reference: bullMqMainQueue,
-    client: bullMqClientsQueue
-  }
   const pageMetricsQueue = new BullMqPageMetricsQueue(queuesMap);
 
   const collectPageMetricsDispatcher = new CollectPageMetricsDispatcher(channelsRepository, pageMetricsQueue)

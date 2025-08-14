@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "pnpm env:load ts-node --transpile-only src/index.ts",
+    "collect": "pnpm env:load ts-node --transpile-only src/collect.ts",
+    "env:load": "dotenv -e ../../.env --"
   },
   "keywords": [],
   "author": "",
@@ -13,7 +15,8 @@
     "@best-lap/eslint-config": "workspace:*",
     "@best-lap/prettier": "workspace:*",
     "@best-lap/tsconfig": "workspace:*",
-    "@types/node": "^24.0.13"
+    "@types/node": "^24.0.13",
+    "dotenv-cli": "^8.0.0"
   },
   "eslintConfig": {
     "extends": [
@@ -24,6 +27,7 @@
   "dependencies": {
     "@best-lap/core": "workspace:^",
     "@best-lap/infra": "workspace:^",
-    "node-cron": "^4.2.1"
+    "node-cron": "^4.2.1",
+    "ts-node": "^10.9.2"
   }
 }

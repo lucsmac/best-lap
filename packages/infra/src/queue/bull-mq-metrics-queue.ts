@@ -15,11 +15,12 @@ export class BullMqPageMetricsQueue implements PageMetricsQueue {
     }
 
     const { pageId, pageUrl } = data;
+    const dateTimestamp = new Date().toISOString();
 
     await queue.add(
       'collectChannelPerformanceMetric',
       { pageUrl, pageId },
-      { jobId: `collect-metrics-${pageId}` }
+      { jobId: `collect-metrics-${pageId}-${dateTimestamp}` }
     )
   }
 } 
