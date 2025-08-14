@@ -2,7 +2,7 @@ import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, Up
 import { ChannelEntity } from '@best-lap/core'
 import { Page } from './page-entity';
 
-@Entity()
+@Entity('channels')
 export class Channel implements ChannelEntity {
   @PrimaryGeneratedColumn('uuid')
   id!: string;

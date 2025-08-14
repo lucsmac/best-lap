@@ -2,7 +2,7 @@ import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn, PrimaryGeneratedC
 import { MetricEntity } from '@best-lap/core';
 import { Page } from './page-entity';
 
-@Entity()
+@Entity('metrics')
 export class Metric implements MetricEntity {
   @PrimaryGeneratedColumn('uuid')
   id!: string;

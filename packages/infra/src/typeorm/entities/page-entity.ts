@@ -3,7 +3,7 @@ import { PageEntity } from '@best-lap/core'
 import { Channel } from './channel-entity';
 import { Metric } from './metric-entity';
 
-@Entity()
+@Entity('pages')
 export class Page implements PageEntity {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
