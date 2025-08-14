@@ -18,6 +18,8 @@ export const env = createEnv({
     REDIS_HOST: z.string().default('localhost'),
 
     GOOGLE_API_KEY: z.string().optional(),
+
+    COLLECT_METRICS_CRON_EXPRESSION: z.coerce.string().default('0 8,14,20 * * *'),
   },
   client: {},
   shared: {},
@@ -37,6 +39,8 @@ export const env = createEnv({
     REDIS_HOST: process.env.REDIS_HOST,
 
     GOOGLE_API_KEY: process.env.GOOGLE_API_KEY,
+
+    COLLECT_METRICS_CRON_EXPRESSION: process.env.COLLECT_METRICS_CRON_EXPRESSION
   },
   emptyStringAsUndefined: true,
 })
