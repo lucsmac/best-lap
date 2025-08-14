@@ -46,24 +46,52 @@ export class GetPageAverageMetricsUseCase {
 
     const queryParams = [dateTrunc, page_id, parsedStartDate, parsedEndDate]
 
+    const sourceTable = {
+      daily: 'metrics_daily',
+      weekly: 'metrics_weekly',
+      hourly: 'metrics',
+    }[period];
+
+    const timeColumn = period === 'hourly' ? 'time' : 'bucket';
+
+    const colsMetricsTable = {
+      score: 'score',
+      response_time: '"response_time"',
+      fcp: 'fcp',
+      si: 'si',
+      lcp: 'lcp',
+      tbt: 'tbt',
+      cls: 'cls',
+    }
+
+    const colsAvgMetricsTable = {
+      score: 'avg_score',
+      response_time: '"avg_response_time"',
+      fcp: 'avg_fcp',
+      si: 'avg_si',
+      lcp: 'avg_lcp',
+      tbt: 'avg_tbt',
+      cls: 'avg_cls',
+    }
+
+    const tableColsMap = sourceTable === 'metrics' ? colsMetricsTable : colsAvgMetricsTable;
+
     const results = await this.metricsRepository.query(
       `
       SELECT
-        DATE_TRUNC($1, time) AS period_start,
-        AVG(score) AS avg_score,
-        AVG("response_time") AS avg_response_time,
-        AVG(fcp) AS avg_fcp,
-        AVG(si) AS avg_si,
-        AVG(lcp) AS avg_lcp,
-        AVG(tbt) AS avg_tbt,
-        AVG(cls) AS avg_cls,
-        MIN(score) AS min_score,
-        MAX(score) AS max_score
-      FROM metrics
-      INNER JOIN pages p ON metrics.page_id = $2
-      WHERE time BETWEEN $3 AND $4
+        DATE_TRUNC($1, ${timeColumn}) AS period_start,
+        AVG(${tableColsMap.score}) AS avg_score,
+        AVG(${tableColsMap.response_time}) AS avg_response_time,
+        AVG(${tableColsMap.fcp}) AS avg_fcp,
+        AVG(${tableColsMap.si}) AS avg_si,
+        AVG(${tableColsMap.lcp}) AS avg_lcp,
+        AVG(${tableColsMap.tbt}) AS avg_tbt,
+        AVG(${tableColsMap.cls}) AS avg_cls
+      FROM ${sourceTable} m
+      INNER JOIN pages p ON m.page_id = $2
+      WHERE ${timeColumn} BETWEEN $3 AND $4
       GROUP BY
-        DATE_TRUNC($1, time)
+        DATE_TRUNC($1, ${timeColumn})
       ORDER BY
         period_start;
       `,

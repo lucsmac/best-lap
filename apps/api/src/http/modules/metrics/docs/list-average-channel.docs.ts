@@ -18,9 +18,9 @@ export const listAverageChannelMetricsDocs = {
     response: {
       200: z.object({
         metrics: z.array(z.object({
-          period_start: z.iso.datetime(),
+          period_start: z.date(),
           avg_score: z.number().optional(),
-          avg_response_time: z.number().optional(),
+          avg_response_time: z.string().optional(),
           avg_fcp: z.number().optional(),
           avg_si: z.number().optional(),
           avg_lcp: z.number().optional(),
