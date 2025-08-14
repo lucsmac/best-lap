@@ -9,7 +9,7 @@ export async function appRoutes(server: FastifyInstance) {
   })
 
   server.register(pagesRoutes, {
-    prefix: 'channels/pages',
+    prefix: 'channels',
   })
 
   server.register(metricsRoutes, {

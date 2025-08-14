@@ -6,7 +6,7 @@ import { EditPageUseCase } from "@best-lap/core";
 export async function editPage(request: FastifyRequest, reply: FastifyReply) {
   try {
     const { channel_id, page_id } = editPageRequestParamsSchema.parse(request.params)
-    const dataToUpdate = editPageRequestBodySchema.parse(request.params)
+    const dataToUpdate = editPageRequestBodySchema.parse(request.body)
 
     const channelsRepository = new TypeormChannelsRepository()
     const channel = await channelsRepository.findById(channel_id)

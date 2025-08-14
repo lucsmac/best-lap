@@ -12,7 +12,7 @@ export const listPagesDocs = {
         pages: z.array(z.object({
           id: z.uuid().describe('Page ID'),
           path: z.string().describe('Path of the page'),
-          title: z.string().describe('Title of the page'),
+          name: z.string().describe('Name of the page'),
         })),
       }).describe('List of pages for the channel'),
       404: z.object({

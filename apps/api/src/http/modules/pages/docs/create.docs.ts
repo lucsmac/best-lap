@@ -9,7 +9,7 @@ export const createPageDocs = {
     }),
     body: z.object({
       path: z.string().describe('Path of the page'),
-      title: z.string().describe('Title of the page'),
+      name: z.string().describe('Name of the page'),
     }),
     response: {
       201: z.object({

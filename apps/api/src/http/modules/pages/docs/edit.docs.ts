@@ -9,8 +9,8 @@ export const editPageDocs = {
       page_id: z.string().describe('Must be a valid page ID')
     }),
     body: z.object({
-      path: z.string().describe('Path of the page'),
-      title: z.string().describe('Title of the page'),
+      path: z.string().optional().describe('Path of the page'),
+      name: z.string().optional().describe('Name of the page'),
     }),
     response: {
       200: z.object({
