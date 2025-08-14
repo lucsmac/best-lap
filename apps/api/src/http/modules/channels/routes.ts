@@ -7,7 +7,8 @@ import {
   editChannelDocs,
   enableChannelDocs,
   disableChannelDocs,
-  listChannelsByThemeDocs
+  listChannelsByThemeDocs,
+  showChannelDocs
 } from './docs'
 import {
   listChannels,
@@ -16,13 +17,18 @@ import {
   disableChannel,
   editChannel,
   enableChannel,
-  listChannelsByTheme
+  listChannelsByTheme,
+  showChannel
 } from './controllers'
 
 export async function channelsRoutes(server: FastifyInstance) {
   server
     .withTypeProvider<ZodTypeProvider>()
     .get('/', listChannelsDocs, listChannels)
+
+  server
+    .withTypeProvider<ZodTypeProvider>()
+    .get('/:channel_id', showChannelDocs, showChannel)
 
   server
     .withTypeProvider<ZodTypeProvider>()

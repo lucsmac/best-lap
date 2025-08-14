@@ -1,16 +1,12 @@
 import { z } from 'zod';
 
-export const listChannelsByThemeDocs = {
+export const showChannelDocs = {
   schema: {
-    description: 'List all channels by a specific theme',
+    description: 'Show channel',
     tags: ['channels'],
-    params: z.object({
-      theme: z.string().describe('Theme to filter channels by')
-    }),
     response: {
       200: z.object({
-        channels_count: z.number().describe('Total number of channels'),
-        channels: z.array(z.object({
+        channel: z.object({
           id: z.uuid().describe('Channel ID'),
           domain: z.string().describe('Domain of the channel'),
           internal_link: z.string().optional().describe('Internal link of the channel'),
@@ -20,8 +16,8 @@ export const listChannelsByThemeDocs = {
           active: z.boolean().describe('Indicates if the channel is active'),
           created_at: z.date().describe('Creation date of the channel'),
           updated_at: z.date().optional().describe('Last update date of the channel')
-        })).describe('List of channels')
-      }).describe('List of channels with their details'),
+        }).describe('Details of channel')
+      }).describe('Channel with their details'),
       404: z.object({
         message: z.string()
       }),

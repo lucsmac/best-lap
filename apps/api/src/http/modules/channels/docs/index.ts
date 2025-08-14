@@ -5,3 +5,4 @@ export * from './delete.docs';
 export * from './disable.docs';
 export * from './enable.docs';
 export * from './list-by-theme.docs';
+export * from './show.docs';
