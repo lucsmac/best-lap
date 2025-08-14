@@ -82,8 +82,8 @@ export class GetChannelsAverageMetricsUseCase {
         MIN(score) AS min_score,
         MAX(score) AS max_score
       FROM metrics
-      ${theme || pagePath ? 'INNER JOIN page p ON metrics.page_id = p.id' : ''}
-      ${theme ? 'INNER JOIN channel c ON p.channel_id = c.id' : ''}
+      ${theme || pagePath ? 'INNER JOIN pages p ON metrics.page_id = p.id' : ''}
+      ${theme ? 'INNER JOIN channels c ON p.channel_id = c.id' : ''}
       WHERE ${whereConditions.join(' AND ')}
       GROUP BY DATE_TRUNC('${granularity}', time)
       ORDER BY period_start;

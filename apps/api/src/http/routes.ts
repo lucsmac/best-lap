@@ -13,6 +13,6 @@ export async function appRoutes(server: FastifyInstance) {
   })
 
   server.register(metricsRoutes, {
-    prefix: 'metrics',
+    prefix: 'channels/metrics',
   })
 }

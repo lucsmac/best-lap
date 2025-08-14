@@ -44,7 +44,7 @@ export class GetPageAverageMetricsUseCase {
     const parsedStartDate = parseISO(startDate)
     const parsedEndDate = endDate ? endOfDay(parseISO(endDate)) : new Date()
 
-    const queryParams = [dateTrunc, parsedStartDate, parsedEndDate, page_id]
+    const queryParams = [dateTrunc, page_id, parsedStartDate, parsedEndDate]
 
     const results = await this.metricsRepository.query(
       `
@@ -60,8 +60,8 @@ export class GetPageAverageMetricsUseCase {
         MIN(score) AS min_score,
         MAX(score) AS max_score
       FROM metrics
-      INNER JOIN page p ON metrics.page_id = c.id
-      WHERE time BETWEEN $2 AND $3 AND c.id = $4
+      INNER JOIN pages p ON metrics.page_id = $2
+      WHERE time BETWEEN $3 AND $4
       GROUP BY
         DATE_TRUNC($1, time)
       ORDER BY

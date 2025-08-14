@@ -16,10 +16,10 @@ export const listChannelMetricsDocs = {
     }),
     response: {
       200: z.object({
-        channel_url: z.string(),
+        page_url: z.string(),
         theme: z.string(),
         metrics: z.array(z.object({
-          time: z.string().datetime(),
+          time: z.iso.datetime(),
           score: z.number().optional(),
           response_time: z.number().optional(),
           fcp: z.number().optional(),
