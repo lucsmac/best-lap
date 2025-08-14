@@ -9,6 +9,7 @@ import { appRoutes } from './http/routes';
 import { swaggerConfig } from './docs/config';
 
 import { connectToDatabase } from '@best-lap/infra';
+import { loggerConfig } from './config';
 
 async function startServer() {
   try {
@@ -19,7 +20,7 @@ async function startServer() {
   }
 
   const server = Fastify({
-    logger: true,
+    logger: loggerConfig,
     ajv: {
       customOptions: {
         removeAdditional: 'all',
