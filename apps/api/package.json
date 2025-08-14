@@ -4,7 +4,7 @@
   "main": "src/server.ts",
   "types": "src/server.ts",
   "scripts": {
-    "dev": "pnpm env:load ts-node --transpile-only src/server.ts",
+    "dev": "pnpm env:load nodemon --watch src --ext ts --exec ts-node --transpile-only src/server.ts",
     "env:load": "dotenv -e ../../.env --"
   },
   "keywords": [],
@@ -16,6 +16,8 @@
     "@best-lap/prettier": "workspace:*",
     "@best-lap/tsconfig": "workspace:*",
     "@types/node": "^24.0.13",
+    "nodemon": "^3.1.10",
+    "pino-pretty": "^13.1.1",
     "ts-node": "^10.9.2"
   },
   "eslintConfig": {
@@ -34,6 +36,7 @@
     "dotenv-cli": "^8.0.0",
     "fastify": "^5.4.0",
     "fastify-type-provider-zod": "^5.0.2",
+    "pino": "^9.9.0",
     "reflect-metadata": "^0.2.2",
     "zod": "^4.0.5"
   }
