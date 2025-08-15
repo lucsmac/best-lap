@@ -47,14 +47,14 @@ export class AddContinuousAggregatesAndPolicies1732278565824 implements Migratio
       SELECT add_continuous_aggregate_policy('metrics_daily',
         start_offset => INTERVAL '90 days',
         end_offset => INTERVAL '0 days',
-        schedule_interval => INTERVAL '3 hour');
+        schedule_interval => INTERVAL '1 hour');
     `);
 
     await queryRunner.query(`
       SELECT add_continuous_aggregate_policy('metrics_weekly',
         start_offset => INTERVAL '1 year',
         end_offset => INTERVAL '0 days',
-        schedule_interval => INTERVAL '3 hour');
+        schedule_interval => INTERVAL '1 hour');
     `);
 
     // Políticas de retenção
