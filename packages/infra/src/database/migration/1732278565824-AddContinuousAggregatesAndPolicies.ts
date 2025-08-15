@@ -17,7 +17,8 @@ export class AddContinuousAggregatesAndPolicies1732278565824 implements Migratio
         avg(si) AS avg_si,
         avg(lcp) AS avg_lcp,
         avg(tbt) AS avg_tbt,
-        avg(cls) AS avg_cls
+        avg(cls) AS avg_cls,
+        avg(seo) AS avg_seo
       FROM metrics
       GROUP BY bucket, page_id;
     `);
@@ -35,7 +36,8 @@ export class AddContinuousAggregatesAndPolicies1732278565824 implements Migratio
         avg(si) AS avg_si,
         avg(lcp) AS avg_lcp,
         avg(tbt) AS avg_tbt,
-        avg(cls) AS avg_cls
+        avg(cls) AS avg_cls,
+        avg(seo) AS avg_seo
       FROM metrics
       GROUP BY bucket, page_id;
     `);
