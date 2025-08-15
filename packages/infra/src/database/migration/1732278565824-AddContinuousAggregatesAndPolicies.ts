@@ -9,7 +9,7 @@ export class AddContinuousAggregatesAndPolicies1732278565824 implements Migratio
       CREATE MATERIALIZED VIEW metrics_daily
       WITH (timescaledb.continuous) AS
       SELECT
-        time_bucket('1 day', time) AS bucket,
+        time_bucket('1 day', time, TIMESTAMPTZ '2025-07-26 00:00:00') AS bucket,
         page_id,
         avg(score) AS avg_score,
         avg(response_time) AS avg_response_time,
@@ -44,15 +44,15 @@ export class AddContinuousAggregatesAndPolicies1732278565824 implements Migratio
     await queryRunner.query(`
       SELECT add_continuous_aggregate_policy('metrics_daily',
         start_offset => INTERVAL '90 days',
-        end_offset => INTERVAL '1 day',
-        schedule_interval => INTERVAL '1 hour');
+        end_offset => INTERVAL '0 days',
+        schedule_interval => INTERVAL '3 hour');
     `);
 
     await queryRunner.query(`
       SELECT add_continuous_aggregate_policy('metrics_weekly',
         start_offset => INTERVAL '1 year',
-        end_offset => INTERVAL '1 week',
-        schedule_interval => INTERVAL '1 hour');
+        end_offset => INTERVAL '0 days',
+        schedule_interval => INTERVAL '3 hour');
     `);
 
     // Políticas de retenção
