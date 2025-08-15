@@ -11,7 +11,7 @@ export async function seedDb() {
     const pageRepository = new TypeormPagesRepository()
 
     channelsSeedData.forEach(async (channelData: ChannelEntity) => {
-      const channel = await channelRepository.create(channelData)
+      const channel = await channelRepository.create({ ...channelData, active: true })
 
       await pageRepository.create({
         name: "index",
