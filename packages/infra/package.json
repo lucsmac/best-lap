@@ -10,6 +10,7 @@
   "scripts": {
     "dev:infra": "pnpm env:load tsx watch src/main.ts",
     "env:load": "dotenv -e ../../.env --",
+    "db:seed": "pnpm env:load tsx src/database/seed.ts",
     "bull-board": "tsx src/queue/bull-board/server.ts"
   },
   "devDependencies": {
