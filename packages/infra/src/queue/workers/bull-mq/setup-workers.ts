@@ -1,5 +1,6 @@
 import { makeWorker } from "./factory/make-worker";
 import { QueueType } from "../../queues/types/queue-type";
+import { env } from "@best-lap/env";
 
 type workerConfig = {
   queueName: QueueType;
@@ -11,6 +12,9 @@ export const setupWorkers = (workersConfig: workerConfig[]) => {
     makeWorker({
       queueName,
       processor,
+      options: {
+        concurrency: env.WORKER_CONCURRENCY
+      }
     });
 
     console.log(`Worker for queue ${queueName} started successfully`);

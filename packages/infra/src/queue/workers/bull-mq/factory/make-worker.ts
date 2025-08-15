@@ -5,9 +5,16 @@ import { QueueType } from '../../../queues/types/queue-type';
 type MakeWorkerParams = {
   queueName: QueueType;
   processor: (job: any) => Promise<void>;
+  options?: {
+    concurrency?: number;
+    name?: string;
+    autorun?: boolean;
+    maxStalledCount?: number;
+    stalledInterval?: number;
+  }
 }
 
-export const makeWorker = ({ queueName, processor }: MakeWorkerParams) => {
+export const makeWorker = ({ queueName, processor, options }: MakeWorkerParams) => {
   const worker = new Worker(
     queueName,
     processor,
@@ -16,7 +23,8 @@ export const makeWorker = ({ queueName, processor }: MakeWorkerParams) => {
       limiter: {
         max: 30,
         duration: 60 * 1000 * 2,
-      }
+      },
+      ...options,
     }
   )
 
