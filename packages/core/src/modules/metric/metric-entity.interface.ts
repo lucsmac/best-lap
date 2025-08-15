@@ -4,6 +4,7 @@ export interface MetricEntity {
   id?: string;
   time: Date;
   score: number;
+  seo: number;
   response_time: number;
   fcp: number;
   si: number;

@@ -13,7 +13,8 @@ export type PerformanceMetrics = {
   si: number,
   lcp: number,
   tbt: number,
-  cls: number
+  cls: number,
+  seo: number
 }
 
 export const PerformanceMetricEnum = {
@@ -24,6 +25,7 @@ export const PerformanceMetricEnum = {
   lcp: 'lcp',
   tbt: 'tbt',
   cls: 'cls',
+  seo: 'seo',
 } as const;
 
 export type PerformanceMetricEnum = keyof typeof PerformanceMetricEnum;
@@ -36,7 +38,8 @@ export type PerformanceMetricsResponse = {
   si?: number,
   lcp?: number,
   tbt?: number,
-  cls?: number
+  cls?: number,
+  seo?: number
 }
 
 export type PerformanceAverageMetricsResponse = {
@@ -47,5 +50,6 @@ export type PerformanceAverageMetricsResponse = {
   avg_si?: number,
   avg_lcp?: number,
   avg_tbt?: number,
-  avg_cls?: number
+  avg_cls?: number,
+  avg_seo?: number
 }

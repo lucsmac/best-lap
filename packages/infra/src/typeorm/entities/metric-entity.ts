@@ -16,6 +16,9 @@ export class Metric implements MetricEntity {
   @Column('float')
   score!: number;
 
+  @Column('float')
+  seo!: number;
+
   @Column('int')
   response_time!: number;
 

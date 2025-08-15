@@ -26,7 +26,8 @@ export const listChannelMetricsDocs = {
           si: z.number().optional(),
           lcp: z.number().optional(),
           tbt: z.number().optional(),
-          cls: z.number().optional()
+          cls: z.number().optional(),
+          seo: z.number().optional(),
         }))
       }),
       404: z.object({

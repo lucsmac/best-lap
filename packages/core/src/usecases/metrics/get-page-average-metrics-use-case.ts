@@ -62,6 +62,7 @@ export class GetPageAverageMetricsUseCase {
       lcp: 'lcp',
       tbt: 'tbt',
       cls: 'cls',
+      seo: 'seo',
     }
 
     const colsAvgMetricsTable = {
@@ -72,6 +73,7 @@ export class GetPageAverageMetricsUseCase {
       lcp: 'avg_lcp',
       tbt: 'avg_tbt',
       cls: 'avg_cls',
+      seo: 'avg_seo',
     }
 
     const tableColsMap = sourceTable === 'metrics' ? colsMetricsTable : colsAvgMetricsTable;
@@ -86,7 +88,8 @@ export class GetPageAverageMetricsUseCase {
         AVG(${tableColsMap.si}) AS avg_si,
         AVG(${tableColsMap.lcp}) AS avg_lcp,
         AVG(${tableColsMap.tbt}) AS avg_tbt,
-        AVG(${tableColsMap.cls}) AS avg_cls
+        AVG(${tableColsMap.cls}) AS avg_cls,
+        AVG(${tableColsMap.seo}) AS avg_seo
       FROM ${sourceTable} m
       INNER JOIN pages p ON m.page_id = $2
       WHERE ${timeColumn} BETWEEN $3 AND $4

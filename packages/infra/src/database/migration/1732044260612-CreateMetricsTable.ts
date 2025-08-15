@@ -31,6 +31,11 @@ export class CreateMetricsTable1732044260612 implements MigrationInterface {
                         isNullable: false,
                     },
                     {
+                        name: 'seo',
+                        type: 'float',
+                        isNullable: false,
+                    },
+                    {
                         name: 'response_time',
                         type: 'int',
                         isNullable: false,

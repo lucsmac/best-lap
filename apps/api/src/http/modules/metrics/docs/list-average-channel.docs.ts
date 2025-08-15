@@ -25,7 +25,8 @@ export const listAverageChannelMetricsDocs = {
           avg_si: z.number().optional(),
           avg_lcp: z.number().optional(),
           avg_tbt: z.number().optional(),
-          avg_cls: z.number().optional()
+          avg_cls: z.number().optional(),
+          avg_seo: z.number().optional(),
         }))
       }),
       404: z.object({

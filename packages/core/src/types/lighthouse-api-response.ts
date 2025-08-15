@@ -108,6 +108,9 @@ interface Categories {
     score: number;
     auditRefs: { id: string; weight: number; group?: string }[];
   };
+  seo: {
+    score: number;
+  }
 }
 
 interface CategoryGroups {

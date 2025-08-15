@@ -2,6 +2,7 @@ import { LighthouseResult } from "@best-lap/core";
 
 export const adaptLighthouseResultToMetricPattern = (lighthouseResult: LighthouseResult) => {
   const performanceScore = lighthouseResult.categories.performance.score
+  const seoScore = lighthouseResult.categories.seo.score
   const resultAudits = lighthouseResult.audits
   const responseTime = resultAudits['server-response-time'].numericValue;
   const fcp = resultAudits['first-contentful-paint'].numericValue
@@ -11,13 +12,14 @@ export const adaptLighthouseResultToMetricPattern = (lighthouseResult: Lighthous
   const cls = resultAudits['cumulative-layout-shift'].numericValue;
 
   const metrics = {
+    seo: seoScore * 100,
     score: performanceScore * 100,
     response_time: responseTime,
     fcp,
     si,
     lcp,
     tbt,
-    cls
+    cls,
   }
 
   return metrics
