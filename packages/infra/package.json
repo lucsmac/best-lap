@@ -11,7 +11,11 @@
     "dev:infra": "pnpm env:load tsx watch src/main.ts",
     "env:load": "dotenv -e ../../.env --",
     "db:seed": "pnpm env:load tsx src/database/seed.ts",
-    "bull-board": "tsx src/queue/bull-board/server.ts"
+    "bull-board": "tsx src/queue/bull-board/server.ts",
+    "build": "pnpm env:load tsup src/index.ts --format cjs --target node18 --out-dir dist",
+    "build:bull-board": "tsup src/queue/bull-board/server.ts --format cjs --target node18 --out-dir dist",
+    "start": "node dist/server.js",
+    "start:bull-board": "pnpm env:load node dist/server.js"
   },
   "devDependencies": {
     "@best-lap/core": "workspace:*",
@@ -41,6 +45,7 @@
     "ioredis": "^5.6.1",
     "pg": "^8.16.3",
     "reflect-metadata": "^0.2.2",
+    "tsup": "^8.5.0",
     "typeorm": "^0.3.25"
   }
 }

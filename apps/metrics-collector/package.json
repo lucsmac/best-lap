@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "pnpm env:load ts-node --transpile-only src/index.ts",
     "collect": "pnpm env:load ts-node --transpile-only src/collect.ts",
-    "env:load": "dotenv -e ../../.env --"
+    "env:load": "dotenv -e ../../.env --",
+    "build": "tsup src/index.ts --format cjs --target node18 --out-dir dist",
+    "start": "node dist/index.js"
   },
   "keywords": [],
   "author": "",
@@ -28,6 +30,7 @@
     "@best-lap/core": "workspace:^",
     "@best-lap/infra": "workspace:^",
     "node-cron": "^4.2.1",
-    "ts-node": "^10.9.2"
+    "ts-node": "^10.9.2",
+    "tsup": "^8.5.0"
   }
 }

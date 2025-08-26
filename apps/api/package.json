@@ -5,7 +5,9 @@
   "types": "src/server.ts",
   "scripts": {
     "dev": "pnpm env:load nodemon --watch src --ext ts --exec ts-node --transpile-only src/server.ts",
-    "env:load": "dotenv -e ../../.env --"
+    "env:load": "dotenv -e ../../.env --",
+    "build": "tsup src/server.ts --format esm,cjs --dts --treeshake --legacy-output --out-dir dist",
+    "start": "pnpm env:load node dist/server.js"
   },
   "keywords": [],
   "author": "",
@@ -38,6 +40,7 @@
     "fastify-type-provider-zod": "^5.0.2",
     "pino": "^9.9.0",
     "reflect-metadata": "^0.2.2",
+    "tsup": "^8.5.0",
     "zod": "^4.0.5"
   }
 }
