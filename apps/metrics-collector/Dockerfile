@@ -14,7 +14,7 @@ RUN pnpm install --frozen-lockfile
 FROM deps AS build
 WORKDIR /app
 COPY . .
-RUN pnpm --filter @best-lap/metrics-collector... build
+RUN pnpm --filter @best-lap/metrics-collector build
 
 FROM node:20-alpine AS runtime
 ENV NODE_ENV=production

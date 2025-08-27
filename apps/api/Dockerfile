@@ -18,7 +18,7 @@ RUN pnpm install --frozen-lockfile
 FROM deps AS build
 WORKDIR /app
 COPY . .
-RUN pnpm --filter @best-lap/api... build
+RUN pnpm --filter @best-lap/api build
 
 # Runtime
 FROM node:20-alpine AS runtime

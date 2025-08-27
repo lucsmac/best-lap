@@ -14,7 +14,7 @@ RUN pnpm install --frozen-lockfile
 FROM deps AS build
 WORKDIR /app
 COPY . .
-RUN pnpm --filter @best-lap/infra... build:bull-board
+RUN pnpm --filter @best-lap/infra build:bull-board
 
 FROM node:20-alpine AS runtime
 ENV NODE_ENV=production

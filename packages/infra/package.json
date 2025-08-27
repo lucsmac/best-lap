@@ -12,10 +12,10 @@
     "env:load": "dotenv -e ../../.env --",
     "db:seed": "pnpm env:load tsx src/database/seed.ts",
     "bull-board": "tsx src/queue/bull-board/server.ts",
-    "build": "pnpm env:load tsup src/index.ts --format cjs --target node18 --out-dir dist",
-    "build:bull-board": "tsup src/queue/bull-board/server.ts --format cjs --target node18 --out-dir dist",
+    "build": "pnpm env:load tsup src/index.ts --format cjs --target node18 --out-dir dist --external dotenv --external dotenv/config",
+    "build:bull-board": "tsup src/queue/bull-board/server.ts --format cjs --target node18 --out-dir dist --external dotenv --external dotenv/config",
     "start": "node dist/server.js",
-    "start:bull-board": "pnpm env:load node dist/server.js"
+    "start:bull-board": "pnpm env:load node dist/queue/bull-board/server.js"
   },
   "devDependencies": {
     "@best-lap/core": "workspace:*",
@@ -40,6 +40,7 @@
     "@bull-board/fastify": "^6.12.0",
     "@fastify/cors": "^11.0.1",
     "bullmq": "^5.56.4",
+    "dotenv": "^16.4.5",
     "dotenv-cli": "^8.0.0",
     "fastify": "^5.4.0",
     "ioredis": "^5.6.1",
