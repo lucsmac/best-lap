@@ -9,12 +9,15 @@ COPY pnpm-lock.yaml package.json pnpm-workspace.yaml ./
 COPY packages ./packages
 COPY packages/infra/package.json ./packages/infra/package.json
 COPY packages/*/package.json ./packages/
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile --prod=false && \
+    pnpm store prune
 
 FROM deps AS build
 WORKDIR /app
 COPY . .
-RUN pnpm --filter @best-lap/infra build:bull-board
+RUN pnpm --filter @best-lap/infra build:bull-board && \
+    rm -rf node_modules/.cache && \
+    rm -rf node_modules/.pnpm-store
 
 FROM node:20-alpine AS runtime
 ENV NODE_ENV=production

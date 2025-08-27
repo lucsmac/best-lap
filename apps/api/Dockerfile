@@ -1,26 +1,24 @@
 # syntax=docker/dockerfile:1
 FROM node:20-alpine AS base
 WORKDIR /app
-
-# Enable corepack for pnpm
 RUN corepack enable && corepack prepare pnpm@8.14.0 --activate
 
-# Install deps with workspace context
 FROM base AS deps
 WORKDIR /app
 COPY pnpm-lock.yaml package.json pnpm-workspace.yaml ./
 COPY packages ./packages
 COPY apps/api/package.json ./apps/api/package.json
 COPY packages/*/package.json ./packages/
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile --prod=false && \
+    pnpm store prune
 
-# Build
 FROM deps AS build
 WORKDIR /app
 COPY . .
-RUN pnpm --filter @best-lap/api build
+RUN pnpm --filter @best-lap/api build && \
+    rm -rf node_modules/.cache && \
+    rm -rf node_modules/.pnpm-store
 
-# Runtime
 FROM node:20-alpine AS runtime
 ENV NODE_ENV=production
 WORKDIR /app

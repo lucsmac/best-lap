@@ -73,6 +73,36 @@ docker compose -f docker-compose.prod.yml run --rm seed
 - **API Docs**: http://<EC2_PUBLIC_IP>:3333/docs
 
 ## Troubleshooting
+
+### Common Issues
+
+#### Out of Disk Space
+If you get "no space left on device" errors during build:
+
+1. **Clean up Docker resources**:
+```bash
+# Stop services
+docker compose -f docker-compose.prod.yml down
+
+# Clean up everything
+docker system prune -a -f --volumes
+
+# Check disk space
+df -h
+```
+
+2. **Use the cleanup script**:
+```bash
+chmod +x cleanup-docker.sh
+./cleanup-docker.sh
+```
+
+3. **Rebuild with clean state**:
+```bash
+docker compose -f docker-compose.prod.yml up -d --build
+```
+
+#### Build Failures
 - Check logs: `docker compose -f docker-compose.prod.yml logs <service_name>`
 - Restart service: `docker compose -f docker-compose.prod.yml restart <service_name>`
 - Rebuild: `docker compose -f docker-compose.prod.yml up -d --build <service_name>`
@@ -84,3 +114,15 @@ docker compose -f docker-compose.prod.yml run --rm seed
 - **collector**: Metrics collection service
 - **bullboard**: Bull MQ dashboard on port 4000
 - **seed**: One-time database seeding service
+
+## Space Optimization
+The Dockerfiles are optimized to minimize disk usage:
+- Multi-stage builds with dependency cleanup
+- Removal of build cache and temporary files
+- Efficient layer caching
+- Minimal runtime images
+
+If you still encounter space issues, consider:
+- Increasing EC2 instance storage
+- Using EBS volumes for Docker data
+- Regular cleanup with `./cleanup-docker.sh`

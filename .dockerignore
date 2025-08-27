@@ -16,3 +16,12 @@ build
 coverage
 .vscode
 .idea
+*.md
+tests
+test
+__tests__
+coverage
+.nyc_output
+.cache
+.pnpm-store
+pnpm-debug.log*

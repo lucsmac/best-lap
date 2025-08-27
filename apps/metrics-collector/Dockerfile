@@ -9,12 +9,15 @@ COPY pnpm-lock.yaml package.json pnpm-workspace.yaml ./
 COPY packages ./packages
 COPY apps/metrics-collector/package.json ./apps/metrics-collector/package.json
 COPY packages/*/package.json ./packages/
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile --prod=false && \
+    pnpm store prune
 
 FROM deps AS build
 WORKDIR /app
 COPY . .
-RUN pnpm --filter @best-lap/metrics-collector build
+RUN pnpm --filter @best-lap/metrics-collector build && \
+    rm -rf node_modules/.cache && \
+    rm -rf node_modules/.pnpm-store
 
 FROM node:20-alpine AS runtime
 ENV NODE_ENV=production
