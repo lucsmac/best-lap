@@ -23,10 +23,19 @@ FROM node:20-alpine AS runtime
 ENV NODE_ENV=production
 WORKDIR /app
 RUN corepack enable && corepack prepare pnpm@8.14.0 --activate
-COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/packages ./packages
+
+# Copy package files for production install
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY packages/*/package.json ./packages/
+COPY packages/infra/package.json ./packages/infra/package.json
+
+# Install only production dependencies
+RUN pnpm install --frozen-lockfile --prod
+
+# Copy built artifacts
 COPY --from=build /app/packages/infra/dist ./packages/infra/dist
-COPY --from=build /app/packages/infra/package.json ./packages/infra/package.json
+COPY --from=build /app/packages ./packages
+
 EXPOSE 4000
 CMD ["pnpm", "--filter", "@best-lap/infra", "run", "start:bull-board:prod"]
 

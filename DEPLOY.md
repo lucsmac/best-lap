@@ -51,6 +51,8 @@ docker compose -f docker-compose.prod.yml down
 docker compose -f docker-compose.prod.yml up -d --build
 ```
 
+**Important**: If you encounter module not found errors, the issue is likely with dependency installation in the runtime container. The updated Dockerfiles now properly install production dependencies.
+
 2. Check service status:
 ```bash
 docker compose -f docker-compose.prod.yml ps

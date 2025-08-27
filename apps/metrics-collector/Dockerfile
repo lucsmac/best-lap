@@ -23,10 +23,18 @@ FROM node:20-alpine AS runtime
 ENV NODE_ENV=production
 WORKDIR /app
 RUN corepack enable && corepack prepare pnpm@8.14.0 --activate
-COPY --from=build /app/node_modules ./node_modules
+
+# Copy package files for production install
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY packages/*/package.json ./packages/
+COPY apps/metrics-collector/package.json ./apps/metrics-collector/package.json
+
+# Install only production dependencies
+RUN pnpm install --frozen-lockfile --prod
+
+# Copy built artifacts
 COPY --from=build /app/apps/metrics-collector/dist ./apps/metrics-collector/dist
 COPY --from=build /app/packages ./packages
-COPY --from=build /app/apps/metrics-collector/package.json ./apps/metrics-collector/package.json
 
 CMD ["pnpm", "--filter", "@best-lap/metrics-collector", "run", "start:prod"]
 

@@ -24,11 +24,17 @@ ENV NODE_ENV=production
 WORKDIR /app
 RUN corepack enable && corepack prepare pnpm@8.14.0 --activate
 
-# Copy only built artifact and necessary node_modules
-COPY --from=build /app/node_modules ./node_modules
+# Copy package files for production install
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY packages/*/package.json ./packages/
+COPY apps/api/package.json ./apps/api/package.json
+
+# Install only production dependencies
+RUN pnpm install --frozen-lockfile --prod
+
+# Copy built artifacts
 COPY --from=build /app/apps/api/dist ./apps/api/dist
 COPY --from=build /app/packages ./packages
-COPY --from=build /app/apps/api/package.json ./apps/api/package.json
 
 EXPOSE 3333
 CMD ["pnpm", "--filter", "@best-lap/api", "run", "start:prod"]
