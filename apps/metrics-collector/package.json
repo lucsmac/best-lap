@@ -7,7 +7,8 @@
     "collect": "pnpm env:load ts-node --transpile-only src/collect.ts",
     "env:load": "dotenv -e ../../.env --",
     "build": "tsup src/index.ts --format cjs --target node18 --out-dir dist --external dotenv --external dotenv/config",
-    "start": "pnpm env:load node dist/index.js"
+    "start": "pnpm env:load node dist/index.js",
+    "start:prod": "node dist/index.js"
   },
   "keywords": [],
   "author": "",

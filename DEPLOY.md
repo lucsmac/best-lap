@@ -37,9 +37,17 @@ SEED_THEMES_URL=https://lucsmac.github.io/autodromo-domains/full_data.json
 WORKER_CONCURRENCY=10
 ```
 
+**Note**: The services will use the environment variables from the `.env` file, but in production Docker containers, these are also explicitly set in the docker-compose.prod.yml file.
+
 ## Deploy
 1. Build and start all services:
 ```bash
+docker compose -f docker-compose.prod.yml up -d --build
+```
+
+**After making changes to Dockerfiles or package.json files, you need to rebuild:**
+```bash
+docker compose -f docker-compose.prod.yml down
 docker compose -f docker-compose.prod.yml up -d --build
 ```
 

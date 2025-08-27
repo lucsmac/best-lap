@@ -25,6 +25,6 @@ COPY --from=build /app/apps/metrics-collector/dist ./apps/metrics-collector/dist
 COPY --from=build /app/packages ./packages
 COPY --from=build /app/apps/metrics-collector/package.json ./apps/metrics-collector/package.json
 
-CMD ["pnpm", "--filter", "@best-lap/metrics-collector", "run", "start"]
+CMD ["pnpm", "--filter", "@best-lap/metrics-collector", "run", "start:prod"]
 
 

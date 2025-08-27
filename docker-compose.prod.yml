@@ -31,9 +31,13 @@ services:
       dockerfile: apps/api/Dockerfile
     env_file: .env
     environment:
+      NODE_ENV: production
       SERVER_PORT: 3333
       DB_HOST: postgres
       DB_PORT: 5432
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      DB_NAME: ${DB_NAME:-metrics}
       REDIS_HOST: redis
       REDIS_PORT: 6379
     ports:
@@ -50,8 +54,12 @@ services:
       dockerfile: apps/metrics-collector/Dockerfile
     env_file: .env
     environment:
+      NODE_ENV: production
       DB_HOST: postgres
       DB_PORT: 5432
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      DB_NAME: ${DB_NAME:-metrics}
       REDIS_HOST: redis
       REDIS_PORT: 6379
     depends_on:
@@ -66,6 +74,7 @@ services:
       dockerfile: packages/infra/Dockerfile
     env_file: .env
     environment:
+      NODE_ENV: production
       REDIS_HOST: redis
       REDIS_PORT: 6379
       BULL_BOARD_PORT: 4000

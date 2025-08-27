@@ -25,6 +25,6 @@ COPY --from=build /app/packages ./packages
 COPY --from=build /app/packages/infra/dist ./packages/infra/dist
 COPY --from=build /app/packages/infra/package.json ./packages/infra/package.json
 EXPOSE 4000
-CMD ["pnpm", "--filter", "@best-lap/infra", "run", "start:bull-board"]
+CMD ["pnpm", "--filter", "@best-lap/infra", "run", "start:bull-board:prod"]
 
 

@@ -7,7 +7,8 @@
     "dev": "pnpm env:load nodemon --watch src --ext ts --exec ts-node --transpile-only src/server.ts",
     "env:load": "dotenv -e ../../.env --",
     "build": "tsup src/server.ts --format cjs --target node18 --out-dir dist --external dotenv --external dotenv/config",
-    "start": "pnpm env:load node dist/server.js"
+    "start": "pnpm env:load node dist/server.js",
+    "start:prod": "node dist/server.js"
   },
   "keywords": [],
   "author": "",

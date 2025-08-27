@@ -33,6 +33,6 @@ COPY --from=build /app/packages ./packages
 COPY --from=build /app/apps/api/package.json ./apps/api/package.json
 
 EXPOSE 3333
-CMD ["pnpm", "--filter", "@best-lap/api", "run", "start"]
+CMD ["pnpm", "--filter", "@best-lap/api", "run", "start:prod"]
 
 

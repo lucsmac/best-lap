@@ -15,7 +15,8 @@
     "build": "pnpm env:load tsup src/index.ts --format cjs --target node18 --out-dir dist --external dotenv --external dotenv/config",
     "build:bull-board": "tsup src/queue/bull-board/server.ts --format cjs --target node18 --out-dir dist --external dotenv --external dotenv/config",
     "start": "node dist/server.js",
-    "start:bull-board": "pnpm env:load node dist/queue/bull-board/server.js"
+    "start:bull-board": "pnpm env:load node dist/queue/bull-board/server.js",
+    "start:bull-board:prod": "node dist/queue/bull-board/server.js"
   },
   "devDependencies": {
     "@best-lap/core": "workspace:*",
