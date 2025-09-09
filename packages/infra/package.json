@@ -2,21 +2,20 @@
   "name": "@best-lap/infra",
   "version": "1.0.0",
   "description": "",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js"
+    }
   },
   "scripts": {
+    "build": "tsup",
     "dev:infra": "pnpm env:load tsx watch src/main.ts",
     "env:load": "dotenv -e ../../.env --",
     "db:seed": "pnpm env:load tsx src/database/seed.ts",
-    "bull-board": "tsx src/queue/bull-board/server.ts",
-    "build": "pnpm env:load tsup src/index.ts --format cjs --target node18 --out-dir dist --external dotenv --external dotenv/config --external @best-lap/env --external @best-lap/core",
-    "build:bull-board": "tsup src/queue/bull-board/server.ts --format cjs --target node18 --out-dir dist --external dotenv --external dotenv/config",
-    "start": "node dist/server.js",
-    "start:bull-board": "pnpm env:load node dist/queue/bull-board/server.js",
-    "start:bull-board:prod": "node dist/queue/bull-board/server.js"
+    "bull-board": "tsx src/queue/bull-board/server.ts"
   },
   "devDependencies": {
     "@best-lap/core": "workspace:*",

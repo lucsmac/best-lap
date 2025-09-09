@@ -26,7 +26,7 @@ export const env = createEnv({
   client: {},
   shared: {},
   runtimeEnv: {
-    API_PORT: process.env.SERVER_PORT,
+    API_PORT: process.env.API_PORT,
     NODE_ENV: process.env.NODE_ENV,
 
     BULL_BOARD_PORT: process.env.BULL_BOARD_PORT,

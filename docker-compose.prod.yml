@@ -1,101 +1,120 @@
 services:
+  # Database
   postgres:
     image: timescale/timescaledb:latest-pg15
+    container_name: best-lap-postgres
     environment:
-      POSTGRES_USER: ${DB_USER:-postgres}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
-      POSTGRES_DB: ${DB_NAME:-metrics}
+      POSTGRES_USER: ${DB_USER:-best_lap}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-best_lap}
+      POSTGRES_DB: ${DB_NAME:-best_lap_db}
     ports:
-      - "5432:5432"
+      - "${DB_PORT:-5432}:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER"]
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 10s
       timeout: 5s
       retries: 10
+    restart: unless-stopped
 
+  # Redis
   redis:
-    image: redis:7
+    image: redis:7-alpine
+    container_name: best-lap-redis
     ports:
-      - "6379:6379"
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 10
+    restart: unless-stopped
 
+  # API Application
   api:
     build:
       context: .
-      dockerfile: apps/api/Dockerfile
-    env_file: .env
+      dockerfile: Dockerfile
+      target: api
+    container_name: best-lap-api
     environment:
-      NODE_ENV: production
-      SERVER_PORT: 3333
-      DB_HOST: postgres
-      DB_PORT: 5432
-      DB_USER: ${DB_USER:-postgres}
-      DB_PASSWORD: ${DB_PASSWORD:-postgres}
-      DB_NAME: ${DB_NAME:-metrics}
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
+      - NODE_ENV=production
+      - API_PORT=${API_PORT:-3333}
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=${DB_USER:-best_lap}
+      - DB_PASSWORD=${DB_PASSWORD:-best_lap}
+      - DB_NAME=${DB_NAME:-best_lap_db}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
     ports:
-      - "3333:3333"
+      - "${API_PORT:-3333}:3333"
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
+    restart: unless-stopped
 
-  collector:
+  # Metrics Collector
+  metrics-collector:
     build:
       context: .
-      dockerfile: apps/metrics-collector/Dockerfile
-    env_file: .env
+      dockerfile: Dockerfile
+      target: collector
+    container_name: best-lap-collector
     environment:
-      NODE_ENV: production
-      DB_HOST: postgres
-      DB_PORT: 5432
-      DB_USER: ${DB_USER:-postgres}
-      DB_PASSWORD: ${DB_PASSWORD:-postgres}
-      DB_NAME: ${DB_NAME:-metrics}
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
+      - NODE_ENV=production
+      - TZ=America/Sao_Paulo
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=${DB_USER:-best_lap}
+      - DB_PASSWORD=${DB_PASSWORD:-best_lap}
+      - DB_NAME=${DB_NAME:-best_lap_db}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - COLLECT_METRICS_CRON_EXPRESSION=${COLLECT_METRICS_CRON_EXPRESSION:-0 8,14,20 * * *}
+      - SEED_THEMES_URL=${SEED_THEMES_URL:-https://lucsmac.github.io/autodromo-domains/full_data.json}
+      - WORKER_CONCURRENCY=${WORKER_CONCURRENCY:-10}
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
+      api:
+        condition: service_started
+    restart: unless-stopped
 
-  bullboard:
+  # Bull Board Dashboard
+  bull-board:
     build:
       context: .
-      dockerfile: packages/infra/Dockerfile
-    env_file: .env
+      dockerfile: Dockerfile
+      target: bullboard
+    container_name: best-lap-bullboard
     environment:
-      NODE_ENV: production
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      BULL_BOARD_PORT: 4000
+      - NODE_ENV=production
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - BULL_BOARD_PORT=${BULL_BOARD_PORT:-4000}
     ports:
-      - "4000:4000"
+      - "${BULL_BOARD_PORT:-4000}:4000"
     depends_on:
       redis:
         condition: service_healthy
-
-  seed:
-    build:
-      context: .
-      dockerfile: packages/infra/Dockerfile
-    env_file: .env
-    environment:
-      DB_HOST: postgres
-      DB_PORT: 5432
-    entrypoint: ["pnpm", "--filter", "@best-lap/infra", "run", "db:seed"]
-    depends_on:
-      postgres:
-        condition: service_healthy
+    restart: unless-stopped
 
 volumes:
-  pgdata:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  default:
+    name: best-lap-network

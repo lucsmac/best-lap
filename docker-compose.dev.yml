@@ -1,0 +1,44 @@
+services:
+  # Database for development
+  postgres:
+    image: timescale/timescaledb:latest-pg15
+    container_name: best-lap-dev-postgres
+    environment:
+      POSTGRES_USER: ${DB_USER:-best_lap}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-best_lap}
+      POSTGRES_DB: ${DB_NAME:-best_lap_db}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  # Redis for development
+  redis:
+    image: redis:7-alpine
+    container_name: best-lap-dev-redis
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_dev_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  postgres_dev_data:
+    driver: local
+  redis_dev_data:
+    driver: local
+
+networks:
+  default:
+    name: best-lap-dev-network

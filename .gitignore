@@ -36,3 +36,18 @@ yarn-error.log*
 # Misc
 .DS_Store
 *.pem
+
+# Claude
+.claude/
+CLAUDE.md
+
+# IDEs and editors
+.vscode/
+
+# Deployment artifacts
+backups/
+*.backup.*
+.env.backup.*
+.env.production
+*.sql
+*.tar.gz

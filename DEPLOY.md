@@ -1,8 +1,59 @@
-# Deploy Guide - Best Lap Production
+# 🚀 AWS EC2 Deployment Guide - Best Lap
 
-## Prerequisites
-- Docker and Docker Compose installed on EC2
-- Ports 3333 (API) and 4000 (Bull Board) open in security group
+Guia completo para fazer deploy da aplicação Best Lap no AWS EC2.
+
+## 📋 Pré-requisitos EC2
+
+### AWS EC2 Instance
+- **Instância recomendada**: `t3.medium` ou superior (2 vCPUs, 4GB RAM)
+- **Sistema**: Ubuntu 22.04 LTS
+- **Storage**: Mínimo 20GB SSD
+- **Security Group**: 
+  - SSH (22) - Seu IP
+  - HTTP (80) - 0.0.0.0/0  
+  - HTTPS (443) - 0.0.0.0/0
+  - Custom TCP (3333) - 0.0.0.0/0 (API)
+  - Custom TCP (4000) - 0.0.0.0/0 (Bull Board)
+
+## 🔧 Setup Inicial EC2
+
+### 1. Preparar Instância
+
+```bash
+# Conectar via SSH
+ssh -i sua-chave.pem ubuntu@seu-ec2-ip
+
+# Atualizar sistema
+sudo apt update && sudo apt upgrade -y
+
+# Instalar Docker
+curl -fsSL https://get.docker.com -o get-docker.sh
+sh get-docker.sh
+sudo usermod -aG docker ubuntu
+
+# Instalar Docker Compose
+sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+
+# Instalar Git
+sudo apt install -y git
+
+# Relogar para aplicar grupo docker
+exit
+ssh -i sua-chave.pem ubuntu@seu-ec2-ip
+```
+
+### 2. Clonar Repositório
+
+```bash
+# Clonar aplicação
+git clone https://github.com/seu-usuario/best-lap.git
+cd best-lap
+
+# Configurar environment
+cp .env.example .env
+nano .env
+```
 
 ## Environment Setup
 Create a `.env` file in the root directory with:
@@ -12,7 +63,7 @@ Create a `.env` file in the root directory with:
 NODE_ENV=production
 
 # API Configuration
-SERVER_PORT=3333
+API_PORT=3333
 
 # Bull Board Configuration
 BULL_BOARD_PORT=4000
@@ -39,19 +90,51 @@ WORKER_CONCURRENCY=10
 
 **Note**: The services will use the environment variables from the `.env` file, but in production Docker containers, these are also explicitly set in the docker-compose.prod.yml file.
 
-## Deploy
-1. Build and start all services:
+## 🚀 Primeiro Deploy
+
+1. **Deploy Inicial**:
+```bash
+# Usar script automatizado
+chmod +x scripts/deploy.sh
+./scripts/deploy.sh
+```
+
+**OU manualmente**:
 ```bash
 docker compose -f docker-compose.prod.yml up -d --build
 ```
 
-**After making changes to Dockerfiles or package.json files, you need to rebuild:**
+## 🔄 Estratégias de Atualização
+
+### Método 1: Script Automático (Recomendado)
+
+Para atualizações após mudanças no código:
+
 ```bash
+# Script que faz backup, pull, rebuild e health check
+./scripts/update.sh
+```
+
+### Método 2: GitHub Actions (CI/CD)
+
+1. **Configurar Secrets no GitHub**:
+   - `EC2_HOST`: IP público da instância
+   - `EC2_KEY`: Chave privada SSH (conteúdo do .pem)
+
+2. **Deploy automático**: Qualquer push na branch `main` dispara deploy automático
+
+### Método 3: Manual
+
+```bash
+# Parar serviços
 docker compose -f docker-compose.prod.yml down
+
+# Atualizar código
+git pull origin main
+
+# Rebuild e restart
 docker compose -f docker-compose.prod.yml up -d --build
 ```
-
-**Important**: If you encounter module not found errors, the issue is likely with dependency installation in the runtime container. The updated Dockerfiles now properly install production dependencies.
 
 2. Check service status:
 ```bash
@@ -93,10 +176,10 @@ docker system prune -a -f --volumes
 df -h
 ```
 
-2. **Use the cleanup script**:
+2. **Use system cleanup**:
 ```bash
-chmod +x cleanup-docker.sh
-./cleanup-docker.sh
+# Clean up everything
+docker system prune -a -f --volumes
 ```
 
 3. **Rebuild with clean state**:
@@ -109,22 +192,133 @@ docker compose -f docker-compose.prod.yml up -d --build
 - Restart service: `docker compose -f docker-compose.prod.yml restart <service_name>`
 - Rebuild: `docker compose -f docker-compose.prod.yml up -d --build <service_name>`
 
-## Services
-- **postgres**: TimescaleDB database
-- **redis**: Redis for queues
-- **api**: Fastify API server on port 3333
-- **collector**: Metrics collection service
-- **bullboard**: Bull MQ dashboard on port 4000
-- **seed**: One-time database seeding service
+## 💾 Backup e Monitoramento
 
-## Space Optimization
-The Dockerfiles are optimized to minimize disk usage:
-- Multi-stage builds with dependency cleanup
-- Removal of build cache and temporary files
-- Efficient layer caching
-- Minimal runtime images
+### Backup Manual
+```bash
+# Criar backup completo
+./scripts/backup.sh
 
-If you still encounter space issues, consider:
-- Increasing EC2 instance storage
-- Using EBS volumes for Docker data
-- Regular cleanup with `./cleanup-docker.sh`
+# Backup apenas do banco
+docker run --rm \
+  --network best-lap-network \
+  -e PGPASSWORD=best_lap \
+  postgres:15-alpine \
+  pg_dump -h best-lap-postgres -U best_lap best_lap_db > backup.sql
+```
+
+### Backup Automático
+```bash
+# Adicionar ao crontab para backup diário às 2h
+crontab -e
+
+# Adicionar linha:
+0 2 * * * /home/ubuntu/best-lap/scripts/backup.sh
+```
+
+### Monitoramento
+```bash
+# Logs em tempo real
+docker compose -f docker-compose.prod.yml logs -f
+
+# Status dos serviços
+docker compose -f docker-compose.prod.yml ps
+
+# Uso de recursos
+docker stats
+
+# Espaço em disco
+df -h && docker system df
+```
+
+## 🔒 Segurança (Recomendado)
+
+### 1. Firewall
+```bash
+sudo ufw enable
+sudo ufw allow ssh
+sudo ufw allow 80
+sudo ufw allow 443
+sudo ufw allow 3333  # API
+sudo ufw allow 4000  # Bull Board (considere restringir)
+```
+
+### 2. SSL Certificate
+```bash
+# Instalar Nginx
+sudo apt install -y nginx
+
+# Configurar reverse proxy
+sudo nano /etc/nginx/sites-available/best-lap
+
+# Conteúdo:
+server {
+    listen 80;
+    server_name seu-dominio.com;
+
+    location / {
+        proxy_pass http://localhost:3333;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+
+    location /dashboard {
+        proxy_pass http://localhost:4000;
+        proxy_set_header Host $host;
+    }
+}
+
+# Ativar e instalar SSL
+sudo ln -s /etc/nginx/sites-available/best-lap /etc/nginx/sites-enabled/
+sudo apt install -y certbot python3-certbot-nginx
+sudo certbot --nginx -d seu-dominio.com
+```
+
+## 📊 Services Overview
+- **postgres**: TimescaleDB database (porta 5432)
+- **redis**: Redis para filas (porta 6379)
+- **api**: Fastify API server (porta 3333)
+- **metrics-collector**: Coleta de métricas (cron: 8h, 14h, 20h BRT)
+- **bull-board**: Dashboard de filas (porta 4000)
+
+## 🚀 URLs de Acesso
+
+Após deploy bem-sucedido:
+
+- **API**: `http://seu-ec2-ip:3333`
+- **Documentação**: `http://seu-ec2-ip:3333/docs`  
+- **Bull Board**: `http://seu-ec2-ip:4000`
+- **Com Nginx**: `http://seu-dominio.com`
+
+## 📈 Próximos Passos (Escalabilidade)
+
+Para aplicações maiores, considere:
+
+- **Load Balancer**: Application Load Balancer (ALB)
+- **Database**: RDS PostgreSQL separado
+- **Cache**: ElastiCache Redis separado  
+- **Storage**: EFS para arquivos compartilhados
+- **Monitoring**: CloudWatch, Prometheus + Grafana
+- **Container Orchestration**: ECS ou EKS
+
+## ⚡ Resumo de Comandos
+
+```bash
+# Primeiro deploy
+./scripts/deploy.sh
+
+# Atualizar aplicação
+./scripts/update.sh
+
+# Backup
+./scripts/backup.sh
+
+# Logs
+docker compose -f docker-compose.prod.yml logs -f
+
+# Status
+docker compose -f docker-compose.prod.yml ps
+
+# Parar tudo
+docker compose -f docker-compose.prod.yml down
+```

@@ -25,3 +25,10 @@ coverage
 .cache
 .pnpm-store
 pnpm-debug.log*
+
+# Deployment artifacts
+backups/
+*.backup.*
+*.sql
+*.tar.gz
+.env.production
