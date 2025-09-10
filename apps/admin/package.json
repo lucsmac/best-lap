@@ -1,29 +1,26 @@
 {
-  "name": "@best-lap/infra",
+  "name": "@best-lap/admin",
   "version": "1.0.0",
-  "description": "",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "require": "./dist/index.js"
-    }
-  },
+  "main": "src/server.ts",
+  "types": "src/server.ts",
   "scripts": {
-    "build": "tsup",
-    "dev:infra": "pnpm env:load tsx watch src/main.ts",
+    "dev": "pnpm env:load nodemon --watch src --ext ts --exec ts-node --transpile-only src/server.ts",
     "env:load": "dotenv -e ../../.env --",
-    "db:seed": "pnpm env:load tsx src/database/seed.ts"
+    "start": "pnpm env:load node dist/server.js",
+    "build": "tsup",
+    "start:prod": "node dist/server.js"
   },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "devDependencies": {
-    "@best-lap/core": "workspace:*",
     "@best-lap/env": "workspace:*",
     "@best-lap/eslint-config": "workspace:*",
     "@best-lap/prettier": "workspace:*",
     "@best-lap/tsconfig": "workspace:*",
     "@types/node": "^24.0.13",
-    "tsx": "^4.20.3"
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2"
   },
   "eslintConfig": {
     "extends": [
@@ -31,17 +28,14 @@
     ]
   },
   "prettier": "@best-lap/prettier",
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
+    "@bull-board/api": "^6.12.0",
+    "@bull-board/fastify": "^6.12.0",
     "bullmq": "^5.56.4",
     "dotenv": "^16.4.5",
     "dotenv-cli": "^8.0.0",
+    "fastify": "^5.4.0",
     "ioredis": "^5.6.1",
-    "pg": "^8.16.3",
-    "reflect-metadata": "^0.2.2",
-    "tsup": "^8.5.0",
-    "typeorm": "^0.3.25"
+    "tsup": "^8.5.0"
   }
 }

@@ -5,7 +5,7 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
-    "bull-board": "turbo run bull-board",
+    "admin": "turbo run dev --filter=@best-lap/admin",
     "lint": "turbo run lint",
     "check-types": "turbo run check-types"
   },
