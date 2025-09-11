@@ -5,7 +5,7 @@
   "scripts": {
     "build": "tsup",
     "dev": "pnpm env:load ts-node --transpile-only src/index.ts",
-    "start": "node dist/index.js",
+    "start": "pnpm env:load node dist/index.js",
     "collect": "pnpm env:load ts-node --transpile-only src/collect.ts",
     "env:load": "dotenv -e ../../.env --"
   },
