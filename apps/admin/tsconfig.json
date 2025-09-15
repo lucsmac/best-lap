@@ -1,0 +1,6 @@
+{
+  "extends": "@best-lap/tsconfig/node.json",
+  "include": [
+    "src/**/*"
+  ]
+}

@@ -6,7 +6,7 @@ export const env = createEnv({
     API_PORT: z.coerce.number().default(3333),
     NODE_ENV: z.enum(['development', 'test', 'production']),
 
-    BULL_BOARD_PORT: z.coerce.number().default(4000),
+    ADMIN_PORT: z.coerce.number().default(4000),
 
     DB_HOST: z.string(),
     DB_PORT: z.coerce.number().default(5432),
@@ -29,7 +29,7 @@ export const env = createEnv({
     API_PORT: process.env.SERVER_PORT,
     NODE_ENV: process.env.NODE_ENV,
 
-    BULL_BOARD_PORT: process.env.BULL_BOARD_PORT,
+    ADMIN_PORT: process.env.ADMIN_PORT,
 
     DB_HOST: process.env.DB_HOST,
     DB_PORT: process.env.DB_PORT,

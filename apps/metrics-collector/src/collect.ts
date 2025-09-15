@@ -12,9 +12,11 @@ async function initCollect() {
   try {
     console.log('starting collect')
     await collectMetrics()
-    console.log('collecting...')
+    console.log('collect completed successfully')
+    process.exit(0)
   } catch (err) {
-    console.log("error during executino: ", err)
+    console.log("error during execution: ", err)
+    process.exit(1)
   }
 }
 
