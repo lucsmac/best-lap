@@ -6,7 +6,13 @@
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
-    "check-types": "turbo run check-types"
+    "check-types": "turbo run check-types",
+    "docker:build": "./scripts/build.sh",
+    "docker:deploy": "./scripts/deploy.sh",
+    "docker:monitor": "./scripts/monitor.sh",
+    "infra:up": "docker-compose up -d timescaledb redis",
+    "infra:down": "docker-compose down",
+    "infra:logs": "docker-compose logs -f timescaledb redis"
   },
   "devDependencies": {
     "turbo": "^2.5.4"

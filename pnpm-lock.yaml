@@ -127,6 +127,9 @@ importers:
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@24.1.0)(typescript@5.9.2)
+      tsup:
+        specifier: ^8.3.5
+        version: 8.5.0(typescript@5.9.2)
 
   apps/metrics-collector:
     dependencies:
@@ -136,6 +139,9 @@ importers:
       '@best-lap/infra':
         specifier: workspace:^
         version: link:../../packages/infra
+      dotenv-cli:
+        specifier: ^8.0.0
+        version: 8.0.0
       node-cron:
         specifier: ^4.2.1
         version: 4.2.1
@@ -158,9 +164,9 @@ importers:
       '@types/node':
         specifier: ^24.0.13
         version: 24.1.0
-      dotenv-cli:
-        specifier: ^8.0.0
-        version: 8.0.0
+      tsup:
+        specifier: ^8.3.5
+        version: 8.5.0(typescript@5.9.2)
 
   config/eslint-config:
     devDependencies:
@@ -221,12 +227,12 @@ importers:
       '@types/node':
         specifier: ^24.0.13
         version: 24.1.0
+      tsup:
+        specifier: ^8.3.5
+        version: 8.5.0(typescript@5.9.2)
 
   packages/env:
     dependencies:
-      '@t3-oss/env-nextjs':
-        specifier: ^0.13.8
-        version: 0.13.8(zod@4.0.14)
       zod:
         specifier: ^4.0.5
         version: 4.0.14
@@ -243,12 +249,18 @@ importers:
       '@types/node':
         specifier: ^24.0.13
         version: 24.1.0
+      tsup:
+        specifier: ^8.3.5
+        version: 8.5.0(typescript@5.9.2)
 
   packages/infra:
     dependencies:
       bullmq:
         specifier: ^5.56.4
         version: 5.56.9
+      dotenv:
+        specifier: ^16.4.5
+        version: 16.6.1
       dotenv-cli:
         specifier: ^8.0.0
         version: 8.0.0
@@ -283,6 +295,9 @@ importers:
       '@types/node':
         specifier: ^24.0.13
         version: 24.1.0
+      tsup:
+        specifier: ^8.3.5
+        version: 8.5.0(tsx@4.20.3)
       tsx:
         specifier: ^4.20.3
         version: 4.20.3
@@ -1068,47 +1083,6 @@ packages:
     resolution: {integrity: sha512-Uy0+khmZqUrUGm5dmMqVlnvufZRSK0FbYzVgp0UMstm+F5+W2/jnEEQyc9vo1ZR/E5ZI/B1WjjoTqBqwJL6Krw==}
     dev: false
 
-  /@t3-oss/env-core@0.13.8(zod@4.0.14):
-    resolution: {integrity: sha512-L1inmpzLQyYu4+Q1DyrXsGJYCXbtXjC4cICw1uAKv0ppYPQv656lhZPU91Qd1VS6SO/bou1/q5ufVzBGbNsUpw==}
-    peerDependencies:
-      arktype: ^2.1.0
-      typescript: '>=5.0.0'
-      valibot: ^1.0.0-beta.7 || ^1.0.0
-      zod: ^3.24.0 || ^4.0.0-beta.0
-    peerDependenciesMeta:
-      arktype:
-        optional: true
-      typescript:
-        optional: true
-      valibot:
-        optional: true
-      zod:
-        optional: true
-    dependencies:
-      zod: 4.0.14
-    dev: false
-
-  /@t3-oss/env-nextjs@0.13.8(zod@4.0.14):
-    resolution: {integrity: sha512-QmTLnsdQJ8BiQad2W2nvV6oUpH4oMZMqnFEjhVpzU0h3sI9hn8zb8crjWJ1Amq453mGZs6A4v4ihIeBFDOrLeQ==}
-    peerDependencies:
-      arktype: ^2.1.0
-      typescript: '>=5.0.0'
-      valibot: ^1.0.0-beta.7 || ^1.0.0
-      zod: ^3.24.0 || ^4.0.0-beta.0
-    peerDependenciesMeta:
-      arktype:
-        optional: true
-      typescript:
-        optional: true
-      valibot:
-        optional: true
-      zod:
-        optional: true
-    dependencies:
-      '@t3-oss/env-core': 0.13.8(zod@4.0.14)
-      zod: 4.0.14
-    dev: false
-
   /@tsconfig/node10@1.0.11:
     resolution: {integrity: sha512-DcRjDCujK/kCk/cUe8Xz8ZSpm8mS3mNNpta+jGCA6USEDfktlNvm1+IuZ9eTcDbNk41BHwpHHeW+N1lKCz4zOw==}
 
@@ -1677,10 +1651,12 @@ packages:
       dotenv: 16.6.1
       dotenv-expand: 10.0.0
       minimist: 1.2.8
+    dev: false
 
   /dotenv-expand@10.0.0:
     resolution: {integrity: sha512-GopVGCpVS1UKH75VKHGuQFqS1Gusej0z4FyQkPdwjil2gNIv+LNsqBlboOzpJFZKVT95GkCyWJbBSdFEFUWI2A==}
     engines: {node: '>=12'}
+    dev: false
 
   /dotenv@16.0.3:
     resolution: {integrity: sha512-7GO6HghkA5fYG9TYnNxi14/7K9f5occMlp3zXAuSxn7CKCxt9xbNWG7yF8hTCSUchlfWSe3uLmlPfigevRItzQ==}
@@ -1690,6 +1666,7 @@ packages:
   /dotenv@16.6.1:
     resolution: {integrity: sha512-uBq4egWHTcTt33a72vpSG0z3HnPuIl6NqYcTrKEg2azoEyl2hpW0zqlxysq2pK9HlDIHyHyakeYaYnSAwd8bow==}
     engines: {node: '>=12'}
+    dev: false
 
   /dunder-proto@1.0.1:
     resolution: {integrity: sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A==}
@@ -2878,7 +2855,7 @@ packages:
     engines: {node: '>= 0.4'}
     dev: false
 
-  /postcss-load-config@6.0.1:
+  /postcss-load-config@6.0.1(tsx@4.20.3):
     resolution: {integrity: sha512-oPtTM4oerL+UXmx+93ytZVN82RrlY/wPUV8IeDxFrzIjXOLF1pN+EmKPLbubvKHT2HC20xXsCAH2Z+CKV6Oz/g==}
     engines: {node: '>= 18'}
     peerDependencies:
@@ -2897,6 +2874,7 @@ packages:
         optional: true
     dependencies:
       lilconfig: 3.1.3
+      tsx: 4.20.3
     dev: true
 
   /postgres-array@2.0.0:
@@ -3365,6 +3343,49 @@ packages:
     resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
     dev: false
 
+  /tsup@8.5.0(tsx@4.20.3):
+    resolution: {integrity: sha512-VmBp77lWNQq6PfuMqCHD3xWl22vEoWsKajkF8t+yMBawlUS8JzEI+vOVMeuNZIuMML8qXRizFKi9oD5glKQVcQ==}
+    engines: {node: '>=18'}
+    hasBin: true
+    peerDependencies:
+      '@microsoft/api-extractor': ^7.36.0
+      '@swc/core': ^1
+      postcss: ^8.4.12
+      typescript: '>=4.5.0'
+    peerDependenciesMeta:
+      '@microsoft/api-extractor':
+        optional: true
+      '@swc/core':
+        optional: true
+      postcss:
+        optional: true
+      typescript:
+        optional: true
+    dependencies:
+      bundle-require: 5.1.0(esbuild@0.25.8)
+      cac: 6.7.14
+      chokidar: 4.0.3
+      consola: 3.4.2
+      debug: 4.4.1(supports-color@5.5.0)
+      esbuild: 0.25.8
+      fix-dts-default-cjs-exports: 1.0.1
+      joycon: 3.1.1
+      picocolors: 1.1.1
+      postcss-load-config: 6.0.1(tsx@4.20.3)
+      resolve-from: 5.0.0
+      rollup: 4.50.2
+      source-map: 0.8.0-beta.0
+      sucrase: 3.35.0
+      tinyexec: 0.3.2
+      tinyglobby: 0.2.15
+      tree-kill: 1.2.2
+    transitivePeerDependencies:
+      - jiti
+      - supports-color
+      - tsx
+      - yaml
+    dev: true
+
   /tsup@8.5.0(typescript@5.9.2):
     resolution: {integrity: sha512-VmBp77lWNQq6PfuMqCHD3xWl22vEoWsKajkF8t+yMBawlUS8JzEI+vOVMeuNZIuMML8qXRizFKi9oD5glKQVcQ==}
     engines: {node: '>=18'}
@@ -3393,7 +3414,7 @@ packages:
       fix-dts-default-cjs-exports: 1.0.1
       joycon: 3.1.1
       picocolors: 1.1.1
-      postcss-load-config: 6.0.1
+      postcss-load-config: 6.0.1(tsx@4.20.3)
       resolve-from: 5.0.0
       rollup: 4.50.2
       source-map: 0.8.0-beta.0

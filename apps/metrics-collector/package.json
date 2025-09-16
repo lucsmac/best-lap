@@ -4,6 +4,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "pnpm env:load ts-node --transpile-only src/index.ts",
+    "build": "tsup",
+    "start": "node dist/index.js",
     "collect": "pnpm env:load ts-node --transpile-only src/collect.ts",
     "env:load": "dotenv -e ../../.env --"
   },
@@ -16,7 +18,7 @@
     "@best-lap/prettier": "workspace:*",
     "@best-lap/tsconfig": "workspace:*",
     "@types/node": "^24.0.13",
-    "dotenv-cli": "^8.0.0"
+    "tsup": "^8.3.5"
   },
   "eslintConfig": {
     "extends": [
@@ -27,6 +29,7 @@
   "dependencies": {
     "@best-lap/core": "workspace:^",
     "@best-lap/infra": "workspace:^",
+    "dotenv-cli": "^8.0.0",
     "node-cron": "^4.2.1",
     "ts-node": "^10.9.2"
   }
