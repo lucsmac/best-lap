@@ -18,6 +18,10 @@ export const swaggerConfig = {
         description: 'Local development server'
       },
       {
+        url: 'http://75.101.196.198:3333',
+        description: 'EC2 deployment server'
+      },
+      {
         url: 'https://api-staging.autoforce.com.br',
         description: 'Staging environment (work in progress)'
       },

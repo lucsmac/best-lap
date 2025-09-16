@@ -39,6 +39,8 @@ async function startServer() {
   server.register(fastifySwagger, swaggerConfig);
   server.register(fastifySwaggerUi, {
     routePrefix: '/docs',
+    staticCSP: true,
+    transformStaticCSP: (header) => header.replace('https:', 'http:'),
     uiConfig: {
       docExpansion: 'list',
       deepLinking: false,
