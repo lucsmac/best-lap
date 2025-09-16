@@ -14,12 +14,16 @@ export const swaggerConfig = {
     },
     servers: [
       {
-        url: `http://localhost:${env.API_PORT}`,
-        description: 'Local development server'
+        url: 'http://ec2-75-101-196-198.compute-1.amazonaws.com:3333',
+        description: 'EC2 deployment server (HTTP)'
       },
       {
         url: 'http://75.101.196.198:3333',
-        description: 'EC2 deployment server'
+        description: 'EC2 deployment server (IP)'
+      },
+      {
+        url: `http://localhost:${env.API_PORT}`,
+        description: 'Local development server'
       },
       {
         url: 'https://api-staging.autoforce.com.br',

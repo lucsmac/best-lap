@@ -20,6 +20,9 @@ const envSchema = z.object({
   COLLECT_METRICS_CRON_EXPRESSION: z.coerce.string().default('0 8,14,20 * * *'),
   SEED_THEMES_URL: z.string().default('https://lucsmac.github.io/autodromo-domains/full_data.json'),
   WORKER_CONCURRENCY: z.coerce.number().default(10),
+
+  // Swagger configuration
+  FORCE_HTTP_SWAGGER: z.coerce.boolean().default(false),
 })
 
 function validateEnv() {
@@ -43,6 +46,8 @@ function validateEnv() {
     COLLECT_METRICS_CRON_EXPRESSION: process.env.COLLECT_METRICS_CRON_EXPRESSION,
     SEED_THEMES_URL: process.env.SEED_THEMES_URL,
     WORKER_CONCURRENCY: process.env.WORKER_CONCURRENCY,
+
+    FORCE_HTTP_SWAGGER: process.env.FORCE_HTTP_SWAGGER,
   }
 
   // Convert empty strings to undefined to match t3-env behavior
