@@ -58,8 +58,7 @@ async function startServer() {
         defaultSrc: ["'self'"],
         styleSrc: ["'self'", "'unsafe-inline'"],
         scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
-        imgSrc: ["'self'", "data:", "https:"],
-        upgradeInsecureRequests: null,
+        imgSrc: ["'self'", "data:", "https:"]
       }
     }
   });
