@@ -31,7 +31,6 @@ async function startServer() {
   }).withTypeProvider<ZodTypeProvider>();
 
   server.register(import('@fastify/cors'));
-  server.register(import('@fastify/helmet'));
 
   server.setValidatorCompiler(validatorCompiler);
   server.setSerializerCompiler(serializerCompiler);
@@ -39,11 +38,29 @@ async function startServer() {
   server.register(fastifySwagger, swaggerConfig);
   server.register(fastifySwaggerUi, {
     routePrefix: '/docs',
-    staticCSP: true,
-    transformStaticCSP: (header) => header.replace('https:', 'http:'),
+    staticCSP: false,
     uiConfig: {
       docExpansion: 'list',
       deepLinking: false,
+    },
+    uiHooks: {
+      onRequest: function (_request, reply, next) {
+        reply.header('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
+        reply.header('Origin-Agent-Cluster', '?0');
+        next();
+      }
+    }
+  });
+
+  server.register(import('@fastify/helmet'), {
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+        imgSrc: ["'self'", "data:", "https:"],
+        upgradeInsecureRequests: null,
+      }
     }
   });
 
