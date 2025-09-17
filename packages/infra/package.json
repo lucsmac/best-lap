@@ -10,7 +10,8 @@
     "build": "tsup",
     "dev:infra": "pnpm env:load tsx watch src/main.ts",
     "env:load": "dotenv -e ../../.env --",
-    "db:seed": "pnpm env:load tsx src/database/seed.ts"
+    "db:seed": "pnpm env:load tsx src/database/seed.ts",
+    "db:seed:prod": "pnpm env:load node dist/database/seed.js"
   },
   "devDependencies": {
     "@best-lap/core": "workspace:*",

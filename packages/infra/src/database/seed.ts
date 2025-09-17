@@ -1,33 +1,65 @@
 import "reflect-metadata"
-import { ChannelEntity, PageEntity } from "@best-lap/core"
-import { TypeormChannelsRepository, TypeormPagesRepository } from "../typeorm"
 import { getThemesData } from "../utils/get-themes-data"
 import { connectToDatabase } from "./start-connection"
+import { Channel } from "../typeorm/entities/channel-entity"
+import { Page } from "../typeorm/entities/page-entity"
+
+// Define interfaces locally to avoid runtime imports
+interface ChannelData {
+  id?: string;
+  name: string;
+  domain: string;
+  internal_link: string;
+  theme: string;
+  active?: boolean;
+  is_reference?: boolean;
+  pages?: any[];
+  created_at?: Date;
+  updated_at?: Date;
+}
+
+interface PageData {
+  id?: string;
+  name: string;
+  path: string;
+  channel_id: string;
+  created_at?: Date;
+  updated_at?: Date;
+}
 
 export async function seedDb() {
   try {
-    const channelsSeedData: ChannelEntity[] = await getThemesData()
-    const channelRepository = new TypeormChannelsRepository();
-    const pageRepository = new TypeormPagesRepository()
+    const dataSource = await connectToDatabase();
 
-    channelsSeedData.forEach(async (channelData: ChannelEntity) => {
-      const channel = await channelRepository.create({ ...channelData, active: true })
+    const channelsSeedData: ChannelData[] = await getThemesData()
 
-      await pageRepository.create({
-        name: "index",
-        path: "/",
-        channel_id: channel.id
-      } as PageEntity)
-    })
+    const channelRepository = dataSource.getRepository(Channel);
+    const pageRepository = dataSource.getRepository(Page);
+
+    await Promise.all(
+      channelsSeedData.map(async (channelData: ChannelData) => {
+        const channelEntity = channelRepository.create({ ...channelData, active: true });
+        const savedChannel = await channelRepository.save(channelEntity);
+
+        const pageEntity = pageRepository.create({
+          name: "index",
+          path: "/",
+          channel_id: savedChannel.id
+        } as PageData);
+
+        await pageRepository.save(pageEntity);
+      })
+    );
 
     console.log(`Database was seeded with ${channelsSeedData.length} channels`)
   } catch (error) {
     console.error(`Error when seed database * Error message: ${error}`)
+    process.exit(1);
   }
 }
 
-connectToDatabase().then(() => {
-  seedDb()
-}).catch((error) => {
-  console.error('Error during database connection:', error);
+// Execute seed
+seedDb().catch((error) => {
+  console.error('Error during database seeding:', error);
+  process.exit(1);
 });

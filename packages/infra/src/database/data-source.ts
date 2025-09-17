@@ -1,9 +1,19 @@
 import 'dotenv/config';
 import { DataSource } from 'typeorm';
 import { env } from '@best-lap/env';
-import path from 'path';
 
-const rootFolder = env.NODE_ENV === 'development' ? 'src' : 'dist';
+// Import entities directly to ensure they're always available
+import { Channel } from '../typeorm/entities/channel-entity';
+import { Page } from '../typeorm/entities/page-entity';
+import { Metric } from '../typeorm/entities/metric-entity';
+
+// Import migrations directly to avoid dynamic loading issues with Node.js v22
+import { CreateChannelTable1732044214596 } from './migration/1732044214596-CreateChannelTable';
+import { CreatePageTable1732044214599 } from './migration/1732044214599-CreatePageTable';
+import { CreateMetricsTable1732044260612 } from './migration/1732044260612-CreateMetricsTable';
+import { SetupHypertable1732050948683 } from './migration/1732050948683-SetupHypertable';
+import { CreateMetricsPrimaryKeys1732278565823 } from './migration/1732278565823-CreateMetricsPrimaryKeys';
+import { AddContinuousAggregatesAndPolicies1732278565824 } from './migration/1732278565824-AddContinuousAggregatesAndPolicies';
 
 export const dataSource = new DataSource({
   type: 'postgres',
@@ -15,10 +25,15 @@ export const dataSource = new DataSource({
   synchronize: false,
   logging: true,
   migrationsTransactionMode: 'each',
-  entities: [
-    path.resolve(__dirname, `../../${rootFolder}/typeorm/entities/*.{ts,js}`)
-  ],
+  // Use direct imports for more reliable entity loading
+  entities: [Channel, Page, Metric],
+  // Use direct imports for migrations to avoid dynamic loading issues
   migrations: [
-    path.resolve(__dirname, `../../${rootFolder}/database/migration/*.{ts,js}`)
+    CreateChannelTable1732044214596,
+    CreatePageTable1732044214599,
+    CreateMetricsTable1732044260612,
+    SetupHypertable1732050948683,
+    CreateMetricsPrimaryKeys1732278565823,
+    AddContinuousAggregatesAndPolicies1732278565824,
   ]
 });

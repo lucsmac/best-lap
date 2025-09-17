@@ -53,7 +53,10 @@ chmod +x scripts/*.sh
 # 2. Iniciar serviços
 docker-compose up -d
 
-# 3. Verificar status
+# 3. Executar seed do banco (opcional)
+pnpm --filter=@best-lap/infra db:seed:prod
+
+# 4. Verificar status
 ./scripts/monitor.sh health
 ```
 
@@ -99,6 +102,9 @@ nano .env.production.local
 # Execute o deploy
 chmod +x scripts/*.sh
 ./scripts/deploy.sh
+
+# Executar seed do banco (opcional)
+pnpm --filter=@best-lap/infra db:seed:prod
 ```
 
 ### 4. Configuração de Proxy Reverso (Nginx)
@@ -190,6 +196,16 @@ docker-compose exec timescaledb pg_dump -U best_lap best_lap_db > backup.sql
 
 # Restore
 docker-compose exec -T timescaledb psql -U best_lap best_lap_db < backup.sql
+```
+
+### Comandos de Seed do Banco
+
+```bash
+# Seed para desenvolvimento (dados básicos)
+pnpm --filter=@best-lap/infra db:seed
+
+# Seed para produção (dados essenciais apenas)
+pnpm --filter=@best-lap/infra db:seed:prod
 ```
 
 ## 🔧 Troubleshooting

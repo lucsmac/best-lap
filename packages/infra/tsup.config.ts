@@ -9,5 +9,6 @@ export default defineConfig({
   sourcemap: true,
   dts: false,
   bundle: false,
+  target: 'node16',
   external: ['dotenv/config'],
 })
