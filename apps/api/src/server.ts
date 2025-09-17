@@ -46,10 +46,12 @@ async function startServer() {
   server.setValidatorCompiler(validatorCompiler);
   server.setSerializerCompiler(serializerCompiler);
 
+  // Register Swagger before Helmet to avoid CSP conflicts
   server.register(fastifySwagger, swaggerConfig);
   server.register(fastifySwaggerUi, {
     routePrefix: '/docs',
     staticCSP: false,
+    transformStaticCSP: false,
     transformSpecification: (swaggerObject: SwaggerObject, req) => {
       // Detect protocol using universal headers (works with any proxy/load balancer)
       const protocol = env.FORCE_HTTP_SWAGGER ? 'http' :
@@ -92,14 +94,16 @@ async function startServer() {
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        styleSrc: ["'self'", "'unsafe-inline'"],
-        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+        styleSrc: ["'self'", "'unsafe-inline'", "http:", "https:"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "http:", "https:"],
         imgSrc: ["'self'", "data:", "http:", "https:"],
         connectSrc: ["'self'", "http:", "https:"],
         fontSrc: ["'self'", "data:", "http:", "https:"],
         mediaSrc: ["'self'", "http:", "https:"]
       }
-    }
+    },
+    crossOriginOpenerPolicy: false,
+    originAgentCluster: false
   });
 
   server.register(appRoutes);
