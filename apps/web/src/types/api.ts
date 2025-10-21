@@ -1,0 +1,103 @@
+// Channel types
+export interface Channel {
+  id: string
+  name: string
+  domain: string
+  internal_link: string
+  theme: string
+  active: boolean
+  is_reference: boolean
+  created_at: string
+  updated_at: string
+  pages?: Page[]
+}
+
+export interface CreateChannelInput {
+  name: string
+  domain: string
+  internal_link: string
+  theme: string
+  active?: boolean
+  is_reference?: boolean
+}
+
+export interface UpdateChannelInput {
+  name?: string
+  domain?: string
+  internal_link?: string
+  theme?: string
+  active?: boolean
+  is_reference?: boolean
+}
+
+// Page types
+export interface Page {
+  id: string
+  name: string
+  path: string
+  channel_id: string
+  created_at: string
+  updated_at: string
+  channel?: Channel
+  metrics?: Metric[]
+}
+
+export interface CreatePageInput {
+  name: string
+  path: string
+}
+
+export interface UpdatePageInput {
+  name?: string
+  path?: string
+}
+
+// Metric types
+export interface Metric {
+  id: string
+  time: string
+  score: number
+  seo: number
+  response_time: number
+  fcp: number
+  si: number
+  lcp: number
+  tbt: number
+  cls: number
+  page_id: string
+  page?: Page
+}
+
+export interface AverageMetric {
+  time: string
+  avg_score: number
+  avg_seo: number
+  avg_response_time: number
+  avg_fcp: number
+  avg_si: number
+  avg_lcp: number
+  avg_tbt: number
+  avg_cls: number
+}
+
+export type Period = 'hourly' | 'daily' | 'weekly' | 'monthly'
+
+export type PerformanceMetricKey =
+  | 'score'
+  | 'seo'
+  | 'response_time'
+  | 'fcp'
+  | 'si'
+  | 'lcp'
+  | 'tbt'
+  | 'cls'
+
+// API Response types
+export interface ApiResponse<T> {
+  data: T
+}
+
+export interface ApiError {
+  message: string
+  statusCode: number
+}
