@@ -6,7 +6,7 @@ import { CreatePageUseCase, PageAlreadyExists } from "@best-lap/core";
 export async function createPage(request: FastifyRequest, reply: FastifyReply) {
   try {
     const { channel_id } = createPageRequestParamsSchema.parse(request.params);
-    const { path, name } = createPageBodySchema.parse(request.body)
+    const { path, name, provider_id } = createPageBodySchema.parse(request.body)
 
     const channelsRepository = new TypeormChannelsRepository()
     const channel = await channelsRepository.findById(channel_id)
@@ -18,7 +18,7 @@ export async function createPage(request: FastifyRequest, reply: FastifyReply) {
     const pagesRepository = new TypeormPagesRepository()
     const createPageUseCase = new CreatePageUseCase(pagesRepository)
 
-    await createPageUseCase.execute({ channel_id, path, name })
+    await createPageUseCase.execute({ channel_id, path, name, provider_id })
 
     return reply.code(201).send({ message: 'Page created successfully' });
   } catch (error) {

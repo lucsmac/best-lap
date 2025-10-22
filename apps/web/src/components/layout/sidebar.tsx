@@ -5,6 +5,7 @@ import {
   BarChart3,
   GitCompare,
   Layers,
+  Box,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -18,6 +19,11 @@ const navigation = [
     name: 'Canais',
     href: '/channels',
     icon: Radio,
+  },
+  {
+    name: 'Providers',
+    href: '/providers',
+    icon: Box,
   },
   {
     name: 'Métricas',

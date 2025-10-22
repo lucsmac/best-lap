@@ -30,26 +30,56 @@ export interface UpdateChannelInput {
   is_reference?: boolean
 }
 
+// Provider types
+export interface Provider {
+  id: string
+  name: string
+  website: string
+  slug: string
+  description?: string
+  created_at: string
+  updated_at: string
+  pages?: Page[]
+}
+
+export interface CreateProviderInput {
+  name: string
+  website: string
+  slug: string
+  description?: string
+}
+
+export interface UpdateProviderInput {
+  name?: string
+  website?: string
+  slug?: string
+  description?: string
+}
+
 // Page types
 export interface Page {
   id: string
   name: string
   path: string
   channel_id: string
+  provider_id?: string
   created_at: string
   updated_at: string
   channel?: Channel
+  provider?: Provider
   metrics?: Metric[]
 }
 
 export interface CreatePageInput {
   name: string
   path: string
+  provider_id?: string
 }
 
 export interface UpdatePageInput {
   name?: string
   path?: string
+  provider_id?: string
 }
 
 // Metric types

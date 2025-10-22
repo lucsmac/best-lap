@@ -5,12 +5,13 @@ interface CreatePageUseCaseRequest {
   channel_id: string;
   path: string;
   name: string;
+  provider_id?: string;
 }
 
 export class CreatePageUseCase {
   constructor(private pagesRepository: PageRepository) { }
 
-  async execute({ channel_id, name, path }: CreatePageUseCaseRequest) {
+  async execute({ channel_id, name, path, provider_id }: CreatePageUseCaseRequest) {
     const pageAlreadyExists = await this.pagesRepository.findByPathFromChannel({ channel_id, path });
 
     if (pageAlreadyExists) {
@@ -21,6 +22,7 @@ export class CreatePageUseCase {
       channel_id,
       path,
       name,
+      provider_id,
     })
 
     return createdChannel

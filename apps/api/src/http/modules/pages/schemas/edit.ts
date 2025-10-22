@@ -8,4 +8,5 @@ export const editPageRequestParamsSchema = z.object({
 export const editPageRequestBodySchema = z.object({
   name: z.string().optional(),
   path: z.string().optional(),
+  provider_id: z.uuid().optional(),
 });

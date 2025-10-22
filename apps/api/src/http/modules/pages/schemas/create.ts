@@ -7,4 +7,5 @@ export const createPageRequestParamsSchema = z.object({
 export const createPageBodySchema = z.object({
   name: z.string(),
   path: z.string(),
+  provider_id: z.uuid().optional(),
 })

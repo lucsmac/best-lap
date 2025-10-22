@@ -6,6 +6,7 @@ import { PagesPage } from '@/pages/pages'
 import { MetricsPage } from '@/pages/metrics'
 import { ComparePage } from '@/pages/compare'
 import { ThemesPage } from '@/pages/themes'
+import { ProvidersPage } from '@/pages/providers'
 
 // Root route
 const rootRoute = createRootRoute({
@@ -60,6 +61,13 @@ const themesRoute = createRoute({
   component: ThemesPage,
 })
 
+// Providers route
+const providersRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/providers',
+  component: ProvidersPage,
+})
+
 // Create route tree
 const routeTree = rootRoute.addChildren([
   indexRoute,
@@ -69,6 +77,7 @@ const routeTree = rootRoute.addChildren([
   metricsRoute,
   compareRoute,
   themesRoute,
+  providersRoute,
 ])
 
 // Create router

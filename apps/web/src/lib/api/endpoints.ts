@@ -3,6 +3,9 @@ import type {
   Channel,
   CreateChannelInput,
   UpdateChannelInput,
+  Provider,
+  CreateProviderInput,
+  UpdateProviderInput,
   Page,
   CreatePageInput,
   UpdatePageInput,
@@ -33,6 +36,22 @@ export const channelsApi = {
 
   disable: (channelId: string) =>
     api.patch<Channel>(`/channels/${channelId}/disable`),
+}
+
+// Provider endpoints
+export const providersApi = {
+  getAll: () =>
+    api.get<{ providers_count: number; providers: Provider[] }>('/providers'),
+
+  getById: (providerId: string) =>
+    api.get<{ provider: Provider }>(`/providers/${providerId}`),
+
+  create: (data: CreateProviderInput) => api.post<Provider>('/providers', data),
+
+  update: (providerId: string, data: UpdateProviderInput) =>
+    api.patch<Provider>(`/providers/${providerId}`, data),
+
+  delete: (providerId: string) => api.delete(`/providers/${providerId}`),
 }
 
 // Page endpoints
