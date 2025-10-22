@@ -22,7 +22,9 @@ export class TypeormChannelsRepository implements ChannelsRepository {
   }
 
   async listAll(): Promise<ChannelEntity[]> {
-    return await channelRepository.find()
+    return await channelRepository.find({
+      relations: ['pages']
+    })
   }
 
   async listAllReferences(): Promise<ChannelEntity[]> {
@@ -80,7 +82,8 @@ export class TypeormChannelsRepository implements ChannelsRepository {
     const channel = await channelRepository.findOne({
       where: {
         id
-      }
+      },
+      relations: ['pages']
     })
 
     return channel
