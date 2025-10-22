@@ -13,9 +13,11 @@ import type {
 
 // Channel endpoints
 export const channelsApi = {
-  getAll: () => api.get<Channel[]>('/channels'),
+  getAll: () =>
+    api.get<{ channels_count: number; channels: Channel[] }>('/channels'),
 
-  getById: (channelId: string) => api.get<Channel>(`/channels/${channelId}`),
+  getById: (channelId: string) =>
+    api.get<{ channel: Channel }>(`/channels/${channelId}`),
 
   getByTheme: (theme: string) => api.get<Channel[]>(`/channels/theme/${theme}`),
 
@@ -36,29 +38,35 @@ export const channelsApi = {
 // Page endpoints
 export const pagesApi = {
   getByChannel: (channelId: string) =>
-    api.get<Page[]>(`/${channelId}/pages`),
+    api.get<{ pages: Page[] }>(`/channels/${channelId}/pages`),
 
   create: (channelId: string, data: CreatePageInput) =>
-    api.post<Page>(`/${channelId}/pages`, data),
+    api.post<Page>(`/channels/${channelId}/pages`, data),
 
   update: (channelId: string, pageId: string, data: UpdatePageInput) =>
-    api.patch<Page>(`/${channelId}/pages/${pageId}`, data),
+    api.patch<Page>(`/channels/${channelId}/pages/${pageId}`, data),
 
   delete: (channelId: string, pageId: string) =>
-    api.delete(`/${channelId}/pages/${pageId}`),
+    api.delete(`/channels/${channelId}/pages/${pageId}`),
 }
 
 // Metrics endpoints
 export const metricsApi = {
   getRawMetrics: (channelId: string) =>
-    api.get<Metric[]>(`/metrics/${channelId}`),
+    api.get<{ metrics: Metric[] }>(`/channels/metrics/${channelId}`),
 
   getChannelAverage: (channelId: string, period: Period) =>
-    api.get<AverageMetric[]>(`/metrics/${channelId}/average/${period}`),
+    api.get<{ metrics: AverageMetric[] }>(
+      `/channels/metrics/${channelId}/average/${period}`
+    ),
 
   getAllAverage: (period: Period) =>
-    api.get<AverageMetric[]>(`/metrics/average/${period}`),
+    api.get<{ metrics: AverageMetric[] }>(
+      `/channels/metrics/average/${period}`
+    ),
 
   getThemeAverage: (theme: string, period: Period) =>
-    api.get<AverageMetric[]>(`/metrics/theme/${theme}/average/${period}`),
+    api.get<{ metrics: AverageMetric[] }>(
+      `/channels/metrics/theme/${theme}/average/${period}`
+    ),
 }

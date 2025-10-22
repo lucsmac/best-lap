@@ -9,7 +9,7 @@ export function useChannels() {
     queryKey: [CHANNELS_QUERY_KEY],
     queryFn: async () => {
       const { data } = await channelsApi.getAll()
-      return data
+      return data.channels || []
     },
   })
 }
@@ -20,7 +20,7 @@ export function useChannel(channelId: string | undefined) {
     queryFn: async () => {
       if (!channelId) throw new Error('Channel ID is required')
       const { data } = await channelsApi.getById(channelId)
-      return data
+      return data.channel
     },
     enabled: !!channelId,
   })

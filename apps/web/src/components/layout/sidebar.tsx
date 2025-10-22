@@ -2,7 +2,6 @@ import { Link, useLocation } from '@tanstack/react-router'
 import {
   LayoutDashboard,
   Radio,
-  FileText,
   BarChart3,
   GitCompare,
   Layers,
@@ -19,11 +18,6 @@ const navigation = [
     name: 'Canais',
     href: '/channels',
     icon: Radio,
-  },
-  {
-    name: 'Páginas',
-    href: '/pages',
-    icon: FileText,
   },
   {
     name: 'Métricas',

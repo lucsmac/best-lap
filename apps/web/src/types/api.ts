@@ -69,10 +69,10 @@ export interface Metric {
 }
 
 export interface AverageMetric {
-  time: string
+  period_start: string
   avg_score: number
   avg_seo: number
-  avg_response_time: number
+  avg_response_time: number | string
   avg_fcp: number
   avg_si: number
   avg_lcp: number

@@ -10,7 +10,7 @@ export function usePages(channelId: string | undefined) {
     queryFn: async () => {
       if (!channelId) throw new Error('Channel ID is required')
       const { data } = await pagesApi.getByChannel(channelId)
-      return data
+      return data.pages || []
     },
     enabled: !!channelId,
   })

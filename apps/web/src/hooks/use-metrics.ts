@@ -10,7 +10,7 @@ export function useRawMetrics(channelId: string | undefined) {
     queryFn: async () => {
       if (!channelId) throw new Error('Channel ID is required')
       const { data } = await metricsApi.getRawMetrics(channelId)
-      return data
+      return data.metrics || []
     },
     enabled: !!channelId,
   })
@@ -25,7 +25,7 @@ export function useChannelMetrics(
     queryFn: async () => {
       if (!channelId) throw new Error('Channel ID is required')
       const { data } = await metricsApi.getChannelAverage(channelId, period)
-      return data
+      return data.metrics || []
     },
     enabled: !!channelId,
   })
@@ -36,7 +36,7 @@ export function useAllMetrics(period: Period) {
     queryKey: [METRICS_QUERY_KEY, 'all', period],
     queryFn: async () => {
       const { data } = await metricsApi.getAllAverage(period)
-      return data
+      return data.metrics || []
     },
   })
 }
@@ -47,7 +47,7 @@ export function useThemeMetrics(theme: string | undefined, period: Period) {
     queryFn: async () => {
       if (!theme) throw new Error('Theme is required')
       const { data } = await metricsApi.getThemeAverage(theme, period)
-      return data
+      return data.metrics || []
     },
     enabled: !!theme,
   })

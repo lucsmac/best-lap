@@ -21,11 +21,15 @@ export function PerformanceChart({
   data,
   title = 'Performance Score ao longo do tempo',
 }: PerformanceChartProps) {
-  const chartData = data.map((item) => ({
-    time: format(new Date(item.time), 'dd/MM HH:mm'),
-    score: item.avg_score,
-    seo: item.avg_seo,
-  }))
+  const chartData = data.map((item) => {
+    const date = new Date(item.period_start)
+    const isValidDate = item.period_start && !isNaN(date.getTime())
+    return {
+      time: isValidDate ? format(date, 'dd/MM HH:mm') : '-',
+      score: item.avg_score,
+      seo: item.avg_seo,
+    }
+  })
 
   return (
     <Card>
