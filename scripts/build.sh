@@ -27,6 +27,10 @@ docker build -t best-lap-admin:latest -f apps/admin/Dockerfile .
 echo "Building Metrics Collector application..."
 docker build -t best-lap-metrics-collector:latest -f apps/metrics-collector/Dockerfile .
 
+echo "Building Web Dashboard application..."
+docker build -t best-lap-web:latest -f apps/web/Dockerfile \
+  --build-arg VITE_API_URL="${VITE_API_URL}" .
+
 echo "✅ All Docker images built successfully!"
 
 # Show built images

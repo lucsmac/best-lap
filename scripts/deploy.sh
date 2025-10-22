@@ -86,7 +86,7 @@ print_status "🗃️  Running database setup..."
 
 # Start application services
 print_status "🚀 Starting application services..."
-docker-compose up -d api admin metrics-collector
+docker-compose up -d api admin web metrics-collector
 
 # Wait a bit for services to start
 sleep 10
@@ -108,6 +108,13 @@ else
     print_warning "Admin panel health check failed - check logs with: docker-compose logs admin"
 fi
 
+# Check Web Dashboard health
+if curl -f http://localhost:5173/health > /dev/null 2>&1; then
+    print_success "Web Dashboard is healthy"
+else
+    print_warning "Web Dashboard health check failed - check logs with: docker-compose logs web"
+fi
+
 # Show running containers
 print_status "📋 Running containers:"
 docker-compose ps
@@ -118,6 +125,7 @@ print_status "🌐 Access your applications:"
 print_status "  • API: http://localhost:3333"
 print_status "  • API Docs: http://localhost:3333/docs"
 print_status "  • Admin Panel: http://localhost:4000"
+print_status "  • Web Dashboard: http://localhost:5173"
 print_status ""
 print_status "📊 Useful commands:"
 print_status "  • View logs: docker-compose logs -f [service-name]"
