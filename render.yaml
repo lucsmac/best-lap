@@ -8,7 +8,7 @@ services:
     name: best-lap-dashboard
     runtime: static
     env: static
-    buildCommand: cd apps/web && pnpm install && pnpm build
+    buildCommand: bash apps/web/render-build.sh
     staticPublishPath: apps/web/dist
 
     # Custom headers for security and caching

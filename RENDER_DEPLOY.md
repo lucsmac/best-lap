@@ -82,8 +82,8 @@ Preencha os campos:
 |-------|-------|
 | **Name** | `best-lap-dashboard` |
 | **Branch** | `main` |
-| **Root Directory** | `apps/web` |
-| **Build Command** | `pnpm install && pnpm build` |
+| **Root Directory** | (deixe VAZIO) |
+| **Build Command** | `bash apps/web/render-build.sh` |
 | **Publish Directory** | `apps/web/dist` |
 
 ### Passo 3: Variáveis de Ambiente
@@ -212,13 +212,34 @@ Se quiser desabilitar auto-deploy:
 
 **Solução**: Certifique-se de que `PNPM_VERSION=8.14.0` está nas variáveis de ambiente.
 
+### Build Falha - "Cannot find type definition file for 'vite/client'" ⭐ COMUM
+
+**Erro completo**:
+```
+error TS2688: Cannot find type definition file for 'vite/client'.
+```
+
+**Causa**: Build não está instalando devDependencies do monorepo
+
+**Solução**:
+1. Vá em **Settings**
+2. Mude **Root Directory** para VAZIO (deixe em branco)
+3. Mude **Build Command** para:
+   ```bash
+   bash apps/web/render-build.sh
+   ```
+4. **Save Changes**
+
+**OU** use este comando alternativo:
+```bash
+pnpm install --frozen-lockfile && pnpm build --filter=@best-lap/web
+```
+
 ### Build Falha - "Cannot find module"
 
-**Solução**: Pode ser problema com dependências do monorepo. Tente:
-1. Alterar o Build Command para:
-   ```bash
-   cd ../.. && pnpm install && cd apps/web && pnpm build
-   ```
+**Solução**: Certifique-se de que está instalando do root do monorepo:
+1. **Root Directory**: VAZIO
+2. **Build Command**: `bash apps/web/render-build.sh`
 
 ### Frontend não conecta com a API
 
