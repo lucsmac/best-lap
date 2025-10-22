@@ -1,0 +1,52 @@
+# Render Blueprint for Best Lap Web Dashboard
+# This file defines the infrastructure for deploying the frontend to Render
+# Documentation: https://render.com/docs/blueprint-spec
+
+services:
+  # Web Dashboard - Static Site
+  - type: web
+    name: best-lap-dashboard
+    runtime: static
+    env: static
+    buildCommand: cd apps/web && pnpm install && pnpm build
+    staticPublishPath: apps/web/dist
+
+    # Custom headers for security and caching
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: SAMEORIGIN
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: X-XSS-Protection
+        value: 1; mode=block
+
+    # Routes configuration for SPA
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
+    # Environment variables
+    envVars:
+      # API URL - MUST be configured in Render dashboard
+      # Example: http://ec2-xx-xxx-xxx-xxx.compute.amazonaws.com:3333
+      - key: VITE_API_URL
+        sync: false
+        # This will need to be set manually in Render dashboard or via Render.com UI
+
+      # Node and pnpm versions
+      - key: NODE_VERSION
+        value: "18"
+
+      - key: PNPM_VERSION
+        value: "8.14.0"
+
+      # Build optimizations
+      - key: NODE_ENV
+        value: production
+
+# Auto-deploy configuration
+# By default, Render will auto-deploy on every push to the main branch

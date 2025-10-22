@@ -2,8 +2,25 @@
 
 # Deploy script for Best Lap applications
 # This script handles production deployment with Docker Compose
+#
+# Usage:
+#   ./scripts/deploy.sh              # Deploy backend only (default)
+#   ./scripts/deploy.sh --with-web   # Deploy backend + web dashboard
 
 set -e
+
+# Parse arguments
+DEPLOY_WEB=false
+for arg in "$@"; do
+    case $arg in
+        --with-web)
+            DEPLOY_WEB=true
+            shift
+            ;;
+        *)
+            ;;
+    esac
+done
 
 # Colors for output
 RED='\033[0;31m'
@@ -86,7 +103,13 @@ print_status "🗃️  Running database setup..."
 
 # Start application services
 print_status "🚀 Starting application services..."
-docker-compose up -d api admin web metrics-collector
+if [ "$DEPLOY_WEB" = true ]; then
+    print_status "Deploying backend + web dashboard..."
+    docker-compose up -d api admin web metrics-collector
+else
+    print_status "Deploying backend only (web dashboard excluded)..."
+    docker-compose up -d api admin metrics-collector
+fi
 
 # Wait a bit for services to start
 sleep 10
@@ -108,11 +131,13 @@ else
     print_warning "Admin panel health check failed - check logs with: docker-compose logs admin"
 fi
 
-# Check Web Dashboard health
-if curl -f http://localhost:5173/health > /dev/null 2>&1; then
-    print_success "Web Dashboard is healthy"
-else
-    print_warning "Web Dashboard health check failed - check logs with: docker-compose logs web"
+# Check Web Dashboard health (only if deployed)
+if [ "$DEPLOY_WEB" = true ]; then
+    if curl -f http://localhost:5173/health > /dev/null 2>&1; then
+        print_success "Web Dashboard is healthy"
+    else
+        print_warning "Web Dashboard health check failed - check logs with: docker-compose logs web"
+    fi
 fi
 
 # Show running containers
@@ -125,7 +150,9 @@ print_status "🌐 Access your applications:"
 print_status "  • API: http://localhost:3333"
 print_status "  • API Docs: http://localhost:3333/docs"
 print_status "  • Admin Panel: http://localhost:4000"
-print_status "  • Web Dashboard: http://localhost:5173"
+if [ "$DEPLOY_WEB" = true ]; then
+    print_status "  • Web Dashboard: http://localhost:5173"
+fi
 print_status ""
 print_status "📊 Useful commands:"
 print_status "  • View logs: docker-compose logs -f [service-name]"
