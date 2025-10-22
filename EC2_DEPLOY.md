@@ -1,5 +1,12 @@
 # Guia de Deploy no EC2
 
+> **⚠️ Usando t2.micro (1GB RAM)?** Leia primeiro: [T2_MICRO_GUIDE.md](./T2_MICRO_GUIDE.md)
+>
+> t2.micro tem apenas 1GB RAM. Builds podem levar 30+ minutos ou travar.
+> **Recomendação**: Faça build localmente e transfira as imagens (5-10 min total)
+
+---
+
 ## 🧹 Limpeza de Memória (Executar ANTES do Deploy)
 
 ### Limpar Docker (Libera muito espaço!)
@@ -37,6 +44,14 @@ docker system df
 
 O frontend será hospedado no Render, então no EC2 você só precisa do backend.
 
+### Escolha o Script de Deploy
+
+| Script | Quando Usar | Velocidade |
+|--------|-------------|------------|
+| `./scripts/deploy-light.sh` | **t2.micro ou quando imagens já existem** | ⚡ Rápido (2-3 min) |
+| `./scripts/deploy.sh` | Instâncias grandes (t3.medium+) com rebuild | 🐌 Lento (15-30 min) |
+| `./scripts/restart.sh` | Apenas reiniciar containers (código mudou) | ⚡⚡ Muito rápido (30s) |
+
 ### 1. Preparar o ambiente
 
 ```bash
@@ -62,7 +77,10 @@ docker-compose build api admin metrics-collector
 ### 3. Deploy dos Serviços (SEM web)
 
 ```bash
-# Deploy APENAS do backend
+# Deploy LEVE (recomendado para t2.micro)
+./scripts/deploy-light.sh
+
+# OU deploy completo com rebuild (t3.medium+)
 ./scripts/deploy.sh
 
 # OU manualmente
@@ -70,6 +88,9 @@ docker-compose down
 docker-compose up -d timescaledb redis
 sleep 10
 docker-compose up -d api admin metrics-collector
+
+# OU apenas restart (se só mudou código)
+./scripts/restart.sh
 ```
 
 ### 4. Verificar Status
