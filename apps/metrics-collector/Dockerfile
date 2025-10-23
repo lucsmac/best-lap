@@ -1,9 +1,8 @@
 # Dockerfile for Metrics Collector application
-# Single-stage build with Chromium for Lighthouse
+# Multi-stage build optimized for EC2 instances
 
-FROM node:18-alpine
-
-# Install Chromium for Lighthouse
+# Stage 1: Base with Chromium
+FROM node:18-alpine AS base
 RUN apk add --no-cache \
     chromium \
     nss \
@@ -13,25 +12,17 @@ RUN apk add --no-cache \
     ca-certificates \
     ttf-freefont
 
-# Tell Puppeteer to skip installing Chromium since it's already available
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
-# Install pnpm
+# Stage 2: Dependencies
+FROM base AS deps
 RUN npm install -g pnpm@8.14.0
-
-# Create app user for security
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
-
-# Set working directory
 WORKDIR /app
 
-# Copy workspace configuration files first for better layer caching
+# Copy only lock files and package.json files
 COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
 COPY turbo.json ./
-
-# Copy all package.json files for dependency resolution
 COPY packages/core/package.json ./packages/core/
 COPY packages/env/package.json ./packages/env/
 COPY packages/infra/package.json ./packages/infra/
@@ -40,29 +31,63 @@ COPY config/prettier/package.json ./config/prettier/
 COPY config/typescript-config/package.json ./config/typescript-config/
 COPY apps/metrics-collector/package.json ./apps/metrics-collector/
 
-# Install all dependencies (including dev dependencies for build)
+# Install dependencies - layer will be cached unless lockfile changes
 RUN pnpm install --frozen-lockfile
 
-# Copy all source code
+# Stage 3: Builder
+FROM base AS builder
+RUN npm install -g pnpm@8.14.0
+WORKDIR /app
+
+# Copy dependencies from deps stage
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/package.json ./package.json
+COPY --from=deps /app/pnpm-workspace.yaml ./pnpm-workspace.yaml
+COPY --from=deps /app/pnpm-lock.yaml ./pnpm-lock.yaml
+COPY --from=deps /app/turbo.json ./turbo.json
+
+# Copy source code
 COPY packages/ ./packages/
 COPY config/ ./config/
 COPY apps/metrics-collector/ ./apps/metrics-collector/
 
-# Build the metrics-collector application and its dependencies
+# Build only the metrics-collector and required dependencies
 RUN pnpm build --filter=@best-lap/metrics-collector
 
-# Remove dev dependencies to reduce image size
+# Stage 4: Production runtime
+FROM base AS runner
+RUN npm install -g pnpm@8.14.0
+
+# Create app user for security
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 appuser
+
+WORKDIR /app
+
+# Copy package files for production install
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
+COPY turbo.json ./
+COPY packages/core/package.json ./packages/core/
+COPY packages/env/package.json ./packages/env/
+COPY packages/infra/package.json ./packages/infra/
+COPY apps/metrics-collector/package.json ./apps/metrics-collector/
+
+# Install only production dependencies
 RUN pnpm install --prod --frozen-lockfile
 
-# Change ownership of the app directory to nextjs user
-RUN chown -R nextjs:nodejs /app
+# Copy built artifacts from builder
+COPY --from=builder /app/packages/core/dist ./packages/core/dist
+COPY --from=builder /app/packages/env/dist ./packages/env/dist
+COPY --from=builder /app/packages/infra/dist ./packages/infra/dist
+COPY --from=builder /app/apps/metrics-collector/dist ./apps/metrics-collector/dist
 
-# Switch to non-root user
-USER nextjs
+# Change ownership
+RUN chown -R appuser:nodejs /app
 
-# Health check (basic process check since this is a background service)
+USER appuser
+
+# Optimized health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
   CMD pgrep -f "node.*apps/metrics-collector/dist/index.js" || exit 1
 
-# Start the application
 CMD ["node", "apps/metrics-collector/dist/index.js"]

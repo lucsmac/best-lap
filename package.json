@@ -9,10 +9,15 @@
     "check-types": "turbo run check-types",
     "docker:build": "./scripts/build.sh",
     "docker:deploy": "./scripts/deploy.sh",
+    "docker:deploy:ec2": "./scripts/deploy-ec2.sh",
+    "docker:deploy:ec2:rebuild": "./scripts/deploy-ec2.sh --rebuild",
     "docker:monitor": "./scripts/monitor.sh",
     "infra:up": "docker-compose up -d timescaledb redis",
     "infra:down": "docker-compose down",
-    "infra:logs": "docker-compose logs -f timescaledb redis"
+    "infra:logs": "docker-compose logs -f timescaledb redis",
+    "ec2:logs": "docker-compose -f docker-compose.ec2.yml logs -f",
+    "ec2:ps": "docker-compose -f docker-compose.ec2.yml ps",
+    "ec2:down": "docker-compose -f docker-compose.ec2.yml down"
   },
   "devDependencies": {
     "turbo": "^2.5.4"

@@ -1,0 +1,71 @@
+# Node
+node_modules
+npm-debug.log
+yarn-error.log
+.pnpm-debug.log
+
+# Next.js / Build outputs
+.next
+out
+dist
+build
+*.tsbuildinfo
+
+# Testing
+coverage
+.nyc_output
+
+# Misc
+.DS_Store
+*.pem
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Git
+.git
+.gitignore
+.github
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# CI/CD
+.gitlab-ci.yml
+.travis.yml
+
+# Documentation
+*.md
+!package.json
+docs
+
+# Logs
+logs
+*.log
+
+# Docker
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# Scripts (we copy them manually if needed)
+scripts
+
+# Web app (deployed separately on Render)
+apps/web
+
+# Development files
+.prettierrc
+.prettierignore
+.eslintrc.js
+.eslintignore
+
+# Temporary files
+tmp
+temp
+*.tmp
