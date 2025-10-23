@@ -50,14 +50,8 @@ echo "📦 Installing dependencies from monorepo root..."
 cd "$MONOREPO_ROOT"
 pnpm install --frozen-lockfile
 
-# Verify turbo is available
-echo "🔍 Verifying turbo installation..."
-if ! pnpm exec turbo --version &> /dev/null; then
-    echo "⚠️  Turbo not found, installing explicitly..."
-    pnpm add -D turbo@2.5.5
-fi
-
 # Build the web app using pnpm exec to ensure turbo is in PATH
+# pnpm exec ensures that locally installed binaries are available
 echo "🔨 Building web application..."
 pnpm exec turbo run build --filter=@best-lap/web
 
