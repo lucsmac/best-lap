@@ -1,4 +1,5 @@
 import { PageEntity } from "../page";
+import { ProviderEntity } from "../provider";
 
 export interface ChannelEntity {
   id?: string;
@@ -8,6 +9,8 @@ export interface ChannelEntity {
   theme: string;
   active: boolean;
   is_reference?: boolean;
+  provider_id?: string;
+  provider?: ProviderEntity;
   pages?: PageEntity[];
   created_at?: Date;
   updated_at?: Date;

@@ -10,4 +10,5 @@ export const editChannelRequestBodySchema = z.object({
   is_reference: z.boolean().optional(),
   name: z.string().optional(),
   theme: z.string().optional(),
+  provider_id: z.string().uuid().optional().nullable(),
 })

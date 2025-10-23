@@ -1,6 +1,7 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
 import { ProviderEntity } from '@best-lap/core'
 import { Page } from './page-entity';
+import { Channel } from './channel-entity';
 
 @Entity('providers')
 export class Provider implements ProviderEntity {
@@ -24,6 +25,9 @@ export class Provider implements ProviderEntity {
 
   @UpdateDateColumn()
   updated_at!: Date;
+
+  @OneToMany(() => Channel, (channel) => channel.provider)
+  channels!: Channel[];
 
   @OneToMany(() => Page, (page) => page.provider)
   pages!: Page[];

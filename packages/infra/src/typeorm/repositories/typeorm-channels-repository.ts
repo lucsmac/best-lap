@@ -23,7 +23,7 @@ export class TypeormChannelsRepository implements ChannelsRepository {
 
   async listAll(): Promise<ChannelEntity[]> {
     return await channelRepository.find({
-      relations: ['pages']
+      relations: ['pages', 'provider']
     })
   }
 
@@ -52,7 +52,7 @@ export class TypeormChannelsRepository implements ChannelsRepository {
       where: {
         active: true,
       },
-      relations: ['pages']
+      relations: ['pages', 'provider']
     })
 
     return activeChannels
@@ -83,7 +83,7 @@ export class TypeormChannelsRepository implements ChannelsRepository {
       where: {
         id
       },
-      relations: ['pages']
+      relations: ['pages', 'provider']
     })
 
     return channel

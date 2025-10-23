@@ -5,6 +5,11 @@ import { pagesRoutes } from "./modules/pages/routes"
 import { providersRoutes } from "./modules/providers/routes"
 
 export async function appRoutes(server: FastifyInstance) {
+  // Health check endpoint
+  server.get('/health', async () => {
+    return { status: 'ok', timestamp: new Date().toISOString() }
+  })
+
   server.register(channelsRoutes, {
     prefix: 'channels',
   })

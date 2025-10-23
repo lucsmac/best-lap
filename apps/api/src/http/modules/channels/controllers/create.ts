@@ -10,13 +10,14 @@ export async function createChannel(request: FastifyRequest, reply: FastifyReply
       internal_link,
       is_reference,
       name,
-      theme
+      theme,
+      provider_id
     } = createChannelBodySchema.parse(request.body)
 
     const channelsRepository = new TypeormChannelsRepository()
     const createChannelUseCase = new CreateChannelUseCase(channelsRepository)
 
-    await createChannelUseCase.execute({ domain, internal_link, is_reference, name, theme, active: false })
+    await createChannelUseCase.execute({ domain, internal_link, is_reference, name, theme, provider_id, active: false })
 
     return reply.code(201).send({ message: 'Channel created successfully.' })
   } catch (error) {

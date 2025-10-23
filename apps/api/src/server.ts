@@ -42,7 +42,12 @@ async function startServer() {
     }
   });
 
-  server.register(import('@fastify/cors'));
+  server.register(import('@fastify/cors'), {
+    origin: env.CORS_ORIGIN || '*',
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+  });
 
   server.register(appRoutes);
 

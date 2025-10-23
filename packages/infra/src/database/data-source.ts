@@ -17,6 +17,7 @@ import { CreateMetricsPrimaryKeys1732278565823 } from './migration/1732278565823
 import { AddContinuousAggregatesAndPolicies1732278565824 } from './migration/1732278565824-AddContinuousAggregatesAndPolicies';
 import { CreateProviderTable1737562800000 } from './migration/1737562800000-CreateProviderTable';
 import { AddProviderIdToPages1737562800001 } from './migration/1737562800001-AddProviderIdToPages';
+import { AddProviderIdToChannels1737562800002 } from './migration/1737562800002-AddProviderIdToChannels';
 
 export const dataSource = new DataSource({
   type: 'postgres',
@@ -40,5 +41,6 @@ export const dataSource = new DataSource({
     AddContinuousAggregatesAndPolicies1732278565824,
     CreateProviderTable1737562800000,
     AddProviderIdToPages1737562800001,
+    AddProviderIdToChannels1737562800002,
   ]
 });

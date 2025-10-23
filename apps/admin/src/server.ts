@@ -14,6 +14,11 @@ async function startAdminServer() {
 
   await setupQueues(connection, serverAdapter);
 
+  // Health check endpoint
+  fastify.get('/health', async () => {
+    return { status: 'ok', timestamp: new Date().toISOString() }
+  });
+
   await fastify.register(serverAdapter.registerPlugin(), {
     prefix: '/',
   });

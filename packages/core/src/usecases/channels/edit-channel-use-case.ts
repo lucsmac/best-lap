@@ -8,6 +8,7 @@ interface DataToUpdateChannel {
   active?: boolean;
   name?: string;
   theme?: string;
+  provider_id?: string | null;
 }
 
 export class EditChannelUseCase {
@@ -24,6 +25,12 @@ export class EditChannelUseCase {
       throw new NoDataProvided();
     }
 
-    await this.channelsRepository.update(channel_id, dataToUpdate)
+    // Convert null to undefined for provider_id
+    const sanitizedData = {
+      ...dataToUpdate,
+      provider_id: dataToUpdate.provider_id === null ? undefined : dataToUpdate.provider_id,
+    }
+
+    await this.channelsRepository.update(channel_id, sanitizedData)
   }
 }

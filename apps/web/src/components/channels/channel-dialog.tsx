@@ -14,16 +14,43 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { useCreateChannel, useUpdateChannel } from '@/hooks/use-channels'
+import { useProviders } from '@/hooks/use-providers'
 import { useToast } from '@/hooks/use-toast'
 import type { Channel } from '@/types/api'
 
 const channelFormSchema = z.object({
   name: z.string().min(1, 'Nome é obrigatório'),
-  domain: z.string().url('Domínio deve ser uma URL válida'),
+  domain: z
+    .string()
+    .min(1, 'Domínio é obrigatório')
+    .refine(
+      (val) => {
+        // Aceita URLs completas ou domínios simples
+        if (val.startsWith('http://') || val.startsWith('https://')) {
+          try {
+            new URL(val)
+            return true
+          } catch {
+            return false
+          }
+        }
+        // Valida formato de domínio simples (ex: exemplo.com.br)
+        return /^[a-zA-Z0-9][a-zA-Z0-9-_.]+[a-zA-Z0-9]\.[a-zA-Z]{2,}$/.test(val)
+      },
+      { message: 'Domínio inválido. Use um domínio válido (ex: exemplo.com.br) ou URL completa' }
+    ),
   internal_link: z.string().min(1, 'Link interno é obrigatório'),
   theme: z.string().min(1, 'Tema é obrigatório'),
   is_reference: z.boolean().default(false),
+  provider_id: z.string().optional(),
 })
 
 type ChannelFormData = z.infer<typeof channelFormSchema>
@@ -42,6 +69,7 @@ export function ChannelDialog({
   const { toast } = useToast()
   const createChannel = useCreateChannel()
   const updateChannel = useUpdateChannel()
+  const { data: providers = [] } = useProviders()
 
   const isEditing = !!channel
 
@@ -53,6 +81,7 @@ export function ChannelDialog({
       internal_link: '',
       theme: '',
       is_reference: false,
+      provider_id: undefined,
     },
   })
 
@@ -65,6 +94,7 @@ export function ChannelDialog({
         internal_link: channel.internal_link,
         theme: channel.theme,
         is_reference: channel.is_reference,
+        provider_id: channel.provider_id,
       })
     } else if (open && !channel) {
       form.reset({
@@ -73,6 +103,7 @@ export function ChannelDialog({
         internal_link: '',
         theme: '',
         is_reference: false,
+        provider_id: undefined,
       })
     }
   }, [open, channel, form])
@@ -145,8 +176,7 @@ export function ChannelDialog({
             <Label htmlFor="domain">Domínio</Label>
             <Input
               id="domain"
-              type="url"
-              placeholder="https://exemplo.com"
+              placeholder="exemplo.com.br ou https://exemplo.com.br"
               {...form.register('domain')}
               disabled={isLoading}
             />
@@ -185,6 +215,29 @@ export function ChannelDialog({
                 {form.formState.errors.theme.message}
               </p>
             )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="provider_id">Provider (Opcional)</Label>
+            <Select
+              value={form.watch('provider_id') || 'none'}
+              onValueChange={(value) =>
+                form.setValue('provider_id', value === 'none' ? undefined : value)
+              }
+              disabled={isLoading}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione um provider" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">Nenhum</SelectItem>
+                {providers.map((provider) => (
+                  <SelectItem key={provider.id} value={provider.id}>
+                    {provider.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="flex items-center space-x-2">

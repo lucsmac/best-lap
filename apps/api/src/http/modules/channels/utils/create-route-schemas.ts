@@ -6,4 +6,5 @@ export const createChannelBodySchema = z.object({
   internal_link: z.string(),
   theme: z.string(),
   is_reference: z.boolean().optional(),
+  provider_id: z.string().uuid().optional(),
 })

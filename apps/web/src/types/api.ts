@@ -7,9 +7,11 @@ export interface Channel {
   theme: string
   active: boolean
   is_reference: boolean
+  provider_id?: string
   created_at: string
   updated_at: string
   pages?: Page[]
+  provider?: Provider
 }
 
 export interface CreateChannelInput {
@@ -19,6 +21,7 @@ export interface CreateChannelInput {
   theme: string
   active?: boolean
   is_reference?: boolean
+  provider_id?: string
 }
 
 export interface UpdateChannelInput {
@@ -28,6 +31,7 @@ export interface UpdateChannelInput {
   theme?: string
   active?: boolean
   is_reference?: boolean
+  provider_id?: string
 }
 
 // Provider types

@@ -192,6 +192,30 @@ export function ChannelInfoTab({ channel, onEdit }: ChannelInfoTabProps) {
 
               <div>
                 <p className="text-sm font-medium text-muted-foreground">
+                  Provider
+                </p>
+                {channel.provider ? (
+                  <div className="mt-1">
+                    <p className="font-medium">{channel.provider.name}</p>
+                    {channel.provider.website && (
+                      <a
+                        href={channel.provider.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1 text-sm text-primary hover:underline"
+                      >
+                        {channel.provider.website}
+                        <ExternalLink className="h-3 w-3" />
+                      </a>
+                    )}
+                  </div>
+                ) : (
+                  <p className="mt-1 text-muted-foreground">-</p>
+                )}
+              </div>
+
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">
                   Criado em
                 </p>
                 <p className="mt-1">

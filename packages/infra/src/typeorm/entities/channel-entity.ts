@@ -1,6 +1,7 @@
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
 import { ChannelEntity } from '@best-lap/core'
 import { Page } from './page-entity';
+import { Provider } from './provider-entity';
 
 @Entity('channels')
 export class Channel implements ChannelEntity {
@@ -30,6 +31,13 @@ export class Channel implements ChannelEntity {
 
   @UpdateDateColumn()
   updated_at!: Date;
+
+  @Column('uuid', { nullable: true })
+  provider_id?: string;
+
+  @ManyToOne(() => Provider, (provider) => provider.channels, { nullable: true })
+  @JoinColumn({ name: 'provider_id' })
+  provider?: Provider;
 
   @OneToMany(() => Page, (page) => page.channel)
   pages!: Page[];

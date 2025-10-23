@@ -107,7 +107,10 @@ chmod +x scripts/*.sh
 pnpm --filter=@best-lap/infra db:seed:prod
 ```
 
-### 4. Configuração de Proxy Reverso (Nginx)
+### 4. Configuração de Proxy Reverso (Opcional - Nginx)
+
+Se você deseja expor os serviços através de um proxy reverso:
+
 ```bash
 # Instalar Nginx
 sudo apt install nginx
@@ -116,7 +119,7 @@ sudo apt install nginx
 sudo nano /etc/nginx/sites-available/best-lap
 ```
 
-Conteúdo do arquivo de configuração:
+Exemplo de configuração:
 ```nginx
 server {
     listen 80;
@@ -135,7 +138,7 @@ server {
         proxy_cache_bypass $http_upgrade;
     }
 
-    # Admin Panel
+    # Admin Panel (proteja com autenticação básica ou firewall)
     location /admin/ {
         proxy_pass http://localhost:4000/;
         proxy_http_version 1.1;
@@ -153,6 +156,8 @@ sudo ln -s /etc/nginx/sites-available/best-lap /etc/nginx/sites-enabled/
 sudo nginx -t
 sudo systemctl reload nginx
 ```
+
+**Nota:** O web dashboard deve ser executado localmente ou em um serviço separado de hospedagem de frontend (Vercel, Netlify, etc).
 
 ## 📊 Monitoramento
 

@@ -13,7 +13,15 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { useCreateChannel, useUpdateChannel } from '@/hooks/use-channels'
+import { useProviders } from '@/hooks/use-providers'
 import type { Channel } from '@/types/api'
 import { useToast } from '@/hooks/use-toast'
 
@@ -24,6 +32,7 @@ const channelSchema = z.object({
   theme: z.string().min(1, 'Tema é obrigatório'),
   active: z.boolean().default(true),
   is_reference: z.boolean().default(false),
+  provider_id: z.string().optional(),
 })
 
 type ChannelFormData = z.infer<typeof channelSchema>
@@ -38,6 +47,7 @@ export function ChannelForm({ open, onOpenChange, channel }: ChannelFormProps) {
   const { toast } = useToast()
   const createChannel = useCreateChannel()
   const updateChannel = useUpdateChannel()
+  const { data: providers = [] } = useProviders()
 
   const {
     register,
@@ -55,6 +65,7 @@ export function ChannelForm({ open, onOpenChange, channel }: ChannelFormProps) {
       theme: '',
       active: true,
       is_reference: false,
+      provider_id: undefined,
     },
   })
 
@@ -86,6 +97,7 @@ export function ChannelForm({ open, onOpenChange, channel }: ChannelFormProps) {
 
   const activeValue = watch('active')
   const referenceValue = watch('is_reference')
+  const providerValue = watch('provider_id')
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -139,6 +151,26 @@ export function ChannelForm({ open, onOpenChange, channel }: ChannelFormProps) {
               {errors.theme && (
                 <p className="text-sm text-destructive">{errors.theme.message}</p>
               )}
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="provider_id">Provider (Opcional)</Label>
+              <Select
+                value={providerValue}
+                onValueChange={(value) => setValue('provider_id', value === 'none' ? undefined : value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione um provider" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">Nenhum</SelectItem>
+                  {providers.map((provider) => (
+                    <SelectItem key={provider.id} value={provider.id}>
+                      {provider.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="flex items-center justify-between">

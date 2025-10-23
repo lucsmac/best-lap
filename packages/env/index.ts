@@ -21,6 +21,9 @@ const envSchema = z.object({
   SEED_THEMES_URL: z.string().default('https://lucsmac.github.io/autodromo-domains/full_data.json'),
   WORKER_CONCURRENCY: z.coerce.number().default(10),
 
+  // CORS configuration
+  CORS_ORIGIN: z.string().default('*'),
+
   // Swagger configuration
   FORCE_HTTP_SWAGGER: z.coerce.boolean().default(false),
 })
@@ -46,6 +49,8 @@ function validateEnv() {
     COLLECT_METRICS_CRON_EXPRESSION: process.env.COLLECT_METRICS_CRON_EXPRESSION,
     SEED_THEMES_URL: process.env.SEED_THEMES_URL,
     WORKER_CONCURRENCY: process.env.WORKER_CONCURRENCY,
+
+    CORS_ORIGIN: process.env.CORS_ORIGIN,
 
     FORCE_HTTP_SWAGGER: process.env.FORCE_HTTP_SWAGGER,
   }

@@ -195,6 +195,22 @@ export function ChannelsTable({
       ),
     },
     {
+      accessorKey: 'provider',
+      header: 'Provider',
+      cell: ({ row }) => {
+        const provider = row.original.provider
+        return (
+          <div className="text-sm">
+            {provider ? (
+              <Badge variant="secondary">{provider.name}</Badge>
+            ) : (
+              <span className="text-muted-foreground">-</span>
+            )}
+          </div>
+        )
+      },
+    },
+    {
       accessorKey: 'active',
       header: 'Status',
       cell: ({ row }) => (

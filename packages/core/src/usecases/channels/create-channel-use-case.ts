@@ -7,13 +7,14 @@ interface CreateChannelUseCaseRequest {
   internal_link: string;
   theme: string;
   is_reference?: boolean;
+  provider_id?: string;
   active: boolean;
 }
 
 export class CreateChannelUseCase {
   constructor(private channelsRepository: ChannelsRepository) { }
 
-  async execute({ domain, internal_link, name, theme, is_reference, active }: CreateChannelUseCaseRequest) {
+  async execute({ domain, internal_link, name, theme, is_reference, provider_id, active }: CreateChannelUseCaseRequest) {
     const channelAlreadyExists = await this.channelsRepository.findByLink(internal_link)
 
     if (channelAlreadyExists) {
@@ -26,6 +27,7 @@ export class CreateChannelUseCase {
       name,
       theme,
       is_reference,
+      provider_id,
       active,
     })
 
