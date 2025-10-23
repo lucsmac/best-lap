@@ -50,10 +50,20 @@ echo "📦 Installing dependencies from monorepo root..."
 cd "$MONOREPO_ROOT"
 pnpm install --frozen-lockfile
 
-# Build the web app using pnpm exec to ensure turbo is in PATH
-# pnpm exec ensures that locally installed binaries are available
+# Debug: Check if turbo binary exists
+echo "🔍 Checking turbo installation..."
+if [ -f "node_modules/.bin/turbo" ]; then
+    echo "✅ Turbo binary found at node_modules/.bin/turbo"
+    ls -lh node_modules/.bin/turbo
+else
+    echo "❌ Turbo binary NOT found"
+    echo "Listing node_modules/.bin/:"
+    ls -la node_modules/.bin/ | head -20 || true
+fi
+
+# Build the web app using direct path to turbo binary
 echo "🔨 Building web application..."
-pnpm exec turbo run build --filter=@best-lap/web
+./node_modules/.bin/turbo run build --filter=@best-lap/web
 
 echo ""
 echo "✅ Build completed successfully!"
