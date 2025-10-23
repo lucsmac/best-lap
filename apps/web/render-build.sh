@@ -43,15 +43,35 @@ if ! command -v pnpm &> /dev/null; then
     npm install -g pnpm@8.14.0
 fi
 
+echo "✅ pnpm version: $(pnpm --version)"
+
 # Install dependencies from monorepo root
 echo "📦 Installing dependencies from monorepo root..."
 cd "$MONOREPO_ROOT"
 pnpm install --frozen-lockfile
 
-# Build the web app
+# Verify turbo is available
+echo "🔍 Verifying turbo installation..."
+if ! pnpm exec turbo --version &> /dev/null; then
+    echo "⚠️  Turbo not found, installing explicitly..."
+    pnpm add -D turbo@2.5.5
+fi
+
+# Build the web app using pnpm exec to ensure turbo is in PATH
 echo "🔨 Building web application..."
-pnpm build --filter=@best-lap/web
+pnpm exec turbo run build --filter=@best-lap/web
 
 echo ""
 echo "✅ Build completed successfully!"
 echo "📦 Output directory: apps/web/dist"
+
+# Verify build output exists
+if [ ! -d "apps/web/dist" ]; then
+    echo "❌ Error: Build output directory not found!"
+    echo "Expected: apps/web/dist"
+    ls -la apps/web/ || true
+    exit 1
+fi
+
+echo "📁 Build output contents:"
+ls -lh apps/web/dist/ || true
