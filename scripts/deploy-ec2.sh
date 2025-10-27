@@ -53,8 +53,10 @@ if [ ! -f .env.production ]; then
     exit 1
 fi
 
-# Load environment variables
-export $(grep -v '^#' .env.production | xargs)
+# Load environment variables (safer method)
+set -a
+source .env.production
+set +a
 
 print_status "🚀 Starting EC2 optimized deployment..."
 
