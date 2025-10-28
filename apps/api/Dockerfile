@@ -69,9 +69,13 @@ RUN pnpm install --prod --frozen-lockfile
 
 # Copy built artifacts from builder
 COPY --from=builder /app/packages/core/dist ./packages/core/dist
+COPY --from=builder /app/packages/core/package.json ./packages/core/package.json
 COPY --from=builder /app/packages/env/dist ./packages/env/dist
+COPY --from=builder /app/packages/env/package.json ./packages/env/package.json
 COPY --from=builder /app/packages/infra/dist ./packages/infra/dist
+COPY --from=builder /app/packages/infra/package.json ./packages/infra/package.json
 COPY --from=builder /app/apps/api/dist ./apps/api/dist
+COPY --from=builder /app/apps/api/package.json ./apps/api/package.json
 
 # Change ownership
 RUN chown -R appuser:nodejs /app
