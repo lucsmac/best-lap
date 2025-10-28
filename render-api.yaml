@@ -1,0 +1,39 @@
+# Render.com configuration for API
+# Deploy: Connect GitHub repo and point to this file
+
+services:
+  - type: web
+    name: best-lap-api
+    env: docker
+    dockerfilePath: ./apps/api/Dockerfile
+    dockerContext: .
+    region: oregon # ou "ohio" (mais próximo da us-east-1 do EC2)
+    plan: free # ou "starter" ($7/mês para sem sleep)
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: API_PORT
+        value: 3333
+      - key: DB_HOST
+        value: ec2-75-101-196-198.compute-1.amazonaws.com
+      - key: DB_PORT
+        value: 5432
+      - key: DB_USER
+        value: best_lap
+      - key: DB_PASSWORD
+        sync: false # Configure no dashboard do Render
+      - key: DB_NAME
+        value: best_lap_db
+      - key: REDIS_HOST
+        value: ec2-75-101-196-198.compute-1.amazonaws.com
+      - key: REDIS_PORT
+        value: 6379
+      - key: REDIS_PASSWORD
+        sync: false # Configure no dashboard do Render
+      - key: GOOGLE_API_KEY
+        sync: false # Configure no dashboard do Render
+      - key: CORS_ORIGIN
+        value: https://best-lap-dashboard.onrender.com # Atualizar depois
+      - key: FORCE_HTTP_SWAGGER
+        value: false
