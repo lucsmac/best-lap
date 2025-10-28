@@ -19,15 +19,10 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-    # Resource limits for EC2 t2.micro (1 vCPU total)
-    deploy:
-      resources:
-        limits:
-          cpus: '0.4'
-          memory: 512M
-        reservations:
-          cpus: '0.1'
-          memory: 256M
+    # Resource limits (using compose v3 format)
+    mem_limit: 512m
+    memswap_limit: 512m
+    cpus: 0.4
 
   redis:
     image: redis:7
@@ -44,15 +39,10 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-    # Resource limits for EC2 t2.micro (1 vCPU total)
-    deploy:
-      resources:
-        limits:
-          cpus: '0.2'
-          memory: 128M
-        reservations:
-          cpus: '0.05'
-          memory: 64M
+    # Resource limits (using compose v3 format)
+    mem_limit: 128m
+    memswap_limit: 128m
+    cpus: 0.2
 
   # Application Services
   api:
@@ -84,15 +74,10 @@ services:
     restart: unless-stopped
     networks:
       - best-lap-network
-    # Resource limits for EC2
-    deploy:
-      resources:
-        limits:
-          cpus: '1.0'
-          memory: 512M
-        reservations:
-          cpus: '0.25'
-          memory: 256M
+    # Resource limits (using compose v3 format)
+    mem_limit: 512m
+    memswap_limit: 512m
+    cpus: 1.0
 
   admin:
     build:
@@ -115,15 +100,10 @@ services:
     restart: unless-stopped
     networks:
       - best-lap-network
-    # Resource limits for EC2 t2.micro (1 vCPU total)
-    deploy:
-      resources:
-        limits:
-          cpus: '0.2'
-          memory: 256M
-        reservations:
-          cpus: '0.05'
-          memory: 128M
+    # Resource limits (using compose v3 format)
+    mem_limit: 256m
+    memswap_limit: 256m
+    cpus: 0.2
 
   metrics-collector:
     build:
@@ -157,15 +137,10 @@ services:
       - seccomp:unconfined
     cap_add:
       - SYS_ADMIN
-    # Resource limits for EC2 t2.micro (1 vCPU total)
-    deploy:
-      resources:
-        limits:
-          cpus: '0.4'
-          memory: 512M
-        reservations:
-          cpus: '0.1'
-          memory: 256M
+    # Resource limits (using compose v3 format)
+    mem_limit: 512m
+    memswap_limit: 512m
+    cpus: 0.4
 
 networks:
   best-lap-network:
