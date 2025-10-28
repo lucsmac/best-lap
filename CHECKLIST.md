@@ -13,19 +13,21 @@ cd best-lap
 git pull origin main
 ```
 
-### [ ] 1.2. Parar API e Admin
+### [ ] 1.2. Parar apenas a API (Admin fica no EC2)
 ```bash
-docker-compose -f docker-compose.ec2.yml stop api admin
-docker-compose -f docker-compose.ec2.yml rm -f api admin
+docker-compose -f docker-compose.ec2.yml stop api
+docker-compose -f docker-compose.ec2.yml rm -f api
 ```
 
-### [ ] 1.3. Subir só DB + Redis + Collector
+**Por quê?** Admin (Bull Board) precisa de acesso rápido ao Redis, então fica no EC2.
+
+### [ ] 1.3. Subir DB + Redis + Collector + Admin
 ```bash
-docker-compose -f docker-compose.ec2.yml up -d timescaledb redis metrics-collector
+docker-compose -f docker-compose.ec2.yml up -d timescaledb redis metrics-collector admin
 docker ps
 ```
 
-**Esperado:** Ver 3 containers rodando (timescaledb, redis, best-lap-metrics-collector)
+**Esperado:** Ver 4 containers rodando (timescaledb, redis, best-lap-metrics-collector, best-lap-admin)
 
 ### [ ] 1.4. Abrir portas no AWS Security Group
 
@@ -181,7 +183,12 @@ Abrir a URL no navegador
 ssh ec2-user@ec2-ip
 docker ps
 ```
-**Esperado:** 3 containers (DB, Redis, Collector)
+**Esperado:** 4 containers (DB, Redis, Collector, Admin)
+
+### [ ] Admin (Bull Board) acessível
+Abrir: `http://ec2-75-101-196-198.compute-1.amazonaws.com:4000`
+
+**Esperado:** Dashboard do Bull Board carrega
 
 ### [ ] API respondendo
 ```bash
@@ -208,7 +215,7 @@ F12 (DevTools) → Network → Verificar requisições para API
 ```
 ✅ Render → API (https://best-lap-api.onrender.com)
 ✅ Render → Dashboard (https://best-lap-dashboard.onrender.com)
-✅ EC2 → TimescaleDB + Redis + Metrics Collector
+✅ EC2 → TimescaleDB + Redis + Metrics Collector + Admin (Bull Board)
 ```
 
 ### Custo:
@@ -218,7 +225,7 @@ F12 (DevTools) → Network → Verificar requisições para API
 ### URLs:
 - **API:** https://best-lap-api.onrender.com/docs
 - **Dashboard:** https://best-lap-dashboard.onrender.com
-- **Admin (Bull Board):** _Pode adicionar depois no Render também_
+- **Admin (Bull Board):** http://ec2-75-101-196-198.compute-1.amazonaws.com:4000
 
 ---
 
