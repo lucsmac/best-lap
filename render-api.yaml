@@ -1,5 +1,8 @@
 # Render.com configuration for API
 # Deploy: Connect GitHub repo and point to this file
+#
+# SIMPLIFIED VERSION - No extra security (good for internal projects)
+# For production with security, see HYBRID_DEPLOY.md
 
 services:
   - type: web
@@ -15,25 +18,33 @@ services:
         value: production
       - key: API_PORT
         value: 3333
+
+      # Database (EC2)
       - key: DB_HOST
-        value: ec2-75-101-196-198.compute-1.amazonaws.com
+        value: ec2-75-101-196-198.compute-1.amazonaws.com # SUBSTITUA PELO SEU IP!
       - key: DB_PORT
         value: 5432
       - key: DB_USER
         value: best_lap
       - key: DB_PASSWORD
-        sync: false # Configure no dashboard do Render
+        value: best_lap
       - key: DB_NAME
         value: best_lap_db
+
+      # Redis (EC2)
       - key: REDIS_HOST
-        value: ec2-75-101-196-198.compute-1.amazonaws.com
+        value: ec2-75-101-196-198.compute-1.amazonaws.com # SUBSTITUA PELO SEU IP!
       - key: REDIS_PORT
         value: 6379
-      - key: REDIS_PASSWORD
-        sync: false # Configure no dashboard do Render
+
+      # External APIs
       - key: GOOGLE_API_KEY
-        sync: false # Configure no dashboard do Render
+        value: # Deixe vazio ou adicione sua chave
+
+      # CORS (atualizar depois com URL do dashboard)
       - key: CORS_ORIGIN
-        value: https://best-lap-dashboard.onrender.com # Atualizar depois
+        value: "*"
+
+      # Swagger
       - key: FORCE_HTTP_SWAGGER
         value: false
