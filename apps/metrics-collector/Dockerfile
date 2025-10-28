@@ -70,26 +70,31 @@ RUN addgroup --system --gid 1001 nodejs && \
 
 WORKDIR /app
 
-# Copy package files for production install
+# Copy package files
 COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
 COPY turbo.json ./
-COPY packages/core/package.json ./packages/core/
-COPY packages/env/package.json ./packages/env/
-COPY packages/infra/package.json ./packages/infra/
-COPY apps/metrics-collector/package.json ./apps/metrics-collector/
+
+# Copy package.json for workspace packages
+COPY --from=builder /app/packages/core/package.json ./packages/core/package.json
+COPY --from=builder /app/packages/env/package.json ./packages/env/package.json
+COPY --from=builder /app/packages/infra/package.json ./packages/infra/package.json
+COPY --from=builder /app/apps/metrics-collector/package.json ./apps/metrics-collector/package.json
 
 # Install only production dependencies
 RUN pnpm install --prod --frozen-lockfile
 
+# Copy node_modules from builder (including workspace links)
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/packages/core/node_modules ./packages/core/node_modules
+COPY --from=builder /app/packages/env/node_modules ./packages/env/node_modules
+COPY --from=builder /app/packages/infra/node_modules ./packages/infra/node_modules
+COPY --from=builder /app/apps/metrics-collector/node_modules ./apps/metrics-collector/node_modules
+
 # Copy built artifacts from builder
 COPY --from=builder /app/packages/core/dist ./packages/core/dist
-COPY --from=builder /app/packages/core/package.json ./packages/core/package.json
 COPY --from=builder /app/packages/env/dist ./packages/env/dist
-COPY --from=builder /app/packages/env/package.json ./packages/env/package.json
 COPY --from=builder /app/packages/infra/dist ./packages/infra/dist
-COPY --from=builder /app/packages/infra/package.json ./packages/infra/package.json
 COPY --from=builder /app/apps/metrics-collector/dist ./apps/metrics-collector/dist
-COPY --from=builder /app/apps/metrics-collector/package.json ./apps/metrics-collector/package.json
 
 # Change ownership
 RUN chown -R appuser:nodejs /app
