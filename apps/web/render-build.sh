@@ -48,7 +48,7 @@ echo "✅ pnpm version: $(pnpm --version)"
 # Install dependencies from monorepo root
 echo "📦 Installing dependencies from monorepo root..."
 cd "$MONOREPO_ROOT"
-pnpm install --frozen-lockfile
+pnpm install --frozen-lockfile --prod=false
 
 # Debug: Check if turbo binary exists
 echo "🔍 Checking turbo installation..."
@@ -61,9 +61,9 @@ else
     ls -la node_modules/.bin/ | head -20 || true
 fi
 
-# Build the web app using direct path to turbo binary
+# Build the web app using npx (handles missing binary gracefully)
 echo "🔨 Building web application..."
-./node_modules/.bin/turbo run build --filter=@best-lap/web
+npx turbo run build --filter=@best-lap/web
 
 echo ""
 echo "✅ Build completed successfully!"
