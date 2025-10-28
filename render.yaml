@@ -70,7 +70,6 @@ services:
     name: best-lap-dashboard
     runtime: static
     env: static
-    plan: free
 
     rootDir: .
     buildCommand: bash apps/web/render-build.sh
