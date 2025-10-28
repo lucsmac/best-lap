@@ -55,12 +55,9 @@ services:
       - key: GOOGLE_API_KEY
         sync: false  # Optional
 
-      # CORS - Will be auto-set to dashboard URL
+      # CORS - Set manually or use wildcard for testing
       - key: CORS_ORIGIN
-        fromService:
-          type: web
-          name: best-lap-dashboard
-          property: url
+        value: "*"  # Change to specific domain after dashboard deploy
 
       # Swagger
       - key: FORCE_HTTP_SWAGGER
@@ -73,7 +70,6 @@ services:
     name: best-lap-dashboard
     runtime: static
     env: static
-    region: ohio  # Same region as API
     plan: free
 
     rootDir: .
@@ -102,12 +98,9 @@ services:
         destination: /index.html
 
     envVars:
-      # API URL - Auto-references API service
+      # API URL - Set manually after API deploy
       - key: VITE_API_URL
-        fromService:
-          type: web
-          name: best-lap-api
-          property: url
+        sync: false  # Set to https://best-lap-api.onrender.com in Render UI
 
       - key: NODE_VERSION
         value: "20"
