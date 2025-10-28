@@ -9,33 +9,30 @@
 
 ## 🧹 Limpeza de Memória (Executar ANTES do Deploy)
 
-### Limpar Docker (Libera muito espaço!)
+### ⚠️ CRÍTICO: Se o build travar, execute isso PRIMEIRO
+
+```bash
+# Script de limpeza agressiva (recomendado)
+./scripts/free-memory.sh
+
+# OU com sudo para limpeza completa do sistema
+sudo ./scripts/free-memory.sh
+```
+
+### Limpar Docker Manualmente
 
 ```bash
 # 1. Parar containers em execução
-docker-compose down
+docker-compose -f docker-compose.ec2.yml down
 
-# 2. Executar script de limpeza completa
-./scripts/docker-cleanup.sh
+# 2. Remover tudo não usado (imagens, containers, volumes)
+docker system prune -af --volumes
 
 # 3. (Opcional) Limpar logs do sistema
 sudo journalctl --vacuum-time=3d
 
-# 4. (Opcional) Limpar cache do apt
-sudo apt-get clean
-
-# 5. Verificar espaço em disco
-df -h
-```
-
-### Comando de Limpeza Rápida (Sem confirmação)
-
-```bash
-# Remove tudo que não está sendo usado
-docker system prune -af --volumes
-
-# Verifica quanto espaço foi liberado
-docker system df
+# 4. Verificar memória livre
+free -h
 ```
 
 ---
@@ -66,13 +63,24 @@ cat .env.production
 
 ### 2. Build das Imagens (SEM web)
 
-```bash
-# Build APENAS do backend (API, Admin, Metrics Collector)
-./scripts/build.sh
+**⚠️ IMPORTANTE: Em t2.micro, builds podem travar por falta de memória!**
 
-# OU usando docker-compose diretamente
-docker-compose build api admin metrics-collector
+```bash
+# OPÇÃO 1: Build sequencial (RECOMENDADO para t2.micro)
+# Constrói um serviço por vez para evitar falta de memória
+./scripts/build-sequential.sh
+
+# OPÇÃO 2: Build sequencial SEM cache (força rebuild completo)
+./scripts/build-sequential.sh --no-cache
+
+# OPÇÃO 3: Build paralelo (apenas para t3.medium+)
+./scripts/deploy-ec2.sh --rebuild
 ```
+
+**Se o build travar:**
+1. Pressione Ctrl+C
+2. Execute: `./scripts/free-memory.sh`
+3. Tente novamente com: `./scripts/build-sequential.sh`
 
 ### 3. Deploy dos Serviços (SEM web)
 
