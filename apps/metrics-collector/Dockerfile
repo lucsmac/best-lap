@@ -46,6 +46,12 @@ COPY --from=deps /app/pnpm-workspace.yaml ./pnpm-workspace.yaml
 COPY --from=deps /app/pnpm-lock.yaml ./pnpm-lock.yaml
 COPY --from=deps /app/turbo.json ./turbo.json
 
+# Copy workspace package node_modules
+COPY --from=deps /app/packages/core/node_modules ./packages/core/node_modules
+COPY --from=deps /app/packages/env/node_modules ./packages/env/node_modules
+COPY --from=deps /app/packages/infra/node_modules ./packages/infra/node_modules
+COPY --from=deps /app/apps/metrics-collector/node_modules ./apps/metrics-collector/node_modules
+
 # Copy source code
 COPY packages/ ./packages/
 COPY config/ ./config/
