@@ -6,10 +6,29 @@ echo "EC2 Redis Fix and Deployment Script"
 echo "========================================="
 echo ""
 
-# Check if we should use simple config
+# Parse command line arguments
 USE_SIMPLE=false
-if [ "$1" == "--simple" ] || [ "$1" == "-s" ]; then
-  USE_SIMPLE=true
+CLEAN_REDIS_DATA=false
+
+for arg in "$@"; do
+  case $arg in
+    --simple|-s)
+      USE_SIMPLE=true
+      ;;
+    --clean-redis|-c)
+      CLEAN_REDIS_DATA=true
+      ;;
+    *)
+      echo "Unknown option: $arg"
+      echo "Usage: $0 [--simple|-s] [--clean-redis|-c]"
+      echo "  --simple/-s: Use simplified config without resource limits"
+      echo "  --clean-redis/-c: Delete old Redis data (fixes large RDB issues)"
+      exit 1
+      ;;
+  esac
+done
+
+if [ "$USE_SIMPLE" = true ]; then
   COMPOSE_FILE="docker-compose.ec2-simple.yml"
   echo "Using simplified config (no resource limits)"
 else
@@ -17,6 +36,10 @@ else
   echo "Using standard config (with resource limits)"
 fi
 echo "Compose file: $COMPOSE_FILE"
+
+if [ "$CLEAN_REDIS_DATA" = true ]; then
+  echo "⚠ Will clean Redis data (old RDB will be deleted)"
+fi
 echo ""
 
 # Step 1: Stop all running containers
@@ -41,6 +64,15 @@ echo ""
 echo "[3/6] Cleaning up Docker resources..."
 docker container prune -f
 docker network prune -f
+
+# Clean Redis data if requested
+if [ "$CLEAN_REDIS_DATA" = true ]; then
+  echo "Removing Redis volume to clear old data..."
+  docker volume rm best-lap_redis_data 2>/dev/null || echo "  (Redis volume already removed or doesn't exist)"
+  docker volume rm redis_data 2>/dev/null || echo "  (Alternative Redis volume name not found)"
+  echo "✓ Redis data cleaned"
+fi
+
 echo "✓ Docker resources cleaned"
 echo ""
 
@@ -128,11 +160,18 @@ echo "3. Check API health: curl http://localhost:3333/health"
 echo "4. Access Admin: http://<your-ec2-ip>:4000"
 echo ""
 echo "Configuration used: $COMPOSE_FILE"
+if [ "$CLEAN_REDIS_DATA" = true ]; then
+  echo "NOTE: Redis data was cleared. Old queues/data are gone."
+fi
 if [ "$USE_SIMPLE" = true ]; then
   echo "NOTE: Using simplified config without resource limits."
   echo "      This may use more resources but should be more stable."
 else
-  echo "NOTE: If you continue to have issues, try running with --simple flag:"
-  echo "      ./ec2-fix-redis.sh --simple"
+  echo ""
+  echo "Troubleshooting options if issues persist:"
+  echo "  1. Use simplified config:  ./ec2-fix-redis.sh --simple"
+  echo "  2. Clean Redis data:       ./ec2-fix-redis.sh --clean-redis"
+  echo "  3. Both:                   ./ec2-fix-redis.sh --simple --clean-redis"
+  echo "  4. Configure system:       sudo ./configure-ec2-for-redis.sh"
 fi
 echo ""
