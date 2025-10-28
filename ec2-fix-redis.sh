@@ -1,16 +1,28 @@
 #!/bin/bash
 # Script to fix Redis issue and deploy on EC2
 
-set -e
-
 echo "========================================="
 echo "EC2 Redis Fix and Deployment Script"
 echo "========================================="
 echo ""
 
+# Check if we should use simple config
+USE_SIMPLE=false
+if [ "$1" == "--simple" ] || [ "$1" == "-s" ]; then
+  USE_SIMPLE=true
+  COMPOSE_FILE="docker-compose.ec2-simple.yml"
+  echo "Using simplified config (no resource limits)"
+else
+  COMPOSE_FILE="docker-compose.ec2.yml"
+  echo "Using standard config (with resource limits)"
+fi
+echo "Compose file: $COMPOSE_FILE"
+echo ""
+
 # Step 1: Stop all running containers
 echo "[1/6] Stopping all containers..."
 docker-compose -f docker-compose.ec2.yml down 2>/dev/null || true
+docker-compose -f docker-compose.ec2-simple.yml down 2>/dev/null || true
 echo "✓ Containers stopped"
 echo ""
 
@@ -34,7 +46,7 @@ echo ""
 
 # Step 4: Start infrastructure services first
 echo "[4/6] Starting infrastructure (TimescaleDB + Redis)..."
-docker-compose -f docker-compose.ec2.yml up -d timescaledb redis
+docker-compose -f "$COMPOSE_FILE" up -d timescaledb redis
 echo "✓ Infrastructure services starting..."
 echo ""
 
@@ -79,7 +91,7 @@ echo ""
 
 # Step 6: Start application services
 echo "[6/6] Starting application services..."
-docker-compose -f docker-compose.ec2.yml up -d api admin metrics-collector
+docker-compose -f "$COMPOSE_FILE" up -d api admin metrics-collector
 echo "✓ Application services starting..."
 echo ""
 
@@ -87,7 +99,7 @@ echo ""
 echo "========================================="
 echo "Deployment Status"
 echo "========================================="
-docker-compose -f docker-compose.ec2.yml ps
+docker-compose -f "$COMPOSE_FILE" ps
 echo ""
 
 echo "========================================="
@@ -110,8 +122,17 @@ echo ""
 echo "========================================="
 echo "Next Steps"
 echo "========================================="
-echo "1. Check logs: docker-compose -f docker-compose.ec2.yml logs -f"
+echo "1. Check logs: docker-compose -f $COMPOSE_FILE logs -f"
 echo "2. Check specific service: docker logs <container_name> -f"
 echo "3. Check API health: curl http://localhost:3333/health"
 echo "4. Access Admin: http://<your-ec2-ip>:4000"
+echo ""
+echo "Configuration used: $COMPOSE_FILE"
+if [ "$USE_SIMPLE" = true ]; then
+  echo "NOTE: Using simplified config without resource limits."
+  echo "      This may use more resources but should be more stable."
+else
+  echo "NOTE: If you continue to have issues, try running with --simple flag:"
+  echo "      ./ec2-fix-redis.sh --simple"
+fi
 echo ""
