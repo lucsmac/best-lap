@@ -1,30 +1,86 @@
-# Render Blueprint for Best Lap Web Dashboard
-# This file defines the infrastructure for deploying the frontend to Render
+# Render Blueprint - Best Lap (Unified API + Dashboard)
+# Deploys both API (Docker) and Dashboard (Static Site) together
 # Documentation: https://render.com/docs/blueprint-spec
 #
-# IMPORTANT: When creating the service in Render:
-# 1. Set "Root Directory" to the repository root (leave blank or set to ".")
-# 2. Build Command: bash apps/web/render-build.sh
-# 3. Publish Directory: apps/web/dist
+# Architecture:
+# - Render.com: API + Dashboard (auto-deploy, HTTPS, CDN)
+# - AWS EC2: TimescaleDB + Redis + Admin + Metrics Collector
+#
+# Usage:
+# 1. Push this file to GitHub
+# 2. Render Dashboard → New → Blueprint
+# 3. Select repository and this file
+# 4. Configure environment variables (see below)
+# 5. Apply
 
 services:
-  # Web Dashboard - Static Site
+  # ============================================
+  # API Backend (Docker)
+  # ============================================
+  - type: web
+    name: best-lap-api
+    env: docker
+    dockerfilePath: ./apps/api/Dockerfile
+    dockerContext: .
+    region: ohio  # us-east-2 (closer to EC2 us-east-1)
+    plan: free    # or "starter" ($7/mês, no cold starts)
+    healthCheckPath: /health
+
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+      - key: API_PORT
+        value: 3333
+
+      # Database (EC2) - MUST UPDATE!
+      - key: DB_HOST
+        sync: false  # Set manually in Render UI
+      - key: DB_PORT
+        value: 5432
+      - key: DB_USER
+        value: best_lap
+      - key: DB_PASSWORD
+        value: best_lap
+      - key: DB_NAME
+        value: best_lap_db
+
+      # Redis (EC2) - MUST UPDATE!
+      - key: REDIS_HOST
+        sync: false  # Set manually in Render UI
+      - key: REDIS_PORT
+        value: 6379
+
+      # External APIs
+      - key: GOOGLE_API_KEY
+        sync: false  # Optional
+
+      # CORS - Will be auto-set to dashboard URL
+      - key: CORS_ORIGIN
+        fromService:
+          type: web
+          name: best-lap-dashboard
+          property: url
+
+      # Swagger
+      - key: FORCE_HTTP_SWAGGER
+        value: false
+
+  # ============================================
+  # Dashboard Frontend (Static Site)
+  # ============================================
   - type: web
     name: best-lap-dashboard
     runtime: static
     env: static
+    region: ohio  # Same region as API
+    plan: free
 
-    # Root directory must be empty or "." to use repository root
-    # Render will execute commands from the repository root
     rootDir: .
-
-    # Build command executes from rootDir
     buildCommand: bash apps/web/render-build.sh
-
-    # Publish path is relative to rootDir
     staticPublishPath: apps/web/dist
 
-    # Custom headers for security and caching
+    # Security headers
     headers:
       - path: /*
         name: X-Frame-Options
@@ -39,31 +95,27 @@ services:
         name: Cache-Control
         value: public, max-age=31536000, immutable
 
-    # Routes configuration for SPA
+    # SPA routing
     routes:
       - type: rewrite
         source: /*
         destination: /index.html
 
-    # Environment variables
     envVars:
-      # API URL - MUST be configured in Render dashboard
-      # Example: http://ec2-xx-xxx-xxx-xxx.compute.amazonaws.com:3333
+      # API URL - Auto-references API service
       - key: VITE_API_URL
-        sync: false
-        # This will need to be set manually in Render dashboard or via Render.com UI
+        fromService:
+          type: web
+          name: best-lap-api
+          property: url
 
-      # Node version (18 is stable and well-supported)
       - key: NODE_VERSION
         value: "20"
 
-      # pnpm version matching local development
       - key: PNPM_VERSION
         value: "8.14.0"
 
-      # Build optimizations
       - key: NODE_ENV
         value: production
 
-# Auto-deploy configuration
-# By default, Render will auto-deploy on every push to the main branch
+# Auto-deploy on push to main branch
