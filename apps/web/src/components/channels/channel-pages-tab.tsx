@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Plus, Pencil, Trash2, ExternalLink } from 'lucide-react'
+import { Plus, Pencil, Trash2, ExternalLink, Activity } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Table,
@@ -27,6 +27,8 @@ import { useToast } from '@/hooks/use-toast'
 import type { Page, Channel } from '@/types/api'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
+import { TriggerCollectionDialog } from '@/components/trigger-collection-dialog'
+import { useTriggerCollectionPage } from '@/hooks/use-metrics'
 
 interface ChannelPagesTabProps {
   channel: Channel
@@ -41,6 +43,8 @@ export function ChannelPagesTab({ channel }: ChannelPagesTabProps) {
   const { toast } = useToast()
   const { data: pages, isLoading } = usePages(channel.id)
   const deletePage = useDeletePage()
+  const { mutate: triggerCollectionPage, isPending: isCollecting } =
+    useTriggerCollectionPage()
 
   const handleCreate = () => {
     setSelectedPage(null)
@@ -181,10 +185,31 @@ export function ChannelPagesTab({ channel }: ChannelPagesTabProps) {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
+                          <TriggerCollectionDialog
+                            scope="page"
+                            pageName={page.name}
+                            onConfirm={() =>
+                              triggerCollectionPage({
+                                channelId: channel.id,
+                                pageId: page.id,
+                              })
+                            }
+                            isPending={isCollecting}
+                          >
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              title="Coletar métricas desta página"
+                              className="border-blue-600 text-blue-600 hover:bg-blue-50 hover:text-blue-700"
+                            >
+                              <Activity className="h-4 w-4" />
+                            </Button>
+                          </TriggerCollectionDialog>
                           <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => handleEdit(page)}
+                            title="Editar página"
                           >
                             <Pencil className="h-4 w-4" />
                           </Button>
@@ -195,6 +220,7 @@ export function ChannelPagesTab({ channel }: ChannelPagesTabProps) {
                               setPageToDelete(page)
                               setDeleteDialogOpen(true)
                             }}
+                            title="Deletar página"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>

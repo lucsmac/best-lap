@@ -12,6 +12,7 @@ import type {
   Metric,
   AverageMetric,
   Period,
+  TriggerCollectionResponse,
 } from '@/types/api'
 
 // Channel endpoints
@@ -88,4 +89,13 @@ export const metricsApi = {
     api.get<{ metrics: AverageMetric[] }>(
       `/channels/metrics/theme/${theme}/average/${period}`
     ),
+
+  triggerCollectionAll: () =>
+    api.post<TriggerCollectionResponse>('/channels/metrics/collect'),
+
+  triggerCollectionChannel: (channelId: string) =>
+    api.post<TriggerCollectionResponse>(`/channels/metrics/${channelId}/collect`),
+
+  triggerCollectionPage: (channelId: string, pageId: string) =>
+    api.post<TriggerCollectionResponse>(`/channels/metrics/${channelId}/pages/${pageId}/collect`),
 }

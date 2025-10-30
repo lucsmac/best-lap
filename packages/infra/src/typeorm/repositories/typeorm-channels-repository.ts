@@ -58,6 +58,17 @@ export class TypeormChannelsRepository implements ChannelsRepository {
     return activeChannels
   }
 
+  async listActiveChannelsWithHomePage(): Promise<ChannelEntity[]> {
+    const activeChannels = await channelRepository
+      .createQueryBuilder('channel')
+      .leftJoinAndSelect('channel.pages', 'page', 'page.path = :path', { path: '/' })
+      .leftJoinAndSelect('channel.provider', 'provider')
+      .where('channel.active = :active', { active: true })
+      .getMany()
+
+    return activeChannels
+  }
+
   async listByTheme(theme: string): Promise<ChannelEntity[]> {
     const channelsByTheme = await channelRepository.find({
       where: {

@@ -9,6 +9,8 @@ import { ChannelInfoTab } from '@/components/channels/channel-info-tab'
 import { ChannelPagesTab } from '@/components/channels/channel-pages-tab'
 import { ChannelDialog } from '@/components/channels/channel-dialog'
 import { useChannel } from '@/hooks/use-channels'
+import { TriggerCollectionDialog } from '@/components/trigger-collection-dialog'
+import { useTriggerCollectionChannel } from '@/hooks/use-metrics'
 
 export function ChannelDetailsPage() {
   const { channelId } = useParams({ strict: false })
@@ -16,6 +18,8 @@ export function ChannelDetailsPage() {
   const [activeTab, setActiveTab] = useState('info')
 
   const { data: channel, isLoading, isError } = useChannel(channelId)
+  const { mutate: triggerCollectionChannel, isPending: isCollecting } =
+    useTriggerCollectionChannel()
 
   if (isLoading) {
     return (
@@ -55,12 +59,21 @@ export function ChannelDetailsPage() {
         { label: channel.name },
       ]}
       action={
-        <Button asChild variant="outline">
-          <Link to="/channels">
-            <ChevronLeft className="mr-2 h-4 w-4" />
-            Voltar
-          </Link>
-        </Button>
+        <div className="flex gap-2">
+          <TriggerCollectionDialog
+            scope="channel"
+            channelName={channel.name}
+            pagesCount={channel.pages?.length || 0}
+            onConfirm={() => triggerCollectionChannel(channel.id)}
+            isPending={isCollecting}
+          />
+          <Button asChild variant="outline">
+            <Link to="/channels">
+              <ChevronLeft className="mr-2 h-4 w-4" />
+              Voltar
+            </Link>
+          </Button>
+        </div>
       }
     >
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">

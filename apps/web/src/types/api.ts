@@ -135,3 +135,11 @@ export interface ApiError {
   message: string
   statusCode: number
 }
+
+// Trigger Collection types
+export interface TriggerCollectionResponse {
+  message: string
+  jobs_count: number
+  channel_id?: string
+  page_id?: string
+}

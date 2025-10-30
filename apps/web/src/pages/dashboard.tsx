@@ -5,7 +5,7 @@ import { ThemeDistributionCard } from '@/components/dashboard/theme-distribution
 import { PerformanceInsightsCard } from '@/components/dashboard/performance-insights-card'
 import { OverallPerformanceChart } from '@/components/dashboard/overall-performance-chart'
 import { useChannels } from '@/hooks/use-channels'
-import { useAllMetrics } from '@/hooks/use-metrics'
+import { useAllMetrics, useTriggerCollectionAll } from '@/hooks/use-metrics'
 import type { Period } from '@/types/api'
 import {
   Select,
@@ -15,6 +15,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { TriggerCollectionDialog } from '@/components/trigger-collection-dialog'
 
 const periodLabels: Record<Period, string> = {
   hourly: 'Última Hora',
@@ -29,6 +30,10 @@ export function DashboardPage() {
   const { data: channels = [], isLoading: isLoadingChannels } = useChannels()
   const { data: metrics = [], isLoading: isLoadingMetrics } =
     useAllMetrics(period)
+  const { mutate: triggerCollectionAll, isPending: isCollecting } =
+    useTriggerCollectionAll()
+
+  const activeChannels = channels.filter((c) => c.active)
 
   return (
     <AppShell
@@ -36,10 +41,18 @@ export function DashboardPage() {
       description="Visão geral das métricas de performance"
     >
       <div className="space-y-6">
-        {/* Period Filter */}
+        {/* Period Filter and Actions */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Período de Visualização</CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-base">Período de Visualização</CardTitle>
+              <TriggerCollectionDialog
+                scope="all"
+                channelsCount={activeChannels.length}
+                onConfirm={() => triggerCollectionAll()}
+                isPending={isCollecting}
+              />
+            </div>
           </CardHeader>
           <CardContent>
             <Select
