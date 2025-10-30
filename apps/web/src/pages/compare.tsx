@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { ChannelCombobox } from '@/components/ui/channel-combobox'
 import { ChannelsComparisonChart } from '@/components/compare/channels-comparison-chart'
 import { ComparisonChannelCard } from '@/components/compare/comparison-channel-card'
 import { ComparisonTable } from '@/components/compare/comparison-table'
@@ -205,34 +206,18 @@ export function ComparePage() {
                   <label className="mb-2 block text-sm font-medium">
                     Adicionar Canal
                   </label>
-                  <Select
+                  <ChannelCombobox
+                    channels={availableChannels}
                     value=""
                     onValueChange={handleAddChannel}
                     disabled={!canAddMore || isLoadingChannels}
-                  >
-                    <SelectTrigger>
-                      <SelectValue
-                        placeholder={
-                          canAddMore
-                            ? 'Selecione um canal'
-                            : 'Máximo de 4 canais'
-                        }
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {availableChannels.length === 0 ? (
-                        <SelectItem value="no-channels" disabled>
-                          Nenhum canal disponível
-                        </SelectItem>
-                      ) : (
-                        availableChannels.map((channel) => (
-                          <SelectItem key={channel.id} value={channel.id}>
-                            {channel.name}
-                          </SelectItem>
-                        ))
-                      )}
-                    </SelectContent>
-                  </Select>
+                    placeholder={
+                      canAddMore
+                        ? 'Selecione um canal'
+                        : 'Máximo de 4 canais'
+                    }
+                    emptyText="Nenhum canal disponível"
+                  />
                 </div>
 
                 {/* Period Select */}

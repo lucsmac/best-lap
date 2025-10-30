@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { ChannelCombobox } from '@/components/ui/channel-combobox'
 import { PerformanceChart } from '@/components/dashboard/performance-chart'
 import { useChannels } from '@/hooks/use-channels'
 import { useChannelMetrics } from '@/hooks/use-metrics'
@@ -62,22 +63,13 @@ export function MetricsPage() {
             <div className="flex flex-col gap-4 md:flex-row">
               <div className="flex-1">
                 <label className="mb-2 block text-sm font-medium">Canal</label>
-                <Select
+                <ChannelCombobox
+                  channels={channels || []}
                   value={selectedChannelId}
                   onValueChange={setSelectedChannelId}
                   disabled={isLoadingChannels}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione um canal" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {channels?.map((channel) => (
-                      <SelectItem key={channel.id} value={channel.id}>
-                        {channel.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  placeholder="Selecione um canal"
+                />
               </div>
 
               <div className="w-full md:w-[200px]">
