@@ -56,15 +56,6 @@ export function DashboardPage() {
     return channels.filter((channel) => channel.provider_id === selectedProviderId)
   }, [channels, selectedProviderId])
 
-  // Filter metrics by channels from selected provider
-  const filteredMetrics = useMemo(() => {
-    if (selectedProviderId === 'all') return metrics
-    const providerChannelIds = new Set(filteredChannels.map((c) => c.id))
-    return metrics.filter((metric) =>
-      metric.channel_id && providerChannelIds.has(metric.channel_id)
-    )
-  }, [metrics, filteredChannels, selectedProviderId])
-
   const activeChannels = filteredChannels.filter((c) => c.active)
 
   return (
@@ -140,13 +131,13 @@ export function DashboardPage() {
         {/* Overview Cards */}
         <DashboardOverviewCards
           channels={filteredChannels}
-          metrics={filteredMetrics}
+          metrics={metrics}
           isLoading={isLoadingChannels || isLoadingMetrics || isLoadingProviders}
         />
 
         {/* Performance Chart */}
         <OverallPerformanceChart
-          data={filteredMetrics}
+          data={metrics}
           isLoading={isLoadingMetrics}
         />
 
