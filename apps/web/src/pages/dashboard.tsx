@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { AppShell } from '@/components/layout/app-shell'
 import { DashboardOverviewCards } from '@/components/dashboard/dashboard-overview-cards'
 import { ThemeDistributionCard } from '@/components/dashboard/theme-distribution-card'
 import { PerformanceInsightsCard } from '@/components/dashboard/performance-insights-card'
 import { OverallPerformanceChart } from '@/components/dashboard/overall-performance-chart'
 import { useChannels } from '@/hooks/use-channels'
+import { useProviders } from '@/hooks/use-providers'
 import { useAllMetrics, useTriggerCollectionAll } from '@/hooks/use-metrics'
 import type { Period } from '@/types/api'
 import {
@@ -26,14 +27,45 @@ const periodLabels: Record<Period, string> = {
 
 export function DashboardPage() {
   const [period, setPeriod] = useState<Period>('daily')
+  const [selectedProviderId, setSelectedProviderId] = useState<string>('all')
 
   const { data: channels = [], isLoading: isLoadingChannels } = useChannels()
+  const { data: providers = [], isLoading: isLoadingProviders } = useProviders()
   const { data: metrics = [], isLoading: isLoadingMetrics } =
     useAllMetrics(period)
   const { mutate: triggerCollectionAll, isPending: isCollecting } =
     useTriggerCollectionAll()
 
-  const activeChannels = channels.filter((c) => c.active)
+  // Set default provider to 'autoforce' or first in list
+  useEffect(() => {
+    if (providers.length > 0 && selectedProviderId === 'all') {
+      const autoforceProvider = providers.find(
+        (p) => p.slug === 'autoforce' || p.name.toLowerCase() === 'autoforce'
+      )
+      if (autoforceProvider) {
+        setSelectedProviderId(autoforceProvider.id)
+      } else {
+        setSelectedProviderId(providers[0].id)
+      }
+    }
+  }, [providers, selectedProviderId])
+
+  // Filter channels by selected provider
+  const filteredChannels = useMemo(() => {
+    if (selectedProviderId === 'all') return channels
+    return channels.filter((channel) => channel.provider_id === selectedProviderId)
+  }, [channels, selectedProviderId])
+
+  // Filter metrics by channels from selected provider
+  const filteredMetrics = useMemo(() => {
+    if (selectedProviderId === 'all') return metrics
+    const providerChannelIds = new Set(filteredChannels.map((c) => c.id))
+    return metrics.filter((metric) =>
+      metric.channel_id && providerChannelIds.has(metric.channel_id)
+    )
+  }, [metrics, filteredChannels, selectedProviderId])
+
+  const activeChannels = filteredChannels.filter((c) => c.active)
 
   return (
     <AppShell
@@ -41,11 +73,11 @@ export function DashboardPage() {
       description="Visão geral das métricas de performance"
     >
       <div className="space-y-6">
-        {/* Period Filter and Actions */}
+        {/* Filters and Actions */}
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle className="text-base">Período de Visualização</CardTitle>
+              <CardTitle className="text-base">Filtros de Visualização</CardTitle>
               <TriggerCollectionDialog
                 scope="all"
                 channelsCount={activeChannels.length}
@@ -55,45 +87,77 @@ export function DashboardPage() {
             </div>
           </CardHeader>
           <CardContent>
-            <Select
-              value={period}
-              onValueChange={(value) => setPeriod(value as Period)}
-            >
-              <SelectTrigger className="w-[200px]">
-                <SelectValue placeholder="Selecione o período" />
-              </SelectTrigger>
-              <SelectContent>
-                {Object.entries(periodLabels).map(([value, label]) => (
-                  <SelectItem key={value} value={value}>
-                    {label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="flex flex-wrap gap-4">
+              {/* Provider Filter */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-muted-foreground">
+                  Provedor
+                </label>
+                <Select
+                  value={selectedProviderId}
+                  onValueChange={setSelectedProviderId}
+                  disabled={isLoadingProviders}
+                >
+                  <SelectTrigger className="w-[200px]">
+                    <SelectValue placeholder="Selecione o provedor" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todos os Provedores</SelectItem>
+                    {providers.map((provider) => (
+                      <SelectItem key={provider.id} value={provider.id}>
+                        {provider.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Period Filter */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-muted-foreground">
+                  Período
+                </label>
+                <Select
+                  value={period}
+                  onValueChange={(value) => setPeriod(value as Period)}
+                >
+                  <SelectTrigger className="w-[200px]">
+                    <SelectValue placeholder="Selecione o período" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.entries(periodLabels).map(([value, label]) => (
+                      <SelectItem key={value} value={value}>
+                        {label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
           </CardContent>
         </Card>
 
         {/* Overview Cards */}
         <DashboardOverviewCards
-          channels={channels}
-          metrics={metrics}
-          isLoading={isLoadingChannels || isLoadingMetrics}
+          channels={filteredChannels}
+          metrics={filteredMetrics}
+          isLoading={isLoadingChannels || isLoadingMetrics || isLoadingProviders}
         />
 
         {/* Performance Chart */}
         <OverallPerformanceChart
-          data={metrics}
+          data={filteredMetrics}
           isLoading={isLoadingMetrics}
         />
 
         {/* Theme Distribution and Insights */}
         <div className="grid gap-6 md:grid-cols-2">
           <ThemeDistributionCard
-            channels={channels}
+            channels={filteredChannels}
             isLoading={isLoadingChannels}
           />
           <PerformanceInsightsCard
-            channels={channels}
+            channels={filteredChannels}
             isLoading={isLoadingChannels}
           />
         </div>
