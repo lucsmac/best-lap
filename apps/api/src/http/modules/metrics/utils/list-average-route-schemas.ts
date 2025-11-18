@@ -13,3 +13,8 @@ export const channelRequestParamsSchema = z.object({
   period: z.enum(["daily", "hourly", "weekly"]),
   channel_id: z.string(),
 })
+
+export const providerRequestParamsSchema = z.object({
+  period: z.enum(["daily", "hourly", "weekly"]),
+  provider_id: z.string(),
+})

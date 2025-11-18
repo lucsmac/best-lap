@@ -6,7 +6,7 @@ import { PerformanceInsightsCard } from '@/components/dashboard/performance-insi
 import { OverallPerformanceChart } from '@/components/dashboard/overall-performance-chart'
 import { useChannels } from '@/hooks/use-channels'
 import { useProviders } from '@/hooks/use-providers'
-import { useAllMetrics, useTriggerCollectionAll } from '@/hooks/use-metrics'
+import { useAllMetrics, useProviderMetrics, useTriggerCollectionAll } from '@/hooks/use-metrics'
 import type { Period } from '@/types/api'
 import {
   Select,
@@ -31,30 +31,57 @@ export function DashboardPage() {
 
   const { data: channels = [], isLoading: isLoadingChannels } = useChannels()
   const { data: providers = [], isLoading: isLoadingProviders } = useProviders()
-  const { data: metrics = [], isLoading: isLoadingMetrics } =
+  const { data: allMetrics = [], isLoading: isLoadingAllMetrics } =
     useAllMetrics(period)
   const { mutate: triggerCollectionAll, isPending: isCollecting } =
     useTriggerCollectionAll()
 
+  // Find autoforce provider ID
+  const autoforceProviderId = useMemo(() => {
+    return providers.find(
+      (p) => p.slug === 'autoforce' || p.name.toLowerCase() === 'autoforce'
+    )?.id
+  }, [providers])
+
+  // Enrich channels with default provider (autoforce) if not set
+  const enrichedChannels = useMemo(() => {
+    return channels.map((channel) => ({
+      ...channel,
+      provider_id: channel.provider_id || autoforceProviderId || undefined,
+    }))
+  }, [channels, autoforceProviderId])
+
   // Set default provider to 'autoforce' or first in list
   useEffect(() => {
     if (providers.length > 0 && selectedProviderId === 'all') {
-      const autoforceProvider = providers.find(
-        (p) => p.slug === 'autoforce' || p.name.toLowerCase() === 'autoforce'
-      )
-      if (autoforceProvider) {
-        setSelectedProviderId(autoforceProvider.id)
+      if (autoforceProviderId) {
+        setSelectedProviderId(autoforceProviderId)
       } else {
         setSelectedProviderId(providers[0].id)
       }
     }
-  }, [providers, selectedProviderId])
+  }, [providers, selectedProviderId, autoforceProviderId])
 
   // Filter channels by selected provider
   const filteredChannels = useMemo(() => {
-    if (selectedProviderId === 'all') return channels
-    return channels.filter((channel) => channel.provider_id === selectedProviderId)
-  }, [channels, selectedProviderId])
+    if (selectedProviderId === 'all') return enrichedChannels
+    return enrichedChannels.filter((channel) => channel.provider_id === selectedProviderId)
+  }, [enrichedChannels, selectedProviderId])
+
+  // Fetch provider-specific metrics using the new efficient endpoint
+  const {
+    data: providerMetrics = [],
+    isLoading: isLoadingProviderMetrics,
+  } = useProviderMetrics(
+    selectedProviderId !== 'all' ? selectedProviderId : undefined,
+    period
+  )
+
+  // Use provider-specific metrics when a provider is selected, otherwise use all metrics
+  const displayMetrics = selectedProviderId === 'all' ? allMetrics : providerMetrics
+  const isLoadingMetrics = selectedProviderId === 'all'
+    ? isLoadingAllMetrics
+    : isLoadingProviderMetrics
 
   const activeChannels = filteredChannels.filter((c) => c.active)
 
@@ -131,13 +158,13 @@ export function DashboardPage() {
         {/* Overview Cards */}
         <DashboardOverviewCards
           channels={filteredChannels}
-          metrics={metrics}
+          metrics={displayMetrics}
           isLoading={isLoadingChannels || isLoadingMetrics || isLoadingProviders}
         />
 
         {/* Performance Chart */}
         <OverallPerformanceChart
-          data={metrics}
+          data={displayMetrics}
           isLoading={isLoadingMetrics}
         />
 

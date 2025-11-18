@@ -9,6 +9,7 @@ type GetMetricsAverageParams = {
   endDate?: string
   theme?: string
   pagePath?: string
+  providerId?: string
 }
 
 interface GetChannelsAverageMetricsUseCaseRequest {
@@ -39,6 +40,7 @@ export class GetChannelsAverageMetricsUseCase {
     endDate,
     theme,
     pagePath,
+    providerId,
   }: GetMetricsAverageParams) {
     if (!period) return null;
 
@@ -76,6 +78,11 @@ export class GetChannelsAverageMetricsUseCase {
       queryParams.push(theme);
     }
 
+    if (providerId) {
+      whereConditions.push(`c.provider_id = $${queryParams.length + 1}`);
+      queryParams.push(providerId);
+    }
+
     const colsMetricsTable = {
       score: 'score',
       response_time: '"response_time"',
@@ -100,6 +107,9 @@ export class GetChannelsAverageMetricsUseCase {
 
     const tableColsMap = sourceTable === 'metrics' ? colsMetricsTable : colsAvgMetricsTable;
 
+    const needsPagesJoin = theme || pagePath || providerId;
+    const needsChannelsJoin = theme || providerId;
+
     const results = await this.metricsRepository.query(
       `
       SELECT
@@ -113,8 +123,8 @@ export class GetChannelsAverageMetricsUseCase {
         AVG(${tableColsMap.cls}) AS avg_cls,
         AVG(${tableColsMap.seo}) AS avg_seo
       FROM ${sourceTable} m
-      ${theme || pagePath ? 'INNER JOIN pages p ON m.page_id = p.id' : ''}
-      ${theme ? 'INNER JOIN channels c ON p.channel_id = c.id' : ''}
+      ${needsPagesJoin ? 'INNER JOIN pages p ON m.page_id = p.id' : ''}
+      ${needsChannelsJoin ? 'INNER JOIN channels c ON p.channel_id = c.id' : ''}
       WHERE ${whereConditions.join(' AND ')}
       GROUP BY DATE_TRUNC('${granularity}', ${timeColumn})
       ORDER BY period_start;

@@ -90,6 +90,11 @@ export const metricsApi = {
       `/channels/metrics/theme/${theme}/average/${period}`
     ),
 
+  getProviderAverage: (providerId: string, period: Period) =>
+    api.get<{ metrics: AverageMetric[] }>(
+      `/channels/metrics/provider/${providerId}/average/${period}`
+    ),
+
   triggerCollectionAll: () =>
     api.post<TriggerCollectionResponse>('/channels/metrics/collect'),
 

@@ -1,7 +1,8 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient, useQueries } from '@tanstack/react-query'
 import { metricsApi } from '@/lib/api/endpoints'
-import type { Period } from '@/types/api'
+import type { Period, AverageMetric } from '@/types/api'
 import { toast } from '@/hooks/use-toast'
+import { useMemo } from 'react'
 
 const METRICS_QUERY_KEY = 'metrics'
 
@@ -52,6 +53,82 @@ export function useThemeMetrics(theme: string | undefined, period: Period) {
     },
     enabled: !!theme,
   })
+}
+
+export function useProviderMetrics(providerId: string | undefined, period: Period) {
+  return useQuery({
+    queryKey: [METRICS_QUERY_KEY, 'provider', providerId, period],
+    queryFn: async () => {
+      if (!providerId) throw new Error('Provider ID is required')
+      const { data } = await metricsApi.getProviderAverage(providerId, period)
+      return data.metrics || []
+    },
+    enabled: !!providerId,
+  })
+}
+
+// Hook to fetch metrics for multiple channels and aggregate them
+export function useMultipleChannelsMetrics(channelIds: string[], period: Period) {
+  const queries = useQueries({
+    queries: channelIds.map((channelId) => ({
+      queryKey: [METRICS_QUERY_KEY, 'channel', channelId, period],
+      queryFn: async () => {
+        const { data } = await metricsApi.getChannelAverage(channelId, period)
+        return data.metrics || []
+      },
+      enabled: channelIds.length > 0,
+    })),
+  })
+
+  const aggregatedMetrics = useMemo(() => {
+    // Check if all queries are loaded
+    const allLoaded = queries.every((q) => !q.isLoading)
+    if (!allLoaded || queries.length === 0) return []
+
+    // Get all metrics from all channels
+    const allMetrics = queries.flatMap((q) => q.data || [])
+    if (allMetrics.length === 0) return []
+
+    // Group metrics by period_start
+    const metricsByPeriod = new Map<string, AverageMetric[]>()
+    allMetrics.forEach((metric) => {
+      const existing = metricsByPeriod.get(metric.period_start) || []
+      metricsByPeriod.set(metric.period_start, [...existing, metric])
+    })
+
+    // Aggregate metrics for each period
+    const aggregated: AverageMetric[] = Array.from(metricsByPeriod.entries()).map(
+      ([period_start, metrics]) => {
+        const count = metrics.length
+        return {
+          period_start,
+          avg_score: metrics.reduce((sum, m) => sum + m.avg_score, 0) / count,
+          avg_seo: metrics.reduce((sum, m) => sum + m.avg_seo, 0) / count,
+          avg_response_time:
+            metrics.reduce((sum, m) => {
+              const rt = typeof m.avg_response_time === 'string'
+                ? parseFloat(m.avg_response_time)
+                : m.avg_response_time
+              return sum + rt
+            }, 0) / count,
+          avg_fcp: metrics.reduce((sum, m) => sum + m.avg_fcp, 0) / count,
+          avg_si: metrics.reduce((sum, m) => sum + m.avg_si, 0) / count,
+          avg_lcp: metrics.reduce((sum, m) => sum + m.avg_lcp, 0) / count,
+          avg_tbt: metrics.reduce((sum, m) => sum + m.avg_tbt, 0) / count,
+          avg_cls: metrics.reduce((sum, m) => sum + m.avg_cls, 0) / count,
+        }
+      }
+    )
+
+    // Sort by period_start
+    return aggregated.sort((a, b) => a.period_start.localeCompare(b.period_start))
+  }, [queries])
+
+  return {
+    data: aggregatedMetrics,
+    isLoading: queries.some((q) => q.isLoading),
+    isError: queries.some((q) => q.isError),
+  }
 }
 
 // Mutation hooks for triggering metrics collection
