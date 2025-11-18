@@ -30,9 +30,11 @@ const channelFormSchema = z.object({
   name: z.string().min(1, 'Nome é obrigatório'),
   domain: z
     .string()
-    .min(1, 'Domínio é obrigatório')
     .refine(
       (val) => {
+        // Permite domínio vazio
+        if (!val || val.trim() === '') return true
+
         // Aceita URLs completas ou domínios simples
         if (val.startsWith('http://') || val.startsWith('https://')) {
           try {
@@ -173,7 +175,7 @@ export function ChannelDialog({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="domain">Domínio</Label>
+            <Label htmlFor="domain">Domínio (Opcional)</Label>
             <Input
               id="domain"
               placeholder="exemplo.com.br ou https://exemplo.com.br"
