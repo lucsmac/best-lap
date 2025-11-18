@@ -11,6 +11,7 @@ import {
 } from '@/components/channels/channels-filters'
 import { BulkActionsToolbar } from '@/components/channels/bulk-actions-toolbar'
 import { useChannels } from '@/hooks/use-channels'
+import { useProviders } from '@/hooks/use-providers'
 import type { Channel } from '@/types/api'
 
 export function ChannelsPage() {
@@ -22,9 +23,11 @@ export function ChannelsPage() {
     theme: 'all',
     status: 'all',
     isReference: 'all',
+    provider: 'all',
   })
 
   const { data, isLoading, isError } = useChannels()
+  const { data: providers = [] } = useProviders()
 
   // Extract unique themes from channels
   const availableThemes = useMemo(() => {
@@ -62,6 +65,17 @@ export function ChannelsPage() {
       if (filters.isReference !== 'all') {
         const isReference = filters.isReference === 'true'
         if (channel.is_reference !== isReference) return false
+      }
+
+      // Provider filter
+      if (filters.provider !== 'all') {
+        if (filters.provider === 'none') {
+          // Filter channels without provider
+          if (channel.provider_id) return false
+        } else {
+          // Filter by specific provider
+          if (channel.provider_id !== filters.provider) return false
+        }
       }
 
       return true
@@ -121,6 +135,7 @@ export function ChannelsPage() {
               filters={filters}
               onFiltersChange={setFilters}
               availableThemes={availableThemes}
+              availableProviders={providers}
             />
 
             {selectedIds.length > 0 && (
@@ -146,7 +161,8 @@ export function ChannelsPage() {
                   {filters.search ||
                   filters.theme !== 'all' ||
                   filters.status !== 'all' ||
-                  filters.isReference !== 'all' ? (
+                  filters.isReference !== 'all' ||
+                  filters.provider !== 'all' ? (
                     <p className="mt-1 text-sm text-muted-foreground">
                       Tente ajustar os filtros.
                     </p>

@@ -8,24 +8,28 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
+import type { Provider } from '@/types/api'
 
 export interface ChannelsFiltersState {
   search: string
   theme: string
   status: string
   isReference: string
+  provider: string
 }
 
 interface ChannelsFiltersProps {
   filters: ChannelsFiltersState
   onFiltersChange: (filters: ChannelsFiltersState) => void
   availableThemes: string[]
+  availableProviders: Provider[]
 }
 
 export function ChannelsFilters({
   filters,
   onFiltersChange,
   availableThemes,
+  availableProviders,
 }: ChannelsFiltersProps) {
   const handleSearchChange = (value: string) => {
     onFiltersChange({ ...filters, search: value })
@@ -43,12 +47,17 @@ export function ChannelsFilters({
     onFiltersChange({ ...filters, isReference: value })
   }
 
+  const handleProviderChange = (value: string) => {
+    onFiltersChange({ ...filters, provider: value })
+  }
+
   const handleClearFilters = () => {
     onFiltersChange({
       search: '',
       theme: 'all',
       status: 'all',
       isReference: 'all',
+      provider: 'all',
     })
   }
 
@@ -56,7 +65,8 @@ export function ChannelsFilters({
     filters.search ||
     filters.theme !== 'all' ||
     filters.status !== 'all' ||
-    filters.isReference !== 'all'
+    filters.isReference !== 'all' ||
+    filters.provider !== 'all'
 
   return (
     <div className="flex flex-col gap-4 md:flex-row md:items-center">
@@ -107,6 +117,21 @@ export function ChannelsFilters({
             <SelectItem value="all">Todos</SelectItem>
             <SelectItem value="true">Referência</SelectItem>
             <SelectItem value="false">Não referência</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select value={filters.provider} onValueChange={handleProviderChange}>
+          <SelectTrigger className="w-[160px]">
+            <SelectValue placeholder="Provedor" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todos os provedores</SelectItem>
+            <SelectItem value="none">Sem provedor</SelectItem>
+            {availableProviders.map((provider) => (
+              <SelectItem key={provider.id} value={provider.id}>
+                {provider.name}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
 
