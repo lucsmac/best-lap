@@ -1,6 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Crown } from 'lucide-react'
 
 interface ThemeCardProps {
   theme: string
@@ -9,6 +10,8 @@ interface ThemeCardProps {
   channelCount: number
   isLoading?: boolean
   onClick?: () => void
+  color?: string
+  isBest?: boolean
 }
 
 function getScoreColor(score: number, isScore: boolean): string {
@@ -33,6 +36,8 @@ export function ThemeCard({
   channelCount,
   isLoading,
   onClick,
+  color,
+  isBest,
 }: ThemeCardProps) {
   if (isLoading) {
     return (
@@ -54,16 +59,32 @@ export function ThemeCard({
 
   return (
     <Card
-      className="cursor-pointer transition-all hover:shadow-sm"
+      className={`cursor-pointer transition-all hover:shadow-sm ${
+        isBest ? 'ring-2 ring-yellow-500' : ''
+      }`}
       onClick={onClick}
     >
       <CardContent className="flex items-center justify-between p-4">
         <div className="flex-1">
           <div className="flex items-center gap-2">
+            {color && (
+              <div
+                className="h-3 w-3 rounded-full"
+                style={{ backgroundColor: color }}
+              />
+            )}
             <span className="font-medium capitalize">{theme}</span>
-            {scoreStatus && (
+            {isBest && (
+              <Crown className="h-4 w-4 text-yellow-500" />
+            )}
+            {scoreStatus && !isBest && (
               <Badge variant="secondary" className="text-xs">
                 {scoreStatus}
+              </Badge>
+            )}
+            {isBest && (
+              <Badge variant="default" className="bg-yellow-500 text-xs hover:bg-yellow-600">
+                Melhor
               </Badge>
             )}
           </div>

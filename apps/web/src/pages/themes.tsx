@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react'
+import { useQueries } from '@tanstack/react-query'
 import { AppShell } from '@/components/layout/app-shell'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -8,15 +9,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { ThemeCard } from '@/components/themes/theme-card'
 import { ThemesComparisonChart } from '@/components/themes/themes-comparison-chart'
 import { ThemesTable } from '@/components/themes/themes-table'
 import { ThemeChannelsSection } from '@/components/themes/theme-channels-section'
 import { useChannels } from '@/hooks/use-channels'
-import { useThemeMetrics } from '@/hooks/use-metrics'
+import { metricsApi } from '@/lib/api/endpoints'
 import type { Period } from '@/types/api'
-import { Layers, ChevronDown, ChevronUp } from 'lucide-react'
+import { Layers, ChevronDown, ChevronUp, X } from 'lucide-react'
 
 const periodLabels: Record<Period, string> = {
   hourly: 'Por Hora',
@@ -50,6 +52,8 @@ export function ThemesPage() {
   const [metricKey, setMetricKey] = useState<MetricKey>('avg_score')
   const [selectedTheme, setSelectedTheme] = useState<string | null>(null)
   const [isOverviewExpanded, setIsOverviewExpanded] = useState(false)
+  const [selectedThemesForComparison, setSelectedThemesForComparison] = useState<string[]>([])
+  const [comparisonMode, setComparisonMode] = useState(false)
 
   const { data: channels, isLoading: isLoadingChannels } = useChannels()
 
@@ -60,20 +64,57 @@ export function ThemesPage() {
     return Array.from(uniqueThemes).filter(Boolean).sort()
   }, [channels])
 
-  // Fetch metrics for each theme
-  const themeMetricsQueries = themes.map((theme) => ({
-    theme,
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    query: useThemeMetrics(theme, period),
-  }))
+  // Fetch metrics for themes using useQueries
+  const themesToFetch = comparisonMode ? selectedThemesForComparison : themes
+  const themeMetricsQueries = useQueries({
+    queries: themesToFetch.map((theme) => ({
+      queryKey: ['metrics', 'theme', theme, period],
+      queryFn: async () => {
+        const { data } = await metricsApi.getThemeAverage(theme, period)
+        return { theme, metrics: data.metrics || [] }
+      },
+      enabled: !!theme,
+    })),
+  })
 
-  const isLoadingMetrics = themeMetricsQueries.some((q) => q.query.isLoading)
+  const isLoadingMetrics = themeMetricsQueries.some((q) => q.isLoading)
+
+  // Handle theme selection for comparison
+  const handleAddThemeToComparison = (theme: string) => {
+    if (selectedThemesForComparison.length < 4 && !selectedThemesForComparison.includes(theme)) {
+      setSelectedThemesForComparison([...selectedThemesForComparison, theme])
+    }
+  }
+
+  const handleRemoveThemeFromComparison = (theme: string) => {
+    setSelectedThemesForComparison(selectedThemesForComparison.filter((t) => t !== theme))
+  }
+
+  const handleStartComparison = () => {
+    setComparisonMode(true)
+  }
+
+  const handleExitComparison = () => {
+    setComparisonMode(false)
+    setSelectedThemesForComparison([])
+  }
+
+  // Available themes for selection (not already selected)
+  const availableThemes = useMemo(() => {
+    return themes.filter((t) => !selectedThemesForComparison.includes(t))
+  }, [themes, selectedThemesForComparison])
+
+  // Can add more themes?
+  const canAddMore = selectedThemesForComparison.length < 4
 
   // Prepare data for cards
   const themeCardsData = useMemo(() => {
-    return themes.map((theme) => {
-      const query = themeMetricsQueries.find((q) => q.theme === theme)
-      const metrics = query?.query.data || []
+    // In comparison mode, only process selected themes; otherwise, all themes
+    const themesToProcess = comparisonMode ? selectedThemesForComparison : themes
+
+    return themesToProcess.map((theme, index) => {
+      const queryResult = themeMetricsQueries[index]
+      const metrics = queryResult?.data?.metrics || []
       const latestMetric = metrics.length > 0 ? metrics[metrics.length - 1] : null
 
       const channelCount = channels?.filter((c) => c.theme === theme).length || 0
@@ -97,28 +138,35 @@ export function ThemesPage() {
         value,
       }
     })
-  }, [themes, themeMetricsQueries, channels, metricKey])
+  }, [themes, selectedThemesForComparison, comparisonMode, themeMetricsQueries, channels, metricKey])
 
-  // Prepare data for chart
+  // Prepare data for chart (either all themes or selected ones)
   const chartData = useMemo(() => {
-    return themes.map((theme, index) => {
-      const query = themeMetricsQueries.find((q) => q.theme === theme)
+    const themesForChart = comparisonMode ? selectedThemesForComparison : themes
+    return themesForChart.map((theme, index) => {
+      const queryResult = themeMetricsQueries[index]
       return {
         theme,
-        metrics: query?.query.data || [],
+        metrics: queryResult?.data?.metrics || [],
         color: THEME_COLORS[index % THEME_COLORS.length],
       }
     })
-  }, [themes, themeMetricsQueries])
+  }, [themes, selectedThemesForComparison, comparisonMode, themeMetricsQueries])
 
-  // Prepare data for table
+  // Prepare data for table (with comparison data)
   const tableData = useMemo(() => {
-    return themes.map((theme) => {
-      const query = themeMetricsQueries.find((q) => q.theme === theme)
-      const metrics = query?.query.data || []
+    // In normal mode, use all themes; in comparison mode, use selected themes
+    const themesToProcess = comparisonMode ? selectedThemesForComparison : themes
+
+    return themesToProcess.map((theme, index) => {
+      const queryResult = themeMetricsQueries[index]
+      const metrics = queryResult?.data?.metrics || []
       const latestMetric = metrics.length > 0 ? metrics[metrics.length - 1] : null
 
       const channelCount = channels?.filter((c) => c.theme === theme).length || 0
+      const colorIndex = comparisonMode
+        ? selectedThemesForComparison.indexOf(theme)
+        : themes.indexOf(theme)
 
       return {
         theme,
@@ -134,9 +182,37 @@ export function ThemesPage() {
         avgCLS: latestMetric?.avg_cls || 0,
         avgTBT: latestMetric?.avg_tbt || 0,
         avgSI: latestMetric?.avg_si || 0,
+        color: THEME_COLORS[colorIndex % THEME_COLORS.length],
       }
     })
-  }, [themes, themeMetricsQueries, channels])
+  }, [themes, selectedThemesForComparison, comparisonMode, themeMetricsQueries, channels])
+
+  // Find best performing theme based on selected metric
+  const bestTheme = useMemo(() => {
+    if (selectedThemesForComparison.length === 0 || !comparisonMode) return null
+
+    const comparisonTableData = tableData.filter((item) =>
+      selectedThemesForComparison.includes(item.theme)
+    )
+
+    if (comparisonTableData.length === 0) return null
+
+    let best = comparisonTableData[0]
+    comparisonTableData.forEach((item) => {
+      let currentValue = item[metricKey.replace('avg_', 'avg') as keyof typeof item] as number
+      let bestValue = best[metricKey.replace('avg_', 'avg') as keyof typeof best] as number
+
+      // For response time and CLS, lower is better
+      if (metricKey === 'avg_response_time') {
+        if (currentValue < bestValue) best = item
+      } else {
+        // For scores, higher is better
+        if (currentValue > bestValue) best = item
+      }
+    })
+
+    return best.theme
+  }, [selectedThemesForComparison, comparisonMode, tableData, metricKey])
 
   return (
     <AppShell
@@ -145,140 +221,299 @@ export function ThemesPage() {
       breadcrumbs={[{ label: 'Por Tema' }]}
     >
       <div className="space-y-6">
-        {/* Filters */}
+        {/* Filters and Comparison Selection */}
         <Card>
           <CardHeader>
-            <CardTitle>Filtros</CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle>
+                {comparisonMode ? 'Modo Comparação' : 'Filtros'}
+              </CardTitle>
+              {!comparisonMode && themes.length > 1 && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleStartComparison}
+                >
+                  <Layers className="mr-2 h-4 w-4" />
+                  Comparar Temas
+                </Button>
+              )}
+              {comparisonMode && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleExitComparison}
+                >
+                  Sair da Comparação
+                </Button>
+              )}
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="flex flex-col gap-4 md:flex-row">
-              <div className="flex-1">
-                <label className="mb-2 block text-sm font-medium">
-                  Período
-                </label>
-                <Select
-                  value={period}
-                  onValueChange={(value) => setPeriod(value as Period)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione o período" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.entries(periodLabels).map(([value, label]) => (
-                      <SelectItem key={value} value={value}>
-                        {label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+            <div className="space-y-4">
+              {/* Comparison Mode: Theme Selection */}
+              {comparisonMode && (
+                <div>
+                  <label className="mb-2 block text-sm font-medium">
+                    Temas Selecionados ({selectedThemesForComparison.length}/4)
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedThemesForComparison.length === 0 ? (
+                      <p className="text-sm text-muted-foreground">
+                        Nenhum tema selecionado
+                      </p>
+                    ) : (
+                      selectedThemesForComparison.map((theme, index) => (
+                        <Badge
+                          key={theme}
+                          variant="secondary"
+                          className="gap-1 pr-1"
+                        >
+                          <div
+                            className="h-2 w-2 rounded-full"
+                            style={{
+                              backgroundColor: THEME_COLORS[index % THEME_COLORS.length],
+                            }}
+                          />
+                          {theme}
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-4 w-4 p-0 hover:bg-transparent"
+                            onClick={() => handleRemoveThemeFromComparison(theme)}
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                        </Badge>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
 
-              <div className="flex-1">
-                <label className="mb-2 block text-sm font-medium">
-                  Métrica Principal
-                </label>
-                <Select
-                  value={metricKey}
-                  onValueChange={(value) => setMetricKey(value as MetricKey)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione a métrica" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {metricOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              {/* Add Theme + Filters Row */}
+              <div className="flex flex-col gap-4 md:flex-row">
+                {/* Add Theme Select (only in comparison mode) */}
+                {comparisonMode && (
+                  <div className="flex-1">
+                    <label className="mb-2 block text-sm font-medium">
+                      Adicionar Tema
+                    </label>
+                    <Select
+                      value=""
+                      onValueChange={handleAddThemeToComparison}
+                      disabled={!canAddMore || isLoadingChannels}
+                    >
+                      <SelectTrigger>
+                        <SelectValue
+                          placeholder={
+                            canAddMore
+                              ? 'Selecione um tema'
+                              : 'Máximo de 4 temas'
+                          }
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {availableThemes.length === 0 ? (
+                          <SelectItem value="none" disabled>
+                            Nenhum tema disponível
+                          </SelectItem>
+                        ) : (
+                          availableThemes.map((theme) => (
+                            <SelectItem key={theme} value={theme}>
+                              {theme}
+                            </SelectItem>
+                          ))
+                        )}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+
+                {/* Period Select */}
+                <div className="flex-1">
+                  <label className="mb-2 block text-sm font-medium">
+                    Período
+                  </label>
+                  <Select
+                    value={period}
+                    onValueChange={(value) => setPeriod(value as Period)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione o período" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.entries(periodLabels).map(([value, label]) => (
+                        <SelectItem key={value} value={value}>
+                          {label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Metric Select */}
+                <div className="flex-1">
+                  <label className="mb-2 block text-sm font-medium">
+                    Métrica Principal
+                  </label>
+                  <Select
+                    value={metricKey}
+                    onValueChange={(value) => setMetricKey(value as MetricKey)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione a métrica" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {metricOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </div>
           </CardContent>
         </Card>
 
         {/* Comparison Chart */}
-        {!isLoadingMetrics && chartData.length > 0 && (
+        {!isLoadingMetrics && chartData.length > 0 && (!comparisonMode || selectedThemesForComparison.length > 0) && (
           <ThemesComparisonChart
             data={chartData}
             metricKey={metricKey}
           />
         )}
 
-        {/* Theme Cards Grid - Preview with Expand */}
-        <Card>
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-base">Visão Geral por Tema</CardTitle>
-                <p className="text-sm text-muted-foreground">
-                  Resumo da métrica selecionada por tema
+        {/* Comparison Mode Empty State */}
+        {comparisonMode && selectedThemesForComparison.length === 0 && (
+          <Card>
+            <CardContent className="flex h-[300px] items-center justify-center">
+              <div className="text-center">
+                <Layers className="mx-auto h-12 w-12 text-muted-foreground/50" />
+                <p className="mt-4 text-sm text-muted-foreground">
+                  Selecione pelo menos um tema para começar a comparação
+                </p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Você pode comparar até 4 temas simultaneamente
                 </p>
               </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {/* Preview or Full Grid */}
-              <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
-                {isLoadingChannels || isLoadingMetrics
-                  ? Array.from({ length: 4 }).map((_, i) => (
-                      <ThemeCard
-                        key={i}
-                        theme="Loading"
-                        value={0}
-                        label=""
-                        channelCount={0}
-                        isLoading
-                      />
-                    ))
-                  : (isOverviewExpanded
-                      ? themeCardsData
-                      : themeCardsData.slice(0, 4)
-                    ).map((data) => (
-                      <ThemeCard
-                        key={data.theme}
-                        theme={data.theme}
-                        value={data.value}
-                        label={metricOptions.find((m) => m.value === metricKey)?.label || ''}
-                        channelCount={data.channelCount}
-                        onClick={() => setSelectedTheme(data.theme)}
-                      />
-                    ))}
-              </div>
+            </CardContent>
+          </Card>
+        )}
 
-              {/* See More/Less Button */}
-              {themeCardsData.length > 4 && (
-                <div className="flex justify-center pt-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setIsOverviewExpanded(!isOverviewExpanded)}
-                  >
-                    {isOverviewExpanded ? (
-                      <>
-                        <ChevronUp className="mr-1 h-4 w-4" />
-                        Ver menos
-                      </>
-                    ) : (
-                      <>
-                        <ChevronDown className="mr-1 h-4 w-4" />
-                        Ver mais {themeCardsData.length - 4} temas
-                      </>
-                    )}
-                  </Button>
+        {/* Theme Cards Grid - Preview with Expand (only in normal mode) */}
+        {!comparisonMode && (
+          <Card>
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-base">Visão Geral por Tema</CardTitle>
+                  <p className="text-sm text-muted-foreground">
+                    Resumo da métrica selecionada por tema
+                  </p>
                 </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {/* Preview or Full Grid */}
+                <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
+                  {isLoadingChannels || isLoadingMetrics
+                    ? Array.from({ length: 4 }).map((_, i) => (
+                        <ThemeCard
+                          key={i}
+                          theme="Loading"
+                          value={0}
+                          label=""
+                          channelCount={0}
+                          isLoading
+                        />
+                      ))
+                    : (isOverviewExpanded
+                        ? themeCardsData
+                        : themeCardsData.slice(0, 4)
+                      ).map((data) => (
+                        <ThemeCard
+                          key={data.theme}
+                          theme={data.theme}
+                          value={data.value}
+                          label={metricOptions.find((m) => m.value === metricKey)?.label || ''}
+                          channelCount={data.channelCount}
+                          onClick={() => setSelectedTheme(data.theme)}
+                        />
+                      ))}
+                </div>
 
-        {/* Detailed Table */}
-        <ThemesTable
-          data={tableData}
-          isLoading={isLoadingChannels || isLoadingMetrics}
-          onThemeClick={(theme) => setSelectedTheme(theme)}
-        />
+                {/* See More/Less Button */}
+                {themeCardsData.length > 4 && (
+                  <div className="flex justify-center pt-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setIsOverviewExpanded(!isOverviewExpanded)}
+                    >
+                      {isOverviewExpanded ? (
+                        <>
+                          <ChevronUp className="mr-1 h-4 w-4" />
+                          Ver menos
+                        </>
+                      ) : (
+                        <>
+                          <ChevronDown className="mr-1 h-4 w-4" />
+                          Ver mais {themeCardsData.length - 4} temas
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Comparison Mode: KPI Cards Grid */}
+        {comparisonMode && selectedThemesForComparison.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Resumo das Métricas</CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Principais indicadores de performance de cada tema
+              </p>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                {selectedThemesForComparison.map((theme, index) => {
+                  const data = themeCardsData.find((d) => d.theme === theme)
+                  const isBest = theme === bestTheme
+
+                  return (
+                    <ThemeCard
+                      key={theme}
+                      theme={theme}
+                      value={data?.value || 0}
+                      label={metricOptions.find((m) => m.value === metricKey)?.label || ''}
+                      channelCount={data?.channelCount || 0}
+                      color={THEME_COLORS[index % THEME_COLORS.length]}
+                      isBest={isBest}
+                      isLoading={isLoadingMetrics}
+                    />
+                  )
+                })}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Detailed Table (already filtered by tableData) */}
+        {(!comparisonMode || selectedThemesForComparison.length > 0) && (
+          <ThemesTable
+            data={tableData}
+            isLoading={isLoadingChannels || isLoadingMetrics}
+            onThemeClick={(theme) => setSelectedTheme(theme)}
+          />
+        )}
 
         {/* Selected Theme Channels Section */}
         {selectedTheme && (
