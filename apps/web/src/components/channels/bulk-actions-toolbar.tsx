@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Trash2, Power, PowerOff } from 'lucide-react'
+import { Trash2, Power, PowerOff, Tag } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   AlertDialog,
@@ -12,10 +12,27 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import {
   useDeleteChannel,
   useEnableChannel,
   useDisableChannel,
+  useUpdateChannel,
 } from '@/hooks/use-channels'
+import { useProviders } from '@/hooks/use-providers'
 import { useToast } from '@/hooks/use-toast'
 
 interface BulkActionsToolbarProps {
@@ -28,11 +45,15 @@ export function BulkActionsToolbar({
   onClearSelection,
 }: BulkActionsToolbarProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+  const [showProviderDialog, setShowProviderDialog] = useState(false)
+  const [selectedProviderId, setSelectedProviderId] = useState<string>('')
   const { toast } = useToast()
 
   const deleteChannel = useDeleteChannel()
   const enableChannel = useEnableChannel()
   const disableChannel = useDisableChannel()
+  const updateChannel = useUpdateChannel()
+  const { data: providers = [] } = useProviders()
 
   const handleEnableAll = async () => {
     try {
@@ -92,6 +113,48 @@ export function BulkActionsToolbar({
     }
   }
 
+  const handleAssignProvider = async () => {
+    if (!selectedProviderId) {
+      toast({
+        title: 'Erro',
+        description: 'Selecione um provedor.',
+        variant: 'destructive',
+      })
+      return
+    }
+
+    try {
+      await Promise.all(
+        selectedIds.map((id) =>
+          updateChannel.mutateAsync({
+            channelId: id,
+            data: {
+              provider_id: selectedProviderId === 'none' ? undefined : selectedProviderId,
+            },
+          })
+        )
+      )
+
+      const providerName = selectedProviderId === 'none'
+        ? 'Nenhum'
+        : providers.find(p => p.id === selectedProviderId)?.name || 'provedor'
+
+      toast({
+        title: 'Provedor atribuído',
+        description: `${selectedIds.length} canal(is) associado(s) ao provedor "${providerName}" com sucesso.`,
+      })
+      onClearSelection()
+      setShowProviderDialog(false)
+      setSelectedProviderId('')
+    } catch (error) {
+      toast({
+        title: 'Erro',
+        description: 'Ocorreu um erro ao atribuir o provedor.',
+        variant: 'destructive',
+      })
+    }
+  }
+
   if (selectedIds.length === 0) {
     return null
   }
@@ -99,7 +162,8 @@ export function BulkActionsToolbar({
   const isLoading =
     deleteChannel.isPending ||
     enableChannel.isPending ||
-    disableChannel.isPending
+    disableChannel.isPending ||
+    updateChannel.isPending
 
   return (
     <>
@@ -109,6 +173,16 @@ export function BulkActionsToolbar({
         </p>
 
         <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowProviderDialog(true)}
+            disabled={isLoading}
+          >
+            <Tag className="mr-2 h-4 w-4" />
+            Atribuir Provedor
+          </Button>
+
           <Button
             variant="outline"
             size="sm"
@@ -149,6 +223,58 @@ export function BulkActionsToolbar({
           </Button>
         </div>
       </div>
+
+      <Dialog open={showProviderDialog} onOpenChange={setShowProviderDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Atribuir Provedor</DialogTitle>
+            <DialogDescription>
+              Selecione um provedor para atribuir aos {selectedIds.length} canal(is) selecionado(s).
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Provedor</label>
+              <Select
+                value={selectedProviderId}
+                onValueChange={setSelectedProviderId}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione um provedor" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">Nenhum (remover provedor)</SelectItem>
+                  {providers.map((provider) => (
+                    <SelectItem key={provider.id} value={provider.id}>
+                      {provider.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowProviderDialog(false)
+                setSelectedProviderId('')
+              }}
+              disabled={isLoading}
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleAssignProvider}
+              disabled={isLoading || !selectedProviderId}
+            >
+              {isLoading ? 'Atribuindo...' : 'Atribuir'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
